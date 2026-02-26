@@ -2,493 +2,796 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>CodeLearn - Student Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NoGuardian Games</title>
+<link rel="icon" href="favicon.ico">
 <style>
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:url('https://i.pinimg.com/736x/8e/d9/33/8ed93366a95da86f13ae3e50582944f3.jpg') center/cover fixed;
-    color:white;
-    min-height:100vh;
-}
-.nav{
-    padding:20px;
-    background:rgba(17,17,17,0.9);
-    display:flex;
-    align-items:center;
-    backdrop-filter:blur(10px);
-}
-.logo{
-    font-size:24px;
-    font-weight:bold;
-    color:#e50914;
-}
-.topbar{
-    padding:15px 30px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    border-bottom:1px solid rgba(34,34,34,0.8);
-    background:rgba(0,0,0,0.5);
-    backdrop-filter:blur(5px);
-}
-#search{
-    padding:8px 15px;
-    border-radius:20px;
-    border:none;
-    background:rgba(34,34,34,0.9);
-    color:white;
-    width:200px;
-}
-.games-grid{
-    display:grid;
-    grid-template-columns:repeat(6, 1fr);
-    gap:25px;
-    padding:30px;
-    max-width:1400px;
-    margin:0 auto;
-}
-@media (max-width: 1200px) {
-    .games-grid{grid-template-columns:repeat(4, 1fr);}
-}
-@media (max-width: 900px) {
-    .games-grid{grid-template-columns:repeat(3, 1fr);}
-}
-@media (max-width: 600px) {
-    .games-grid{grid-template-columns:repeat(2, 1fr);}
-}
-.game-card{
-    width:100%;
-    aspect-ratio:1/1;
-    border-radius:12px;
-    background-size:cover;
-    background-position:center;
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    justify-content:space-between;
-    cursor:pointer;
-    transition:transform .15s ease, box-shadow .15s ease;
-    box-shadow:0 4px 15px rgba(0,0,0,.6);
-    position:relative;
-    overflow:hidden;
-    border:2px solid rgba(255,255,255,0.1);
-}
-.game-card:hover{
-    transform:scale(1.05);
-    box-shadow:0 8px 25px rgba(0,0,0,.8);
-    border-color:rgba(229,9,20,0.5);
-}
-.game-name{
-    background:rgba(0,0,0,.85);
-    width:100%;
-    text-align:center;
-    font-size:13px;
-    padding:8px 0;
-    font-weight:bold;
-}
-.fullscreen-btn{
-    background:#00ff00;
-    color:#000;
-    border:none;
-    border-radius:50%;
-    width:32px;
-    height:32px;
-    font-size:14px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:8px;
-    z-index:10;
-    transition:all 0.2s ease;
-    box-shadow:0 2px 8px rgba(0,255,0,0.4);
-}
-.fullscreen-btn:hover{
-    transform:scale(1.1);
-    box-shadow:0 4px 12px rgba(0,255,0,0.6);
-}
-.close-btn{
+  :root {
+    --primary: #667eea;
+    --primary-hover: #5a67d8;
+    --secondary: #764ba2;
+    --bg-light: #f0f2f5;
+    --text-dark: #1f2937;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--text-dark);
+  }
+  .login-screen {
+    position: fixed; inset: 0;
+    background: url('https://wallpapers-clan.com/wp-content/uploads/2024/03/starfall-night-sky-mountains-aesthetic-gif-cover-desktop-wallpaper.gif') center/cover no-repeat;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 10000; transition: opacity 0.5s ease;
+  }
+  .login-screen::before { content:''; position:absolute; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(2px); pointer-events:none; }
+  .login-screen.hidden { opacity:0; pointer-events:none; }
+  .login-box {
+    background:var(--glass-bg); backdrop-filter:blur(12px); border:1px solid var(--glass-border);
+    padding:40px; border-radius:24px; box-shadow:var(--shadow); width:90%; max-width:400px;
+    text-align:center; animation:slideUp 0.6s ease-out; z-index:2; position:relative;
+  }
+  @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .login-banner { width:100px; height:100px; border-radius:50%; margin-bottom:20px; object-fit:cover; border:4px solid white; box-shadow:0 4px 15px rgba(0,0,0,0.2); }
+  .login-box h1 { color:var(--text-dark); margin-bottom:10px; font-size:28px; }
+  .login-box p { color:#666; margin-bottom:30px; font-size:14px; }
+  .login-input { width:100%; padding:15px 20px; margin-bottom:15px; border:2px solid #e0e0e0; border-radius:12px; font-size:16px; transition:all 0.3s; outline:none; background:rgba(255,255,255,0.9); }
+  .login-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(102,126,234,0.2); }
+  .login-btn { width:100%; padding:15px; background:linear-gradient(135deg,var(--primary)0%,var(--secondary)100%); color:white; border:none; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer; transition:transform 0.2s,box-shadow 0.2s; }
+  .login-btn:hover { transform:translateY(-2px); box-shadow:0 10px 20px rgba(102,126,234,0.3); }
+  .error-msg { color:#e60012; margin-top:15px; font-size:14px; display:none; font-weight:500; }
+  .more-info-container { margin-top:20px; position:relative; }
+  .more-info-btn { background:transparent; border:1px solid #ccc; color:#666; padding:8px 16px; border-radius:20px; cursor:pointer; font-size:12px; transition:all 0.3s; }
+  .more-info-btn:hover { border-color:var(--primary); color:var(--primary); }
+  .info-tooltip {
+    position:absolute; bottom:120%; left:50%; transform:translateX(-50%) scale(0.9);
+    background:#333; color:white; padding:15px; border-radius:12px; width:90%; opacity:0; pointer-events:none;
+    transition:all 0.3s cubic-bezier(0.68,-0.55,0.27,1.55); box-shadow:0 10px 25px rgba(0,0,0,0.2); z-index:10;
+  }
+  .info-tooltip.active { opacity:1; transform:translateX(-50%) scale(1); bottom:140%; }
+  .info-tooltip::after { content:''; position:absolute; top:100%; left:50%; margin-left:-8px; border-width:8px; border-style:solid; border-color:#333 transparent transparent transparent; }
+  .intro-screen { position:fixed; inset:0; background:#000; display:none; align-items:center; justify-content:center; z-index:9999; flex-direction:column; }
+  .intro-screen.active { display:flex; }
+  .intro-gif { max-width:200px; border-radius:20px; margin-bottom:20px; }
+  .intro-text { color:white; font-size:20px; letter-spacing:2px; animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .feedback-popup {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.9);
+    background:white; padding:30px; border-radius:24px; box-shadow:0 25px 80px rgba(0,0,0,0.3);
+    z-index:10001; max-width:400px; width:90%; text-align:center; opacity:0; pointer-events:none; transition:all 0.3s ease;
+  }
+  .feedback-popup.active { opacity:1; pointer-events:all; transform:translate(-50%,-50%) scale(1); }
+  .feedback-popup h2 { color:#333; margin-bottom:15px; font-size:22px; }
+  .feedback-popup p { color:#666; margin-bottom:20px; font-size:14px; line-height:1.5; }
+  .feedback-buttons { display:flex; gap:10px; justify-content:center; }
+  .feedback-btn { padding:12px 24px; border:none; border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .vote-btn { background:linear-gradient(135deg,var(--primary)0%,var(--secondary)100%); color:white; }
+  .vote-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(102,126,234,0.3); }
+  .exit-btn { background:#f0f0f0; color:#666; }
+  .exit-btn:hover { background:#e0e0e0; }
+  .main-site { display:none; min-height:100vh; flex-direction:column; background:var(--bg-light); padding-bottom:100px; }
+  .main-site.active { display:flex; }
+  .header { display:flex; justify-content:space-between; align-items:center; padding:15px 40px; background:white; box-shadow:0 2px 10px rgba(0,0,0,0.05); z-index:100; position:sticky; top:0; }
+  .logo-section { display:flex; align-items:center; gap:15px; }
+  .logo-banner { height:40px; border-radius:8px; }
+  .site-title { color:#333; font-size:22px; font-weight:700; }
+  .header-controls { display:flex; align-items:center; gap:20px; }
+  .search-container { position:relative; }
+  .search-input { padding:10px 15px 10px 35px; border:1px solid #ddd; border-radius:20px; width:250px; font-size:14px; outline:none; transition:all 0.3s; }
+  .search-input:focus { width:300px; border-color:var(--primary); box-shadow:0 0 0 3px rgba(102,126,234,0.1); }
+  .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#999; font-size:14px; }
+  .total-games { color:white; background:#e60012; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; }
+  .time-display { color:#666; font-size:14px; font-weight:500; font-family:monospace; }
+  .games-container { flex:1; display:flex; flex-direction:column; justify-content:center; padding:40px 0; position:relative; overflow:hidden; }
+  .games-scroll-area { width:100%; overflow-x:auto; overflow-y:hidden; scroll-behavior:smooth; scrollbar-width:none; -ms-overflow-style:none; padding:20px 40px; }
+  .games-scroll-area::-webkit-scrollbar { display:none; }
+  .games-row { display:flex; gap:25px; width:max-content; padding:20px; }
+  .game-card {
+    width:200px; height:200px; border-radius:20px; overflow:hidden; cursor:pointer;
+    transition:all 0.3s cubic-bezier(0.25,0.8,0.25,1); background:#000;
+    box-shadow:0 4px 15px rgba(0,0,0,0.5); border:3px solid transparent; position:relative; flex-shrink:0;
+  }
+  .game-card:hover, .game-card.focused {
+    transform:translateY(-10px) scale(1.05); box-shadow:0 20px 40px rgba(0,0,0,0.4); border-color:var(--primary);
+  }
+  .game-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.3s, opacity 0.3s; opacity:0.85; }
+  .game-card:hover img { opacity:1; transform:scale(1.1); }
+  .game-card .star { position:absolute; top:10px; left:10px; color:#ffd700; font-size:24px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index:2; cursor:pointer; transition:transform 0.2s; }
+  .game-card .star:hover { transform:scale(1.2); }
+  .game-card .star.empty { color:rgba(255,255,255,0.4); }
+  .game-card .title {
+    position:absolute; bottom:0; left:0; right:0; padding:15px;
+    background:linear-gradient(to top,rgba(0,0,0,0.9)0%,transparent 100%); color:white;
+    font-size:14px; font-weight:600; text-align:center; opacity:0; transition:opacity 0.3s;
+  }
+  .game-card:hover .title { opacity:1; }
+  .scroll-btn {
+    position:absolute; top:50%; transform:translateY(-50%); width:50px; height:50px;
+    background:rgba(255,255,255,0.9); border:none; border-radius:50%; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,0.2);
+    z-index:10; transition:all 0.3s;
+  }
+  .scroll-btn:hover { background:var(--primary); transform:translateY(-50%) scale(1.1); }
+  .scroll-btn svg { width:24px; height:24px; fill:#333; }
+  .scroll-btn-left { left:20px; }
+  .scroll-btn-right { right:20px; }
+  .game-player {
     position:fixed;
-    top:10px;
-    right:10px;
-    z-index:9999;
-    background:#e50914;
-    color:white;
-    border:none;
-    border-radius:50%;
-    width:40px;
-    height:40px;
-    font-size:20px;
-    cursor:pointer;
-    box-shadow:0 2px 10px rgba(0,0,0,0.5);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:Arial,sans-serif;
-}
-
-/* Preview Overlay Styles */
-.preview-overlay{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
+    top:0; left:0; right:0; bottom:0;
     background:#000;
-    z-index:10000;
+    z-index:9998;
+    display:none;
     flex-direction:column;
-}
-.preview-overlay.active{display:flex}
-.preview-header{
-    background:#111;
-    padding:15px 20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    border-bottom:1px solid #222;
-    height:50px;
-    box-sizing:border-box;
-}
-.preview-title{font-size:18px;font-weight:bold;color:#e50914}
-.preview-close{
-    background:#e50914;
-    color:white;
-    border:none;
-    border-radius:50%;
-    width:35px;
-    height:35px;
-    font-size:18px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-.preview-content{
-    flex:1;
-    position:relative;
-    width:100%;
-    height:calc(100% - 50px);
-    overflow:hidden;
-}
-.preview-frame{
-    width:100%;
-    height:100%;
-    border:none;
-    background:#000;
-}
-.preview-loader{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    color:#e50914;
-    font-size:24px;
-    display:none;
-}
+  }
+  .game-player.active { display:flex; }
+  /* The game player header bar sits inside the player, always visible */
+  .game-player-header {
+    display:flex; align-items:center; padding:10px 16px;
+    background:#1a1a1a; border-bottom:1px solid #333; gap:12px;
+    flex-shrink:0; z-index:9999; position:relative;
+  }
+  .home-btn {
+    display:flex; align-items:center; gap:6px; padding:8px 16px;
+    background:var(--primary); color:white; border:none; border-radius:10px;
+    font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .home-btn svg { width:16px; height:16px; fill:white; flex-shrink:0; }
+  .home-btn:hover { background:var(--primary-hover); }
+  .game-player-title { color:white; font-size:15px; font-weight:600; flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .game-frame { flex:1; width:100%; border:none; background:#000; display:block; }
+  /* Small fullscreen button */
+  .fullscreen-btn {
+    display:flex; align-items:center; gap:4px;
+    padding:6px 12px; background:#28a745; color:white;
+    border:none; border-radius:8px; font-size:12px; font-weight:600;
+    cursor:pointer; white-space:nowrap; flex-shrink:0;
+  }
+  .fullscreen-btn svg { width:13px; height:13px; fill:white; }
+  .fullscreen-btn:hover { background:#218838; }
+  .fullscreen-exit-overlay { position:absolute; top:0; left:0; right:0; height:80px; background:linear-gradient(to bottom,rgba(0,0,0,0.8)0%,transparent 100%); display:flex; justify-content:flex-end; align-items:flex-start; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:10; }
+  .game-player.fullscreen .fullscreen-exit-overlay { pointer-events:all; opacity:1; }
+  .fullscreen-exit-btn { background:#e60012; color:white; border:none; border-radius:50%; width:40px; height:40px; font-size:24px; cursor:pointer; }
+  .my-list-section {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.9);
+    background:white; padding:30px; border-radius:24px; box-shadow:0 25px 80px rgba(0,0,0,0.2);
+    z-index:1002; max-width:900px; width:90%; max-height:80vh; overflow-y:auto; display:none; opacity:0;
+  }
+  .my-list-section.active { display:block; opacity:1; transform:translate(-50%,-50%) scale(1); }
+  .my-list-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:20px; }
+  .close-mylist-btn { margin-top:20px; padding:12px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-size:16px; width:100%; }
+  .dock-container {
+    position:fixed; bottom:25px; left:50%; transform:translateX(-50%);
+    display:flex; gap:15px; padding:12px 20px; background:rgba(255,255,255,0.9);
+    backdrop-filter:blur(10px); border-radius:25px; box-shadow:0 10px 40px rgba(0,0,0,0.1);
+    border:1px solid rgba(255,255,255,0.5); z-index:100;
+  }
+  .dock-item {
+    width:45px; height:45px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.2s; background:#f5f5f5; border:2px solid transparent; position:relative;
+  }
+  .dock-item:hover { transform:translateY(-5px); background:var(--primary); border-color:var(--primary); }
+  .dock-item svg { width:22px; height:22px; fill:#666; }
+  .dock-item.mylist-btn { background:linear-gradient(135deg,#ffd700 0%,#ffaa00 100%); }
+  .dock-item.mylist-btn svg { fill:white; }
+  .dock-item .badge { position:absolute; top:-5px; right:-5px; background:#e60012; color:white; font-size:11px; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .window {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.95);
+    width:85%; height:85%; background:white; border-radius:20px; box-shadow:0 25px 80px rgba(0,0,0,0.3);
+    z-index:1000; display:flex; flex-direction:column; overflow:hidden; border:1px solid #eee; opacity:0; pointer-events:none;
+  }
+  .window.active { opacity:1; pointer-events:all; transform:translate(-50%,-50%) scale(1); }
+  .window.large { width:90%; height:90%; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:#f8f9fa; border-bottom:1px solid #eee; }
+  .topbar button { background:#e0e0e0; border:none; color:#333; width:30px; height:30px; border-radius:8px; cursor:pointer; }
+  #frame { flex:1; width:100%; border:none; }
+  .settings {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.95);
+    background:white; padding:30px; border-radius:24px; box-shadow:0 25px 80px rgba(0,0,0,0.2);
+    z-index:1001; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; opacity:0; pointer-events:none;
+  }
+  .settings.active { opacity:1; pointer-events:all; transform:translate(-50%,-50%) scale(1); }
+  .visitor-counter {
+    position:fixed; bottom:100px; right:20px; background:white; padding:10px 20px;
+    border-radius:30px; box-shadow:0 4px 15px rgba(0,0,0,0.1); font-size:14px; color:#666;
+    z-index:50; font-weight:600; display:flex; align-items:center; gap:8px;
+  }
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; opacity:0; pointer-events:none; }
+  .overlay.active { opacity:1; pointer-events:all; }
+  .no-games, .loading-games { text-align:center; color:#666; padding:40px; font-size:16px; width:100%; }
+  .spinner { width:20px; height:20px; border:3px solid #f3f3f3; border-top:3px solid var(--primary); border-radius:50%; animation:spin 1s linear infinite; display:inline-block; }
+  @keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<button onclick="closeWindow()" class="close-btn">✕</button>
-
-<!-- Preview Overlay -->
-<div id="previewOverlay" class="preview-overlay">
-    <div class="preview-header">
-        <span class="preview-title" id="previewTitle">Game Preview</span>
-        <button class="preview-close" onclick="closePreview()">✕</button>
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEtseCaQReYgXH1C-tdRM6kNttqlXvFyym_g&s" alt="CodeLearn" class="login-banner">
+    <h1>🔒 Student Login</h1>
+    <p>Welcome to CodeLearn Programming Portal</p>
+    <input type="text" class="login-input" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" class="login-input" id="password" placeholder="Password">
+    <button class="login-btn" onclick="checkLogin()">Sign In</button>
+    <div class="error-msg" id="errorMsg">Invalid username or password!</div>
+    <div class="more-info-container">
+      <button class="more-info-btn" onclick="toggleInfo()">ℹ️ More Info</button>
+      <div class="info-tooltip" id="infoTooltip">
+        <p><strong>Username:</strong> 1</p>
+        <p><strong>Password:</strong> blockmelol (any capitalization works now)</p>
+      </div>
     </div>
-    <div class="preview-content" id="previewContent">
-        <div class="preview-loader" id="previewLoader">Loading...</div>
-        <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-fullscreen"></iframe>
-    </div>
+  </div>
 </div>
 
-<nav class="nav">
-  <span class="logo">NoGuardian Games</span>
-</nav>
-
-<div class="topbar">
-  <span id="total">Total games: 5</span>
-  <input id="search" placeholder="Search games…">
+<div class="intro-screen" id="introScreen">
+  <img src="https://68.media.tumblr.com/ecea9391e51144ebfb48c0451f11ee70/tumblr_oh98s6US8x1qjoleso1_500.gif" alt="Loading" class="intro-gif">
+  <div class="intro-text">Loading your workspace...</div>
 </div>
 
-<div id="games" class="games-grid"></div>
+<div class="feedback-popup" id="feedbackPopup">
+  <h2>💭 We Value Your Feedback!</h2>
+  <p>What should I add next?<br>Vote if you like this portal!</p>
+  <div class="feedback-buttons">
+    <button class="feedback-btn vote-btn" onclick="voteSite()">🗳️ Vote</button>
+    <button class="feedback-btn exit-btn" onclick="closeFeedback()">✕ Exit</button>
+  </div>
+</div>
+
+<div class="main-site" id="mainSite">
+  <div class="header">
+    <div class="logo-section">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEtseCaQReYgXH1C-tdRM6kNttqlXvFyym_g&s" alt="CodeLearn" class="logo-banner">
+      <span class="site-title">CodeLearn</span>
+    </div>
+    <div class="header-controls">
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search games..." oninput="handleSearch()">
+      </div>
+      <span class="total-games" id="totalGames">Total Games: Loading...</span>
+      <span class="time-display" id="clock">12:00 PM</span>
+    </div>
+  </div>
+
+  <div class="games-container">
+    <button class="scroll-btn scroll-btn-left" onclick="scrollGamesLeft()">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+    </button>
+    <button class="scroll-btn scroll-btn-right" onclick="scrollGamesRight()">
+      <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+    </button>
+    <div class="games-scroll-area" id="gamesScrollArea">
+      <div class="games-row" id="gamesRow">
+        <div class="loading-games">
+          <div class="spinner"></div>
+          Loading games...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="game-player" id="gamePlayer">
+  <div class="game-player-header">
+    <button class="home-btn" onclick="closeGame()">
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;flex-shrink:0;"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </button>
+    <span class="game-player-title" id="gamePlayerTitle">Game</span>
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">
+      <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:white;"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      Fullscreen
+    </button>
+  </div>
+  <iframe class="game-frame" id="gameFrame" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-pointer-lock"></iframe>
+  <div class="fullscreen-exit-overlay" id="fullscreenExitOverlay">
+    <button class="fullscreen-exit-btn" onclick="exitFullscreen()">✕</button>
+  </div>
+</div>
+
+<div class="visitor-counter" id="visitorCounter">
+  👥 Visitors: <span id="visitorCount">1257</span>
+</div>
+
+<div class="my-list-section" id="myListSection">
+  <h2>⭐ My List (<span id="myListCount">0</span>)</h2>
+  <div class="my-list-grid" id="myListGrid"></div>
+  <button class="close-mylist-btn" onclick="closeMyList()">Close</button>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeAllModals()"></div>
+
+<div class="dock-container">
+  <div class="dock-item" onclick="openWindow('movies.html','Movies')" title="Movies"><svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2z"/></svg></div>
+  <div class="dock-item" onclick="openWindow('partners.html','Partners')" title="Partners"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+  <div class="dock-item" onclick="openWindow('unblockers.html','Unblocker')" title="Unblocker"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+  <div class="dock-item mylist-btn" onclick="openMyList()" title="My List">
+    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    <span class="badge" id="myListBadge" style="display:none;">0</span>
+  </div>
+  <div class="dock-item presentation-btn" onclick="openPresentation()" title="Presentation"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
+  <div class="dock-item chat-btn" onclick="openChat()" title="Chat"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg></div>
+  <div class="dock-item apps-btn" onclick="openWindow('https://ireadygames67.b-cdn.net/a.html','Apps')" title="Apps"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div>
+  <div class="dock-item music-btn" onclick="openWindow('https://docs.google.com/presentation/d/1JJQOdkUf9OzWWcyqJznDTLdD3KTmc2Qkl85ibqx-JxM/edit?usp=sharing','Music')" title="Music"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+  <div class="dock-item settings-btn" onclick="openSettings()" title="Settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L5.09 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+</div>
+
+<div id="window" class="window">
+  <div class="topbar">
+    <span id="windowTitle">App</span>
+    <button onclick="closeWindow()">✕</button>
+  </div>
+  <iframe id="frame"></iframe>
+</div>
+
+<div id="settings" class="settings">
+  <h3>🎭 Cloak</h3>
+  <button onclick="openAboutBlank()">Open about:blank</button>
+  <input id="cloakInput" placeholder="Tab name">
+  <button onclick="setCloak()">Apply Cloak</button>
+  <br><br>
+  <button onclick="closeSettings()">Close Settings</button>
+</div>
 
 <script>
-const gamesEl = document.getElementById("games");
-const search = document.getElementById("search");
-const previewOverlay = document.getElementById("previewOverlay");
-const previewFrame = document.getElementById("previewFrame");
-const previewTitle = document.getElementById("previewTitle");
-const previewLoader = document.getElementById("previewLoader");
-const previewContent = document.getElementById("previewContent");
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-let isFullscreen = false;
+// Visitor Counter
+function updateVisitorCounter() {
+  let count = localStorage.getItem('visitorCount') || 1256;
+  count = parseInt(count) + 1;
+  localStorage.setItem('visitorCount', count);
+  document.getElementById('visitorCount').textContent = count.toLocaleString();
+}
+updateVisitorCounter();
 
-// Game images
-const GAME_IMAGES = {
-    roblox: "https://tse3.mm.bing.net/th/id/OIP.Suu0wkaP6duvpXY_gWJucgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3",
-    gta: "https://tse2.mm.bing.net/th/id/OIP.T6kQS4BQ4CCT6jlXGtAuDgHaE7?rs=1&pid=ImgDetMain&o=7&rm=3",
-    sonic: "https://www.bing.com/th/id/OIP.oIxKByEEPvxJynlJ-lejUwHaD4?w=258&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-    leveldevil: "https://www.bing.com/th/id/OIP.I0DJIM69u3fkaj32V4IX8QAAAA?w=206&h=211&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2",
-    subwaysurfers: "https://th.bing.com/th/id/OIP.kHOQ3zf6vvyOAUXDY4wWNwHaHa?w=160&h=180&c=7&r=0&o=7&pid=1.7&rm=3"
-};
-
-// Safe window handling
-const isInIframe = window !== window.parent;
-const closeWindow = () => {
-    if (isInIframe && typeof parent.closeWindow === 'function') {
-        parent.closeWindow();
-    } else {
-        window.close();
-    }
-};
-
-// Fullscreen functions
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        previewContent.requestFullscreen().then(() => {
-            isFullscreen = true;
-            document.querySelector('.preview-header').style.display = 'none';
-            previewContent.style.height = '100vh';
-        }).catch(err => {
-            console.log('Fullscreen error:', err);
-        });
-    } else {
-        document.exitFullscreen();
-    }
+// More Info Toggle
+function toggleInfo() {
+  document.getElementById('infoTooltip').classList.toggle('active');
 }
 
-// Listen for fullscreen changes
-document.addEventListener('fullscreenchange', () => {
-    if (!document.fullscreenElement) {
-        isFullscreen = false;
-        document.querySelector('.preview-header').style.display = 'flex';
-        previewContent.style.height = 'calc(100% - 50px)';
-    }
-});
+// Feedback
+function showFeedback() { document.getElementById('feedbackPopup').classList.add('active'); }
+function closeFeedback() { document.getElementById('feedbackPopup').classList.remove('active'); }
+function voteSite() {
+  window.open('https://ubghub.org/?site=classroomspot', '_blank');
+  closeFeedback();
+}
 
-// Preview functions
-function openPreview(htmlContent, title) {
-    previewTitle.textContent = title || "Game Preview";
-    previewOverlay.classList.add('active');
-    previewLoader.style.display = 'block';
-    previewFrame.style.opacity = '0';
-    
-    previewFrame.srcdoc = htmlContent;
-    
-    previewFrame.onload = function() {
-        previewLoader.style.display = 'none';
-        previewFrame.style.opacity = '1';
-    };
+// Favorites
+let favorites = JSON.parse(localStorage.getItem('codeLearnFavorites')) || [];
+function toggleFavorite(gameName, e) {
+  e.stopPropagation();
+  const idx = favorites.indexOf(gameName);
+  if (idx > -1) favorites.splice(idx, 1);
+  else favorites.push(gameName);
+  localStorage.setItem('codeLearnFavorites', JSON.stringify(favorites));
+  updateMyListBadge();
+  renderGames();
+}
+function isFavorite(name) { return favorites.includes(name); }
+function updateMyListBadge() {
+  const badge = document.getElementById('myListBadge');
+  badge.textContent = favorites.length;
+  badge.style.display = favorites.length > 0 ? 'flex' : 'none';
+  document.getElementById('myListCount').textContent = favorites.length;
+}
+
+// Login - FIXED: case-insensitive password
+function checkLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim().toLowerCase();
+  const err = document.getElementById('errorMsg');
+  
+  if (u === '1' && p === 'blockmelol') {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('introScreen').classList.add('active');
     
     setTimeout(() => {
-        previewLoader.style.display = 'none';
-        previewFrame.style.opacity = '1';
-    }, 1000);
+      document.getElementById('introScreen').classList.remove('active');
+      document.getElementById('mainSite').classList.add('active');
+      loadGames();
+      updateMyListBadge();
+      showFeedback();
+    }, 3000);
+  } else {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
 }
 
-function closePreview() {
-    previewOverlay.classList.remove('active');
-    previewFrame.srcdoc = '';
-    if (document.fullscreenElement) {
-        document.exitFullscreen();
-    }
+// My List
+function openMyList() {
+  const sec = document.getElementById('myListSection');
+  const grid = document.getElementById('myListGrid');
+  grid.innerHTML = '';
+  const favs = allGames.filter(g => favorites.includes(g.name));
+  if (favs.length === 0) {
+    grid.innerHTML = '<p style="color:#666;text-align:center;grid-column:1/-1;">No favorites yet! Click the star on games.</p>';
+  } else {
+    favs.forEach(g => grid.appendChild(createGameCard(g, true)));
+  }
+  sec.classList.add('active');
+  document.getElementById('overlay').classList.add('active');
+}
+function closeMyList() {
+  document.getElementById('myListSection').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
 }
 
-// Close on escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        } else if (previewOverlay.classList.contains('active')) {
-            closePreview();
-        }
-    }
-});
+// Games Data
+let allGames = [];
+let filteredGames = [];
+let focusedIndex = 0;
 
-// HTML content for games
-const ROBLOX_HTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>roblox - Truffled</title>
-<style>
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
-iframe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border: none; }
-#truffled-logo { position: fixed; bottom: 10px; right: 10px; width: 150px; height: 150px; cursor: pointer; z-index: 9999; }
-</style>
-</head>
-<body>
-<iframe src="https://nevertraveling.thepresenttraveller.com/gamefile/nowgg/roblox.html?prefix=149" allowfullscreen></iframe>
-<a href="https://nevertraveling.thepresenttraveller.com" target="_blank">
-    <img id="truffled-logo" src="https://nevertraveling.thepresenttraveller.com/png/logo.png" alt="Logo">
-</a>
-</body>
-</html>`;
+const ZONES = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
+const COVER_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main/";
+const HTML_BASE = "https://cdn.jsdelivr.net/gh/gn-math/html@main/";
 
-const SONIC_HTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>sonic - Truffled</title>
-<style>
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
-iframe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border: none; }
-#truffled-logo { position: fixed; bottom: 10px; right: 10px; width: 150px; height: 150px; cursor: pointer; z-index: 9999; }
-</style>
-</head>
-<body>
-<iframe src="https://classlink.com.de/games/sonic/index.html" allowfullscreen></iframe>
-<a href="https://classlink.com.de" target="_blank">
-    <img id="truffled-logo" src="https://classlink.com.de/png/logo.png" alt="Logo">
-</a>
-</body>
-</html>`;
+const FALLBACK_IMAGE = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="%23000"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-family="Arial" font-size="16">Image Coming Soon</text></svg>';
 
-const LEVELDEVIL_HTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>lvldevil - Truffled</title>
-<style>
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
-iframe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border: none; }
-#truffled-logo { position: fixed; bottom: 10px; right: 10px; width: 150px; height: 150px; cursor: pointer; z-index: 9999; }
-</style>
-</head>
-<body>
-<iframe src="https://classlink.com.de/games/lvldevil/index.html" allowfullscreen></iframe>
-<a href="https://classlink.com.de" target="_blank">
-    <img id="truffled-logo" src="https://classlink.com.de/png/logo.png" alt="Logo">
-</a>
-</body>
-</html>`;
-
-const SUBWAYSURFERS_HTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>subway-surfers - Truffled</title>
-<style>
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
-iframe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border: none; }
-#truffled-logo { position: fixed; bottom: 10px; right: 10px; width: 150px; height: 150px; cursor: pointer; z-index: 9999; }
-</style>
-</head>
-<body>
-<iframe src="https://classlink.com.de/games/subway-surfers/index.html" allowfullscreen></iframe>
-<a href="https://classlink.com.de" target="_blank">
-    <img id="truffled-logo" src="https://classlink.com.de/png/logo.png" alt="Logo">
-</a>
-</body>
-</html>`;
-
-function createGameCard(name, imageUrl, onClick) {
-    const card = document.createElement("div");
-    card.className = "game-card";
-    card.style.backgroundImage = "url(" + imageUrl + ")";
-    
-    const fsBtn = document.createElement("button");
-    fsBtn.className = "fullscreen-btn";
-    fsBtn.innerHTML = "⛶";
-    fsBtn.title = "Fullscreen";
-    fsBtn.onclick = (e) => {
-        e.stopPropagation();
-        onClick();
-        setTimeout(toggleFullscreen, 100);
-    };
-    card.appendChild(fsBtn);
-    
-    const label = document.createElement("div");
-    label.className = "game-name";
-    label.textContent = name;
-    card.appendChild(label);
-    
-    card.onclick = () => onClick();
-    return card;
-}
-
-function addRoblox(){
-    const card = createGameCard("Roblox", GAME_IMAGES.roblox, () => openPreview(ROBLOX_HTML, "Roblox"));
-    gamesEl.appendChild(card);
-}
-
-function addGTAViceCity(){
-    const card = document.createElement("div");
-    card.className = "game-card";
-    card.style.backgroundImage = "url(" + GAME_IMAGES.gta + ")";
-    
-    const fsBtn = document.createElement("button");
-    fsBtn.className = "fullscreen-btn";
-    fsBtn.innerHTML = "⛶";
-    fsBtn.title = "Fullscreen";
-    fsBtn.onclick = (e) => {
-        e.stopPropagation();
-        window.open("https://sites.google.com/view/gtavicecityforclassroomspot/sdds?authuser=1", "_blank");
-    };
-    card.appendChild(fsBtn);
-    
-    const label = document.createElement("div");
-    label.className = "game-name";
-    label.textContent = "GTA Vice City";
-    card.appendChild(label);
-    
-    card.onclick = () => window.open("https://sites.google.com/view/gtavicecityforclassroomspot/sdds?authuser=1", "_blank");
-    gamesEl.appendChild(card);
-}
-
-function addSonic(){
-    const card = createGameCard("Sonic", GAME_IMAGES.sonic, () => openPreview(SONIC_HTML, "Sonic"));
-    gamesEl.appendChild(card);
-}
-
-function addLevelDevil(){
-    const card = createGameCard("Level Devil", GAME_IMAGES.leveldevil, () => openPreview(LEVELDEVIL_HTML, "Level Devil"));
-    gamesEl.appendChild(card);
-}
-
-function addSubwaySurfers(){
-    const card = createGameCard("Subway Surfers", GAME_IMAGES.subwaysurfers, () => openPreview(SUBWAYSURFERS_HTML, "Subway Surfers"));
-    gamesEl.appendChild(card);
-}
-
-// Add all 5 games
-function initGames() {
-    gamesEl.innerHTML = "";
-    addRoblox();
-    addGTAViceCity();
-    addSonic();
-    addLevelDevil();
-    addSubwaySurfers();
-}
-
-// Search functionality
-search.oninput = () => {
-    const q = search.value.toLowerCase();
-    const allGames = [
-        {name: "Roblox", add: addRoblox},
-        {name: "GTA Vice City", add: addGTAViceCity},
-        {name: "Sonic", add: addSonic},a
-        {name: "Level Devil", add: addLevelDevil},
-        {name: "Subway Surfers", add: addSubwaySurfers}
-    ];
-    
-    gamesEl.innerHTML = "";
-    const filtered = allGames.filter(g => g.name.toLowerCase().includes(q));
-    filtered.forEach(g => g.add());
+const GAME_IMAGES = {
+  "Dead Tapes": "https://classlink.com.de/png/games/deadta.webp",
+  "Binding of Isaac": "https://classlink.com.de/png/games/tboi.webp",
+  "Super Falling Fred": "https://classlink.com.de/png/games/super-falling-fred.webp",
+  "Little Big Planet": "https://classlink.com.de/png/games/lbp.webp",
+  "Poppy Playtime": "https://th.bing.com/th/id/OIP.6XKOw6fTqs3HXHxZUV3ZFAHaHa?w=158&h=180&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
+  "Stumble Guys": "https://www.bing.com/th/id/OIP.ZA-M_lLp_NeCsbk-mWQ78gHaHa?w=192&h=204&c=8&rs=1&qlt=90&o=6&dpr=1.1&pid=3.1&rm=2",
+  "Fortnite": "https://www.tech-wonders.com/wp-content/uploads/2018/09/Fortnite.jpg",
+  "Balatro": "https://classlink.com.de/png/games/bal.webp",
+  "Repo": "https://classlink.com.de/png/games/repo.webp",
+  "Danganronpa": "https://classlink.com.de/png/games/dan.webp",
+  "Portal": "https://classlink.com.de/png/games/portal.webp",
+  "Pac-Man": "https://classlink.com.de/png/games/pacman.webp",
+  "Raldi": "https://classlink.com.de/png/games/raldi.webp",
+  "Honkai Star Rail": "https://th.bing.com/th/id/OIP.VXq7uZySprURyg3Uj4wRgAHaGL?w=189&h=180&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
+  "Genshin Impact": "https://www.bing.com/th/id/OIP.D5LrhfKGsVbqeU2giRid4gHaHa?w=152&h=204&c=8&rs=1&qlt=90&o=6&dpr=1.1&pid=3.1&rm=2",
+  "Verse": "https://classlink.com.de/png/games/gachaverse.webp",
+  "Life": "https://classlink.com.de/png/games/gachalife.webp",
+  "GTB": "https://classlink.com.de/png/games/gotobed.webp",
+  "Deadseat": "https://classlink.com.de/png/games/deadseat.webp",
+  "Fun Mayhem 2": "https://classlink.com.de/png/games/gun2.webp",
+  "Fun Mayhem": "https://classlink.com.de/png/games/gun.webp",
+  "Lego Star Wars": "https://classlink.com.de/png/games/legostarwars.webp",
+  "Mega Man": "https://classlink.com.de/png/games/megaman.webp",
+  "TBOIW": "https://classlink.com.de/png/games/tboiw.webp",
+  "TBOIR": "https://classlink.com.de/png/games/tboir.webp",
+  "SFGE": "https://classlink.com.de/png/games/sli.webp",
+  "Solitaire": "https://classlink.com.de/png/games/soli.webp",
+  "Soccer Bros": "https://classlink.com.de/png/games/soccer.webp",
+  "Truffled Karlson 2D": "https://classlink.com.de/png/games/karlson2d.webp",
+  "DM2": "https://classlink.com.de/png/games/dogeminer2.webp",
+  "Balls": "https://classlink.com.de/png/games/balls.webp",
+  "Lvl Devil": "https://classlink.com.de/png/games/level.webp",
+  "Meatboy": "https://classlink.com.de/png/games/meat.webp",
+  "SSF2": "https://classlink.com.de/png/games/ssf2.webp",
+  "Skibidi Shooter": "https://classlink.com.de/png/games/ski.webp",
+  "Rerun": "https://classlink.com.de/png/games/rerun.webp",
+  "CS": "https://classlink.com.de/png/games/cs08.webp",
+  "Milk": "https://classlink.com.de/png/games/milk.webp",
+  "Monkey Mart": "https://classlink.com.de/png/games/monkey.webp",
+  "N64 South Park": "https://th.bing.com/th/id/OIP.901_j50LTwSbvEQVmTWxgQHaGz?w=174&h=180&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
+  "Mortal Kombat 4": "https://th.bing.com/th/id/OIP.gOQyPwMxYv_OuaynTMmhFwHaJQ?w=153&h=191&c=7&r=0&o=7&dpr=1.1&pid=1.7&rm=3",
+  "Crash Bandicoot PS1": "https://th.bing.com/th/id/OSK.KpP_rhvUCqWX9uKBqhsPTEpU32GqAMgY-bc8Oqq_rP0?w=50&h=50&c=12&o=6&dpr=1.1&pid=SANGAM"
 };
 
-// Initialize
-initGames();
-</script>
 
+allGames = [
+  { name: "Roblox", cover: "https://tse3.mm.bing.net/th/id/OIP.Suu0wkaP6duvpXY_gWJucgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://idontixlsomakets.vercel.app/test33.html", external: true },
+  { name: "GTA Vice City", cover: "https://tse2.mm.bing.net/th/id/OIP.T6kQS4BQ4CCT6jlXGtAuDgHaE7?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://t9os.space/gtavc.html", external: true },
+  { name: "Subway Surfers", cover: "https://static.wikia.nocookie.net/subwaysurf/images/4/4b/FirstAvatar.jpg/revision/latest/scale-to-width-down/200?cb=20250319180337", url: "https://seraph-embeds.vercel.app/games/subwaysurfers/index.html", external: true },
+  { name: "Among Us", cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcG8oF3z56u00DxA_RAGa-iv5ojB1Al1NZbA&s", url: "https://seraph-embeds.vercel.app/games/amongus/index.html", external: true },
+  { name: "Super Smash Bros", cover: "https://assets-prd.ignimgs.com/2022/02/28/ssb-ignedit-dontsteal-1646008911034.jpg", url: "https://seraph-embeds.vercel.app/games/supersmashbros/index.html", external: true },
+  { name: "Clash Royale", cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb-0vYEFuRzD8sX_ClyriT393uJchdjI_RZx11z4PE8w&s", url: "https://t9os.vercel.app/clash.html", external: true },
+  { name: "Brawl Stars", cover: "https://i.pinimg.com/1200x/62/ca/ff/62caff4d60879308531745a6b272920e.jpg", isBrawlStars: true, external: true },
+
+  { name: "Dead Tapes", cover: GAME_IMAGES["Dead Tapes"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/deadtapesfinal/index.html", external: true },
+  { name: "Binding of Isaac", cover: GAME_IMAGES["Binding of Isaac"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/binding-of-isaac/index.html", external: true },
+  { name: "Super Falling Fred", cover: GAME_IMAGES["Super Falling Fred"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/fred/index.html", external: true },
+  { name: "Little Big Planet", cover: GAME_IMAGES["Little Big Planet"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/lbp/index.html", external: true },
+  { name: "Poppy Playtime", cover: GAME_IMAGES["Poppy Playtime"] || FALLBACK_IMAGE, url: "https://classlink.com.de/gamefile/nowgg/poppyplaytime.html", external: true },
+  { name: "Stumble Guys", cover: GAME_IMAGES["Stumble Guys"] || FALLBACK_IMAGE, url: "https://truffling-infinite.b-cdn.net/gamefile/nowgg/stumble.html", external: true },
+  { name: "Fortnite", cover: GAME_IMAGES["Fortnite"] || FALLBACK_IMAGE, url: "https://truffling-infinite.b-cdn.net/gamefile/nowgg/fortnite.html", external: true },
+  { name: "Balatro", cover: GAME_IMAGES["Balatro"] || FALLBACK_IMAGE, url: "https://truffling-infinite.b-cdn.net/games/balatro/index.html", external: true },
+  { name: "Repo", cover: GAME_IMAGES["Repo"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/repo/index.html", external: true },
+  { name: "Danganronpa", cover: GAME_IMAGES["Danganronpa"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/danganronpa/index.html", external: true },
+  { name: "Portal", cover: GAME_IMAGES["Portal"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/portal/index.html", external: true },
+  { name: "Pac-Man", cover: GAME_IMAGES["Pac-Man"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/pacman/index.html", external: true },
+  { name: "Raldi", cover: GAME_IMAGES["Raldi"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/raldi/index.html", external: true },
+  { name: "Honkai Star Rail", cover: GAME_IMAGES["Honkai Star Rail"] || FALLBACK_IMAGE, url: "https://classlink.com.de/gamefile/nowgg/honkai.html", external: true },
+  { name: "Genshin Impact", cover: GAME_IMAGES["Genshin Impact"] || FALLBACK_IMAGE, url: "https://classlink.com.de/gamefile/nowgg/genshin.html", external: true },
+  { name: "Verse", cover: GAME_IMAGES["Verse"] || FALLBACK_IMAGE, url: "https://classlink.com.de/gamefile/verse.html", external: true },
+  { name: "Life", cover: GAME_IMAGES["Life"] || FALLBACK_IMAGE, url: "https://classlink.com.de/gamefile/life.html", external: true },
+  { name: "GTB", cover: GAME_IMAGES["GTB"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/GTB/index.html", external: true },
+  { name: "Deadseat", cover: GAME_IMAGES["Deadseat"] || FALLBACK_IMAGE, url: "https://classlink.com.de/games/deadseat/index.html", external: true },
+  { name: "Monkey Mart", cover: GAME_IMAGES["Monkey Mart"] || FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/genizy/monkey-mart-mobile@89836e4c54e87739ace84f6fe801b423185cc51d/index.html", external: true },
+  { name: "N64 South Park", cover: GAME_IMAGES["N64 South Park"] || FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/examples/parallel_n64.html", external: true },
+  { name: "Mortal Kombat 4", cover: GAME_IMAGES["Mortal Kombat 4"] || FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/examples/n64.html", external: true },
+  { name: "Crash Bandicoot PS1", cover: GAME_IMAGES["Crash Bandicoot PS1"] || FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/genizy/emu@master/psx/crash.html", external: true },
+
+  { name: "Bowmasters", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/youtube-playables@main/bowmasters/index.html", external: true },
+  { name: "Wario Land 4", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/examples/gba.html", external: true },
+  { name: "Vs Nonsense", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/mll-enh/die@fe0e5b08118dacdefc79f2b.../index.html", external: true },
+  { name: "VVVVVV", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/Flash-games@main/vvvvvv.swf", external: true, isSwf: true },
+  { name: "Warfare 1944", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@9c2d92f8128576153dbd00e120ce7138b5a0403e/warfare_1944.swf", external: true, isSwf: true },
+  { name: "Waluigi Taco Stand", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/examples/n64.html", external: true },
+  { name: "WarioWare DIY", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@main/examples/gba.html", external: true },
+  { name: "Wave Dash", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/Flash-games@main/wavedash.swf", external: true, isSwf: true },
+  { name: "Wermhole", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/wermhole/index.html", external: true },
+  { name: "We Become What We Behold", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/webecomewhatwebehold/index.html", external: true },
+  { name: "Wheelie Bike", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@1a8377d87253610bca22dc9dc44f79020b395c1e/wheelie-bike/index.html", external: true },
+  { name: "Whack the Thief", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@ee4beef9317f825b9281b99aa74b28a28e6a2451/whack-the-thief-2016urlfix2.swf", external: true, isSwf: true },
+  { name: "Whack Your Computer", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@d62ba8b3552de509e2ab292bf2cb5f41bd9a6860/whack_your_computer_12_ways.swf", external: true, isSwf: true },
+  { name: "Whack Your Boss", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@553a049ecceebc9021271d5d846b8730a6d02a6e/dont_whack_your_boss.swf", external: true, isSwf: true },
+  { name: "Wheely", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Oozaru341/ClickJogos@a18a27ddb0e3fe3f0c48225a5908607023c90523/jogos/games/wheely.swf", external: true, isSwf: true },
+  { name: "Wheely 2", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Oozaru341/ClickJogos@a18a27ddb0e3fe3f0c48225a5908607023c90523/jogos/games/wheely2.swf", external: true, isSwf: true },
+  { name: "Wheely 3", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Oozaru341/ClickJogos@a18a27ddb0e3fe3f0c48225a5908607023c90523/jogos/games/wheely3.swf", external: true, isSwf: true },
+  { name: "Wheely 4", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Oozaru341/ClickJogos@a18a27ddb0e3fe3f0c48225a5908607023c90523/jogos/games/wheely4.swf", external: true, isSwf: true },
+  { name: "Wheely 5", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Buss-beep-3/Omygayyatta@13ed2774c457b7e829d7d73be624e3c3a6f2b884/games/flash/swf/wheely-5.swf", external: true, isSwf: true },
+  { name: "Wheely 6", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Buss-beep-3/Omygayyatta@13ed2774c457b7e829d7d73be624e3c3a6f2b884/games/flash/swf/wheely-6.swf", external: true, isSwf: true },
+  { name: "Wheely 7", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/mogrt1/BCHS@19fb149c32685a82aed1e66993bf55efc916d5b4/games/flash/swf/wheely-7.swf", external: true, isSwf: true },
+  { name: "Wheely 8", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/mogrt1/BCHS@19fb149c32685a82aed1e66993bf55efc916d5b4/games/flash/swf/wheely-8.swf", external: true, isSwf: true },
+  { name: "Windows Doors", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/swf3/wtw3@main/woondows.swf", external: true, isSwf: true },
+  { name: "Winter Falling", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@54a510a80184f0d5fe1865ddddede69de1df1ef6/winter%20falling/index.html", external: true },
+  { name: "Wipeout 2097", cover: FALLBACK_IMAGE, url: null, isUnsupported: true },
+  { name: "Wordle", cover: FALLBACK_IMAGE, url: "https://www.nytimes.com/games/wordle/index.html", external: true },
+  { name: "Wolfenstein 3D", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/wolfenstein/index.html", external: true },
+  { name: "Untime", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/UNITY/untime/index.html", external: true },
+  { name: "Underneath", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@8874e6849ea73acaedd853ff61ea04d981fce7dd/underneath/index.html", external: true },
+  { name: "World's Hardest Game", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/sonvallhall/x7x@51cffb21c08c2ca9cecbed7aecf10d1afb8b9c72/wordes-hardest-gae.swf", external: true, isSwf: true },
+  { name: "World's Hardest Game 2", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@9daac0cbf890bebeee89cca4abe266204a8aff10/worldshardestgame2.swf", external: true, isSwf: true },
+  { name: "World's Hardest Game 3", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/vjspranav/FlashGames@c4afbfe9dd12f23ef93e19d7f3d298105448f349/games/The%20World's%20Hardest%20Game%203.swf", external: true, isSwf: true },
+  { name: "World's Hardest Game 4", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@9daac0cbf890bebeee89cca4abe266204a8aff10/worlds-hardest-game-4.swf", external: true, isSwf: true },
+  { name: "UpSlash", cover: FALLBACK_IMAGE, url: "https://cdn.statically.io/gh/Stinkalistic/junk/main/upslash/index.html", external: true },
+  { name: "Upgrade Complete", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@d62ba8b3552de509e2ab292bf2cb5f41bd9a6860/upgrade-complete-3955.swf", external: true, isSwf: true },
+  { name: "Unfair Mario", cover: FALLBACK_IMAGE, url: "https://images-opensocial.googleusercontent.com/gadgets/ifr?url=https://s3.amazonaws.com/production-assetsbucket-8ljvyr1xczmb/1ee20621-61bc-4ec8-a8ec-5e839c2e6edc%2Funfair-mario.xml&container=ig", external: true },
+  { name: "Uno", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/paigerodeghero/academicwebsite@897c910c65e6c68b04c44a6b6eba0b99d0f2f2cf/TemplateData/uno.html", external: true },
+  { name: "Woodworm", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@54a510a80184f0d5fe1865ddddede69de1df1ef6/woodworm/index.html", external: true },
+  { name: "Wrestle Bros", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@0e4ecd6d318272b62cd671011d5afe60aec66321/wrestle%20bros/index.html", external: true },
+  { name: "Witchcraft TD", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@8874e6849ea73acaedd853ff61ea04d981fce7dd/witchcraft-td/index.html", external: true },
+  { name: "World Cup 98", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/Flash-games@main/worldcup98.swf", external: true, isSwf: true },
+  { name: "Unfair Undyne", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/bubbls/undyne@293e938aa32b72341bfb36cc1dbbcaef7e728da0/unfair%20undyne/index.html", external: true },
+  { name: "Unono Mercy", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/1e295a49108e716ce8ab7eba0c8dca7d/9326265e4f1b14345a3bdab6f8ffad0e2e7ab3fda920c5f0f095f77359af00aeae22591c5bc4914c84c13d99eb62091d7ce7@main/utyweb/index.html", external: true },
+  { name: "Territorial.io", cover: FALLBACK_IMAGE, url: "https://territorial.io", external: true },
+  { name: "Wave Run", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/Stinkalistic/UGS@main/MISC/waverun/index.html", external: true },
+  { name: "Undertale Yellow", cover: FALLBACK_IMAGE, url: "https://cdn.jsdelivr.net/gh/undertaleyellow/web/index.html", external: true }
+];
+
+function createGameCard(game, isMyList = false) {
+  const card = document.createElement('div');
+  card.className = 'game-card' + (isFavorite(game.name) ? ' favorite' : '');
+  const imgContainer = document.createElement('div');
+  imgContainer.style.cssText = 'width:100%;height:100%;position:relative;background:#000;';
+  
+  if (game.cover) {
+    const img = document.createElement('img');
+    img.src = game.cover;
+    img.alt = game.name;
+    img.loading = 'lazy';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;transition:transform 0.3s, opacity 0.3s;opacity:0.85;';
+    img.onerror = () => { img.src = FALLBACK_IMAGE; };
+    imgContainer.appendChild(img);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.style.cssText = 'width:100%;height:100%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;text-align:center;';
+    placeholder.textContent = 'Image Coming Soon';
+    imgContainer.appendChild(placeholder);
+  }
+  card.appendChild(imgContainer);
+
+  const star = document.createElement('span');
+  star.className = 'star' + (isFavorite(game.name) ? '' : ' empty');
+  star.innerHTML = isFavorite(game.name) ? '★' : '☆';
+  star.onclick = (e) => toggleFavorite(game.name, e);
+  card.appendChild(star);
+
+  const title = document.createElement('div');
+  title.className = 'title';
+  title.textContent = game.name;
+  card.appendChild(title);
+
+  card.onclick = () => {
+    if (game.isBrawlStars) openBrawlStars();
+    else openGame(game);
+  };
+  return card;
+}
+
+async function loadGames() {
+  const row = document.getElementById('gamesRow');
+  row.innerHTML = '<div class="loading-games"><div class="spinner"></div>Loading games...</div>';
+
+  try {
+    const res = await fetch(ZONES + '?t=' + Date.now());
+    if (!res.ok) throw new Error('API fetch failed');
+    const data = await res.json();
+    
+    const apiGames = data
+      .filter(g => g && g.name && !g.name.toLowerCase().includes('suggest') && !g.name.includes('.gg'))
+      .map(g => ({
+        name: g.name,
+        cover: g.cover ? g.cover.replace('{COVER_URL}', COVER_BASE).replace('{HTML_URL}', HTML_BASE) : FALLBACK_IMAGE,
+        url: g.url ? g.url.replace('{COVER_URL}', COVER_BASE).replace('{HTML_URL}', HTML_BASE) : '',
+        external: true
+      }));
+
+    allGames = [...allGames, ...apiGames];
+    filteredGames = [...allGames];
+    document.getElementById('totalGames').textContent = `Total Games: ${allGames.length}`;
+    renderGames();
+  } catch (err) {
+    console.error('Games API error:', err);
+    filteredGames = [...allGames];
+    document.getElementById('totalGames').textContent = `Total Games: ${allGames.length} (local only)`;
+    renderGames();
+  }
+}
+
+function renderGames() {
+  const row = document.getElementById('gamesRow');
+  row.innerHTML = '';
+  if (filteredGames.length === 0) {
+    row.innerHTML = '<div class="no-games">No games found.</div>';
+    return;
+  }
+  filteredGames.forEach(game => row.appendChild(createGameCard(game)));
+}
+
+function handleSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  filteredGames = q ? allGames.filter(g => g.name.toLowerCase().includes(q)) : [...allGames];
+  renderGames();
+}
+
+function scrollGamesLeft() { document.getElementById('gamesScrollArea').scrollBy({left: -500, behavior: 'smooth'}); }
+function scrollGamesRight() { document.getElementById('gamesScrollArea').scrollBy({left: 500, behavior: 'smooth'}); }
+
+async function openGame(game) {
+  if (game.isUnsupported || !game.url) {
+    alert('This game format is not supported in the browser.');
+    return;
+  }
+
+  const player = document.getElementById('gamePlayer');
+  const frame = document.getElementById('gameFrame');
+  document.getElementById('gamePlayerTitle').textContent = game.name;
+  player.classList.add('active');
+
+  const url = game.url;
+
+  // Show loading spinner (no script tags in this string)
+  frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>*{margin:0;padding:0}body{background:#000;color:white;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;flex-direction:column;gap:20px;}.spin{width:40px;height:40px;border:4px solid #333;border-top:4px solid #667eea;border-radius:50%;animation:s 1s linear infinite;}@keyframes s{to{transform:rotate(360deg);}}</style></head><body><div class="spin"></div><div>Loading...</div></body></html>';
+
+  // SWF: use Ruffle — use \x3cscript to avoid breaking HTML parser
+  if (game.isSwf || url.endsWith('.swf')) {
+    frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8">\x3cscript src="https://unpkg.com/@ruffle-rs/ruffle">\x3c/script><style>*{margin:0;padding:0}body{background:#000;width:100vw;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;}ruffle-embed{width:100%;height:100%;}</style></head><body><ruffle-embed src="' + url + '" width="100%" height="100%"></ruffle-embed></body></html>';
+    return;
+  }
+
+  // ROM/binary: unsupported
+  if (url.endsWith('.chd') || url.endsWith('.iso') || url.endsWith('.bin')) {
+    frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;background:#111;color:white;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;text-align:center;}</style></head><body><div><h2>ROM File</h2><p>Requires a local emulator.</p></div></body></html>';
+    return;
+  }
+
+  // Fetch the raw HTML ourselves so CDN content-type is ignored
+  try {
+    const res = await fetch(url);
+    let html = await res.text();
+
+    const t = html.trim().toLowerCase();
+    const isHtml = t.startsWith('<!doctype') || t.startsWith('<html') || t.startsWith('<head') || t.startsWith('<body') || t.startsWith('<meta') || t.startsWith('<link') || t.startsWith('<title');
+
+    if (!isHtml) {
+      // Raw JS bundle — wrap it using \x3cscript to stay safe
+      html = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>*{margin:0;padding:0}body{background:#000;width:100vw;height:100vh;overflow:hidden;}</style></head><body>\x3cscript>\n' + html + '\n\x3c/script></body></html>';
+    } else {
+      // Inject <base> so relative assets resolve correctly
+      const base = url.substring(0, url.lastIndexOf('/') + 1);
+      if (!html.match(/<base[\s>]/i)) {
+        if (html.match(/<head[^>]*>/i)) {
+          html = html.replace(/(<head[^>]*>)/i, '$1<base href="' + base + '">');
+        } else {
+          html = '<base href="' + base + '">' + html;
+        }
+      }
+    }
+    frame.srcdoc = html;
+  } catch (err) {
+    // CORS fallback
+    frame.srcdoc = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>*{margin:0;padding:0}body{background:#000;width:100vw;height:100vh;overflow:hidden;}iframe{width:100%;height:100%;border:none;display:block;}</style></head><body><iframe src="' + url + '" allowfullscreen allow="autoplay;fullscreen;pointer-lock;gamepad"></iframe></body></html>';
+  }
+}
+
+
+
+// Fixed Brawl Stars (loads in large window)
+function openBrawlStars() {
+  const win = document.getElementById('window');
+  const frame = document.getElementById('frame');
+  const titleSpan = document.getElementById('windowTitle');
+  const overlay = document.getElementById('overlay');
+  win.classList.add('large');
+  
+  const brawlHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brawl Stars</title>
+  <style>body{margin:0;overflow:hidden;background:#000;height:100vh;}</style>
+</head>
+<body>
+  <iframe src="https://poki.com/en/embed/brawl-stars" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+</body>
+</html>`;
+  
+  frame.srcdoc = brawlHtml;
+  titleSpan.textContent = '🎮 Brawl Stars';
+  win.classList.add('active');
+  overlay.classList.add('active');
+}
+
+function closeGame() {
+  document.getElementById('gamePlayer').classList.remove('active');
+  const frame = document.getElementById('gameFrame');
+  frame.src = '';
+  frame.srcdoc = '';
+}
+
+function toggleFullscreen() {
+  const player = document.getElementById('gamePlayer');
+  if (!document.fullscreenElement) player.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+function exitFullscreen() { if (document.fullscreenElement) document.exitFullscreen(); }
+
+function openWindow(url, title) {
+  document.getElementById('windowTitle').textContent = title;
+  document.getElementById('frame').src = url;
+  document.getElementById('window').classList.add('active');
+  document.getElementById('overlay').classList.add('active');
+}
+function closeWindow() {
+  document.getElementById('window').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+  document.getElementById('frame').src = '';
+}
+function openSettings() { document.getElementById('settings').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+function closeSettings() { document.getElementById('settings').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
+function openAboutBlank() { window.open('about:blank', '_blank'); }
+function setCloak() {
+  const name = document.getElementById('cloakInput').value.trim() || 'New Tab';
+  document.title = name;
+  history.replaceState({}, name, 'about:blank');
+}
+function openPresentation() { openWindow('https://docs.google.com/presentation/d/1JJQOdkUf9OzWWcyqJznDTLdD3KTmc2Qkl85ibqx-JxM/embed?start=false&loop=false&delayms=3000', 'Presentation'); }
+function openChat() { openWindow('https://t9os.space/chat3.html', 'Chat'); }
+
+function closeAllModals() {
+  closeWindow();
+  closeSettings();
+  closeMyList();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('password').addEventListener('keypress', e => { if (e.key === 'Enter') checkLogin(); });
+  document.getElementById('username').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+});
+</script>
 </body>
 </html>
