@@ -238,6 +238,7 @@
     flex: 1;
     overflow: auto;
     padding: 40px;
+    background: rgba(255, 255, 255, 0.92);
   }
   
   .games-grid {
@@ -771,10 +772,33 @@ function openWindow(type) {
   const urls = {
     'movies': 'movies.html',
     'partners': 'partners.html',
-    'unblocker': 'unblocker.html',
     'presentation': 'https://docs.google.com/presentation/d/1JJQOdkUf9OzWWcyqJznDTLdD3KTmc2Qkl85ibqx-JxM/embed',
     'chat': 'https://t9os.space/chat3.html',
   };
+  
+  if (type === 'unblocker') {
+    const modal = document.createElement('div');
+    modal.className = 'modal-window';
+    modal.style.background = '#000';
+    
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    header.innerHTML = `<span>UNBLOCKER</span><button onclick="this.closest('.modal-window').remove()">✕ Close</button>`;
+    modal.appendChild(header);
+    
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+    const iframe = document.createElement('iframe');
+    iframe.src = 'https://classroomweb67123.b-cdn.net/';
+    iframe.sandbox.add('allow-scripts', 'allow-same-origin', 'allow-forms', 'allow-popups');
+    iframe.allowFullscreen = true;
+    content.appendChild(iframe);
+    modal.appendChild(content);
+    
+    document.body.appendChild(modal);
+    document.getElementById('overlay').classList.add('show');
+    return;
+  }
   
   if (type === 'settings') {
     document.getElementById('settingsModal').classList.add('show');
