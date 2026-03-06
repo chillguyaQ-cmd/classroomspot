@@ -616,6 +616,7 @@ const GAMES = [
   { name: "Duck Math", img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23000' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='16' font-weight='bold'%3EDuck Math%3C/text%3E%3C/svg%3E", url: "https://duck-math.freetls.fastly.net/" },
   { name: "Petezah", img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23000' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='16' font-weight='bold'%3EPetezah%3C/text%3E%3C/svg%3E", url: "https://id-1.misem.or.id/" },
   { name: "Dubdoo", img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23000' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='16' font-weight='bold'%3EDubdoo%3C/text%3E%3C/svg%3E", url: "https://dubdoo.com/" },
+  { name: "Discord", img: "https://t9oss.b-cdn.net/d.png", url: "https://dsc.gg/ireadygames", newTab: true },
 ];
 
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -696,6 +697,12 @@ function filterGames() {
 }
 
 function openGame(game) {
+  // If the game should open in a new tab, do that instead
+  if (game.newTab) {
+    window.open(game.url, '_blank');
+    return;
+  }
+  
   const modal = document.createElement('div');
   modal.className = 'modal-window';
   
