@@ -4,279 +4,133 @@
 <meta charset="UTF-8">
 <title>CodeLearn - Student Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%234285F4' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11z'/></svg>" type="image/svg+xml">
 <style>
-  :root {
-    --primary: #667eea;
-    --secondary: #764ba2;
-    --neon-purple: #c400ff;
-    --bg-light: #f0f2f5;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="none" stroke="%23ffffff" stroke-width="2"/><circle cx="10" cy="10" r="4" fill="%23ffffff"/></svg>') 10 10, auto; }
-  body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-light); color: #1f2937; }
-  
-  .watermark {
-    display: none;
-  }
-  
-  .watermark-text {
-    display: none;
-  }
-  
-  
-  #loginScreen { 
-    position: fixed; 
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: url('https://c.tenor.com/RDhlZLZIrrUAAAAC/tenor.gif') center/cover;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    z-index: 10000;
-  }
-  
-  #loginScreen::before { 
-    content: ''; 
-    position: absolute; 
-    inset: 0; 
-    background: rgba(0,0,0,0.4);
-  }
-  
-  .login-box {
-    position: relative;
-    z-index: 2;
-    background: rgba(255,255,255,0.95);
-    padding: 40px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  }
-  
-  .login-banner { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px; object-fit: cover; border: 4px solid white; }
-  .login-box h1 { font-size: 28px; margin-bottom: 10px; color: #333; }
-  .login-box p { font-size: 14px; color: #666; margin-bottom: 30px; }
-  
-  .login-input { 
-    width: 100%; 
-    padding: 12px 15px; 
-    margin-bottom: 15px; 
-    border: 2px solid #ddd; 
-    border-radius: 8px; 
-    font-size: 16px; 
-    transition: all 0.3s;
-  }
-  
-  .login-input:focus { 
-    outline: none; 
-    border-color: #000; 
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
-  }
-  
-  .login-btn { 
-    width: 100%; 
-    padding: 14px; 
-    background: #000;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: 'Segoe UI', Roboto, sans-serif; 
     color: #fff;
-    border: none; 
-    border-radius: 8px; 
-    font-weight: 700; 
-    font-size: 16px; 
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    transition: all 0.3s;
-    position: relative;
-  }
-  
-  .login-btn:hover { 
-    transform: translateY(-2px);
-    background: #1a1a1a;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
-  }
-  
-  .login-btn:active {
-    transform: translateY(0);
-  }
-  
-  .error-msg { color: #e60012; margin-top: 15px; font-size: 14px; display: none; font-weight: 600; }
-  .info-text { color: #666; font-size: 12px; margin-top: 15px; }
-  
-  #introScreen {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: #0a0e27;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    z-index: 9999;
-  }
-  
-  #introScreen.show { display: flex; }
-  
-  .intro-terminal {
-    background: #1a1f3a;
-    border: 2px solid #00ff88;
-    border-radius: 10px;
-    padding: 30px;
-    font-family: 'Courier New', monospace;
-    color: #00ff88;
-    font-size: 14px;
-    max-width: 600px;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(0, 255, 136, 0.05);
-    min-height: 300px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .code-line {
-    margin: 8px 0;
-    animation: typewriter 0.05s steps(1) forwards;
-  }
-  
-  .cursor {
-    display: inline-block;
-    width: 8px;
-    height: 20px;
-    background: #00ff88;
-    animation: blink 1s infinite;
-  }
-  
-  @keyframes typewriter {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-  
-  .welcome-msg {
-    color: #00ff88;
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 40px;
-    animation: fadeInScale 0.8s ease-out;
-  }
-  
-  @keyframes fadeInScale {
-    from {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  
-  #mainSite { 
-    display: none;
     min-height: 100vh;
-    flex-direction: column;
-    background: url('https://c.tenor.com/RDhlZLZIrrUAAAAC/tenor.gif') center/cover fixed;
+    overflow: hidden;
+    background: #000;
   }
   
-  #mainSite.show { display: flex; }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
+  canvas {
+    position: fixed;
     top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100px;
+    height: 100vh;
+    background: rgba(0, 10, 40, 0.95);
+    border-right: 2px solid #4285F4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+    gap: 20px;
     z-index: 100;
   }
   
-  .logo-section { display: flex; align-items: center; gap: 15px; }
-  .logo-banner { height: 40px; border-radius: 8px; }
-  .site-title { font-size: 24px; font-weight: 700; color: #333; }
-  
-  .header-controls { 
-    display: flex; 
-    align-items: center; 
-    gap: 20px;
-  }
-  
-  .search-input { 
-    padding: 10px 15px; 
-    border: 1px solid #ddd; 
-    border-radius: 20px; 
-    width: 250px; 
-    font-size: 14px;
-    outline: none;
-    transition: all 0.3s;
-  }
-  
-  .search-input:focus {
-    width: 300px;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-  }
-  
-  .total-games { 
-    background: #e60012; 
-    color: white; 
-    padding: 8px 16px; 
-    border-radius: 20px; 
-    font-weight: 600;
-    font-size: 13px;
-  }
-  
-  .clock { color: #666; font-size: 14px; font-family: monospace; }
-  
-  .games-container {
-    flex: 1;
-    overflow: auto;
-    padding: 40px;
+  .nav-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
     background: transparent;
+    border: 2px solid #4285F4;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s;
+    color: #4285F4;
+  }
+  
+  .nav-icon:hover {
+    background: #4285F4;
+    color: white;
+    transform: scale(1.1);
+  }
+  
+  .nav-icon.active {
+    background: #4285F4;
+    color: white;
+  }
+  
+  .main-content {
+    margin-left: 100px;
+    width: calc(100% - 100px);
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .content-section {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+  
+  .content-section.active {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .home-section {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .home-section iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  
+  .games-section {
+    padding: 40px;
   }
   
   .games-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
   }
   
   .game-card {
-    width: 100%;
     aspect-ratio: 1;
-    border-radius: 15px;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.7);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    background: rgba(0, 10, 40, 0.8);
+    border: 2px solid #4285F4;
     transition: all 0.3s;
-    border: 3px solid transparent;
     position: relative;
   }
   
-  .game-card:hover { 
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    border-color: var(--primary);
+  .game-card:hover {
+    transform: translateY(-8px);
+    border-color: #34A853;
+    box-shadow: 0 8px 20px rgba(52, 168, 83, 0.3);
   }
   
-  .game-card img { 
-    width: 100%; 
-    height: 100%; 
+  .game-card img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    opacity: 0.85;
-    transition: all 0.3s;
-  }
-  
-  .game-card:hover img {
-    opacity: 1;
-    transform: scale(1.1);
   }
   
   .game-card-title {
@@ -286,323 +140,310 @@
     right: 0;
     background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
     color: white;
-    padding: 15px;
-    font-size: 14px;
+    padding: 12px;
+    font-size: 13px;
     font-weight: 600;
     text-align: center;
-    opacity: 0;
-    transition: opacity 0.3s;
   }
   
-  .game-card:hover .game-card-title {
-    opacity: 1;
+  .embedded-section {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
   
-  .star {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-    z-index: 2;
-    transition: transform 0.2s;
-  }
-  
-  .star:hover { transform: scale(1.2); }
-  .star.filled { color: #ffd700; }
-  .star.empty { color: rgba(255,255,255,0.4); }
-  
-  .game-frame {
+  .embedded-section iframe {
     width: 100%;
     height: 100%;
     border: none;
   }
   
-  .dock-container {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 15px;
-    padding: 12px 20px;
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 25px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.5);
-    z-index: 100;
-  }
-  
-  .dock-item {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    background: #f5f5f5;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-    position: relative;
-  }
-  
-  .dock-item:hover { 
-    transform: translateY(-5px);
-    background: var(--primary);
-    border-color: var(--primary);
-  }
-  
-  .dock-item svg { 
-    width: 22px; 
-    height: 22px; 
-    fill: #666;
-  }
-  
-  .dock-item:hover svg { fill: white; }
-  
-  .dock-item.mylist { 
-    background: linear-gradient(135deg, #ffd700, #ffaa00);
-  }
-  
-  .dock-item.mylist svg { fill: white; }
-  
-  .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #e60012;
-    color: white;
-    font-size: 11px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    display: none;
-  }
-  
-  .modal-window {
+  .game-modal {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 100px;
     right: 0;
     bottom: 0;
     background: #000;
-    z-index: 5000;
-    display: flex;
+    z-index: 50;
+    display: none;
     flex-direction: column;
   }
   
-  .modal-header {
-    background: #1a1a1a;
-    color: white;
-    padding: 15px;
+  .game-modal.show {
+    display: flex;
+  }
+  
+  .game-modal-header {
+    background: #1a1a3e;
+    border-bottom: 2px solid #4285F4;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
   }
   
-  .modal-header button {
-    background: #000;
+  .game-modal-header h2 {
+    color: #4285F4;
+    font-size: 20px;
+  }
+  
+  .game-modal-header button {
+    background: #4285F4;
     color: white;
     border: none;
     padding: 8px 16px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s;
+    font-weight: 600;
+    transition: all 0.3s;
   }
   
-  .modal-header button:hover { background: #1a1a1a; }
+  .game-modal-header button:hover {
+    background: #34A853;
+  }
   
-  .modal-content {
+  .game-modal-content {
     flex: 1;
-    overflow: auto;
+    overflow: hidden;
   }
   
-  .modal-content iframe {
+  .game-modal-content iframe {
     width: 100%;
     height: 100%;
     border: none;
   }
   
-  .my-list-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.3);
-    z-index: 5001;
-    max-width: 800px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    display: none;
-    opacity: 0;
-    transition: all 0.3s;
-  }
-  
-  .my-list-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  
-  .my-list-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-  }
-  
-  .overlay {
+  .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 4999;
+    background: rgba(0, 0, 0, 0.7);
     display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
   }
   
-  .overlay.show { display: block; }
+  .modal-overlay.show {
+    display: flex;
+  }
   
-  .settings-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.3);
-    z-index: 5001;
+  .modal {
+    background: #1a1a3e;
+    padding: 40px;
+    border-radius: 16px;
+    border: 2px solid #4285F4;
     max-width: 500px;
     width: 90%;
-    display: none;
-    opacity: 0;
+  }
+  
+  .modal h2 {
+    margin-bottom: 30px;
+    color: #4285F4;
+    font-size: 28px;
+  }
+  
+  .modal-section {
+    margin-bottom: 25px;
+  }
+  
+  .modal-section h3 {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .modal-section p {
+    color: #aaa;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  
+  .modal-input {
+    width: 100%;
+    padding: 12px;
+    background: #0a0e27;
+    border: 2px solid #4285F4;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .modal-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(66, 133, 244, 0.5);
+  }
+  
+  .modal-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4285F4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 10px;
     transition: all 0.3s;
   }
   
-  .settings-modal.show {
-    display: block;
-    opacity: 1;
+  .modal-btn:hover {
+    background: #34A853;
+  }
+  
+  .modal-btn.secondary {
+    background: #666;
+  }
+  
+  .modal-btn.secondary:hover {
+    background: #777;
+  }
+  
+  .close-btn {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: #4285F4;
+    background: none;
+    border: none;
+    transition: all 0.3s;
+  }
+  
+  .close-btn:hover {
+    color: white;
   }
 </style>
 </head>
 <body>
 
-<div class="watermark">
-  <div class="watermark-text">⚠️ DANGEROUS</div>
-  <div class="watermark-text">DON'T TAKE OTHER PEOPLE'S WORK</div>
+<canvas id="particleCanvas"></canvas>
+
+<div class="sidebar">
+  <button class="nav-icon active" onclick="showSection('home')" title="Home">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="showSection('games')" title="Games">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20 8h-8V4h-4v4H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9h-4v-4h4v4z"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="showSection('music')" title="Music">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3v9.28c-.47-.46-1.12-.75-1.84-.75-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V7h4V3h-4z"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="showSection('movies')" title="Movies">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zm0 14H6V7h12v10z"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="showSection('partners')" title="Partners">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M14.89 15.88L18 12.77V11c0-1.1-.9-2-2-2h-3V7c0-1.1-.9-2-2-2h-1V3h-2v2H8c-1.1 0-2 .9-2 2v2H3c-1.1 0-2 .9-2 2v1.77l3.11 3.11c.09.09.23.14.37.14.14 0 .28-.05.37-.14L6.73 13.5h1.54l4.22 4.22c.09.09.23.14.37.14s.28-.05.37-.14l1.66-1.66c.09-.09.14-.23.14-.37s-.05-.28-.14-.37z"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="showSection('chat')" title="Chat">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="showSection('apps')" title="Apps">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="6" cy="6" r="2"/>
+      <circle cx="18" cy="6" r="2"/>
+      <circle cx="6" cy="18" r="2"/>
+      <circle cx="18" cy="18" r="2"/>
+    </svg>
+  </button>
+  <button class="nav-icon" onclick="openSettings()" title="Settings">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.1 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+    </svg>
+  </button>
 </div>
 
-<div id="loginScreen">
-  <div class="login-box">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEtseCaQReYgXH1C-tdRM6kNttqlXvFyym_g&s" class="login-banner" alt="Logo">
-    <h1>🔒 Student Login</h1>
-    <p>Welcome to CodeLearn Programming Portal</p>
-    <input type="text" id="username" class="login-input" placeholder="Username" autocomplete="off">
-    <input type="password" id="password" class="login-input" placeholder="Password">
-    <button class="login-btn" onclick="handleLogin()">✨ SIGN IN ✨</button>
-    <div class="error-msg" id="errorMsg">❌ Invalid username or password!</div>
-    <div class="info-text">Username: <strong>1</strong> | Password: <strong>blockmelol</strong></div>
-  </div>
-</div>
-
-<div id="introScreen">
-  <div class="intro-terminal">
-    <div class="code-line">$ <span style="color: #ff6b9d;">npm</span> start</div>
-    <div class="code-line">$ <span style="color: #c678dd;">initializing</span> classroomspot...</div>
-    <div class="code-line">$ <span style="color: #61afef;">loading</span> games<span style="color: #89d76d;">...</span></div>
-    <div class="code-line">$ <span style="color: #e5c07b;">connecting</span> to servers<span style="color: #89d76d;">...</span></div>
-    <div class="code-line">$ <span style="color: #56b6c2;">setup</span> complete<span style="color: #89d76d;">✓</span></div>
-  </div>
-  <div class="welcome-msg">✨ Welcome to ClassroomSpot ✨</div>
-</div>
-
-<div id="mainSite">
-  <div class="header">
-    <div class="logo-section">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEtseCaQReYgXH1C-tdRM6kNttqlXvFyym_g&s" class="logo-banner" alt="Logo">
-      <span class="site-title">CodeLearn</span>
-    </div>
-    <div class="header-controls">
-      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search games..." oninput="filterGames()">
-      <span class="total-games" id="totalGames">Total Games: 1500+</span>
-      <span class="clock" id="clock">12:00 PM</span>
+<div class="main-content">
+  <div class="content-section active" id="home">
+    <div class="home-section">
+      <iframe src="https://classroomweb67123.b-cdn.net/" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
   </div>
   
-  <div class="games-container">
-    <div class="games-grid" id="gamesGrid">
-      <div style="text-align: center; color: #666; padding: 40px; grid-column: 1/-1;">Loading games...</div>
+  <div class="content-section" id="games">
+    <div class="games-section">
+      <div class="games-grid" id="gamesGrid"></div>
+    </div>
+  </div>
+  
+  <div class="content-section" id="music">
+    <div class="embedded-section">
+      <iframe src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  
+  <div class="content-section" id="movies">
+    <div class="embedded-section">
+      <iframe src="https://omgg.b-cdn.net/movies.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  
+  <div class="content-section" id="partners">
+    <div class="embedded-section">
+      <iframe src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  
+  <div class="content-section" id="chat">
+    <div class="embedded-section">
+      <iframe id="chatFrame" src="https://t9oss.b-cdn.net/chat3.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  
+  <div class="content-section" id="apps">
+    <div class="embedded-section">
+      <iframe src="https://t9oss.b-cdn.net/a.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
   </div>
 </div>
 
-<a href='https://www.acadoo.de/leistungen/ghostwriter-doktorarbeit/'>Doktorarbeit schreiben Hilfe</a>
-<script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=2dcef6e1b3171e5ec5311f134bc2683fcba71ef0'></script>
-<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1512676/t/1"></script>
-
-<div class="dock-container">
-  <div class="dock-item" onclick="openWindow('movies')" title="Movies">
-    <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2z"/></svg>
+<div class="game-modal" id="gameModal">
+  <div class="game-modal-header">
+    <h2 id="gameTitle">Game</h2>
+    <button onclick="closeGameModal()">Close</button>
   </div>
-  <div class="dock-item" onclick="openWindow('partners')" title="Partners">
-    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-  </div>
-  <div class="dock-item" onclick="openWindow('unblocker')" title="Unblocker">
-    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-  </div>
-  <div class="dock-item mylist" onclick="openMyList()" title="My List">
-    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-    <span class="badge" id="myListBadge">0</span>
-  </div>
-  <div class="dock-item" onclick="openWindow('music')" title="Music">
-    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.5-13c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm3.5 10H8v-2h9v2z"/></svg>
-  </div>
-  <div class="dock-item" onclick="openWindow('apps')" title="Apps">
-    <svg viewBox="0 0 24 24"><path d="M6 13c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-  </div>
-  <div class="dock-item" onclick="openWindow('chat')" title="T9 OS Chat">
-    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
-  </div>
-  <div class="dock-item" onclick="openWindow('settings')" title="Settings">
-    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.1 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+  <div class="game-modal-content">
+    <iframe id="gameFrame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
   </div>
 </div>
 
-<div class="overlay" id="overlay" onclick="closeAllModals()"></div>
-
-<div class="my-list-modal" id="myListModal">
-  <h2>⭐ My Favorite Games (<span id="myListCount">0</span>)</h2>
-  <div class="my-list-grid" id="myListGrid"></div>
-  <button onclick="closeMyList()" style="width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 20px;">Close</button>
-</div>
-
-<div class="settings-modal" id="settingsModal">
-  <h2>⚙️ Settings</h2>
-  <h3 style="margin-top: 20px;">🎭 Cloak</h3>
-  <p style="color: #666; margin-bottom: 10px;">Change your browser tab title to hide what you're doing</p>
-  <input type="text" id="cloakInput" placeholder="Enter tab name..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
-  <button onclick="applyCloaking()" style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px;">Apply Cloak</button>
-  <button onclick="openAboutBlank()" style="width: 100%; padding: 10px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px;">Open about:blank</button>
-  <button onclick="closeSettings()" style="width: 100%; padding: 10px; background: #e60012; color: white; border: none; border-radius: 5px; cursor: pointer;">Close Settings</button>
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target === this) closeSettings()">
+  <div class="modal">
+    <button class="close-btn" onclick="closeSettings()">×</button>
+    <h2>Settings</h2>
+    
+    <div class="modal-section">
+      <h3>Tab Cloak</h3>
+      <p>Change your browser tab title to hide what you're doing</p>
+      <input type="text" id="cloakInput" class="modal-input" placeholder="Enter new tab name..." value="Google Classroom">
+      <button class="modal-btn" onclick="applyCloaking()">Apply Cloak</button>
+    </div>
+    
+    <div class="modal-section">
+      <h3>Blank Page</h3>
+      <p>Open a blank page in a new tab</p>
+      <button class="modal-btn secondary" onclick="openBlankTab()">Open about:blank</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const VALID_USERNAME = '1';
-const VALID_PASSWORD = 'blockmelol';
 const GAMES = [
   { name: "Subway Surfers", img: "https://t9os.space/subwayHW.png", url: "https://seraph-embeds.vercel.app/games/subwaysurfers/index.html" },
   { name: "Roblox", img: "https://isd901schoolboardlearning.b-cdn.net/r2.png", url: "https://isd901schoolboardlearning.b-cdn.net/test33.html" },
@@ -616,70 +457,105 @@ const GAMES = [
   { name: "Duck Math", img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23000' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='16' font-weight='bold'%3EDuck Math%3C/text%3E%3C/svg%3E", url: "https://duck-math.freetls.fastly.net/" },
   { name: "Petezah", img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23000' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='16' font-weight='bold'%3EPetezah%3C/text%3E%3C/svg%3E", url: "https://id-1.misem.or.id/" },
   { name: "Dubdoo", img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect fill='%23000' width='200' height='200'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='16' font-weight='bold'%3EDubdoo%3C/text%3E%3C/svg%3E", url: "https://dubdoo.com/" },
-  { name: "Discord", img: "https://t9oss.b-cdn.net/d.png", url: "https://dsc.gg/ireadygames", newTab: true },
 ];
 
-let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-let filteredGames = [...GAMES];
-
-function handleLogin() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim().toLowerCase();
-  const errorMsg = document.getElementById('errorMsg');
+class Particle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 3 + 1;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.life = 1;
+  }
   
-  if (username === VALID_USERNAME && password === VALID_PASSWORD.toLowerCase()) {
-    errorMsg.style.display = 'none';
-    startLogin();
-  } else {
-    errorMsg.style.display = 'block';
-    document.getElementById('username').style.borderColor = '#e60012';
-    document.getElementById('password').style.borderColor = '#e60012';
-    setTimeout(() => {
-      document.getElementById('username').style.borderColor = '#ddd';
-      document.getElementById('password').style.borderColor = '#ddd';
-    }, 3000);
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.speedY += 0.01;
+    this.life -= 0.005;
+  }
+  
+  draw(ctx) {
+    ctx.globalAlpha = this.life;
+    ctx.fillStyle = '#4285F4';
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
   }
 }
 
-function startLogin() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('introScreen').classList.add('show');
-  
-  setTimeout(() => {
-    document.getElementById('introScreen').classList.remove('show');
-    document.getElementById('mainSite').classList.add('show');
-    loadGames();
-    updateClock();
-  }, 2500);
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+function createParticles() {
+  for (let i = 0; i < 2; i++) {
+    particles.push(new Particle(
+      Math.random() * canvas.width,
+      Math.random() * canvas.height
+    ));
+  }
 }
 
-function loadGames() {
-  filteredGames = [...GAMES];
-  renderGames();
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  particles = particles.filter(p => p.life > 0);
+  
+  if (particles.length < 50) {
+    createParticles();
+  }
+  
+  particles.forEach(p => {
+    p.update();
+    p.draw(ctx);
+  });
+  
+  requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+
+function showSection(sectionId) {
+  document.querySelectorAll('.content-section').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  document.querySelectorAll('.nav-icon').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  document.getElementById(sectionId).classList.add('active');
+  event.target.closest('.nav-icon').classList.add('active');
+  
+  if (sectionId === 'games') {
+    renderGames();
+  }
 }
 
 function renderGames() {
   const grid = document.getElementById('gamesGrid');
   grid.innerHTML = '';
   
-  filteredGames.forEach(game => {
+  GAMES.forEach(game => {
     const card = document.createElement('div');
     card.className = 'game-card';
-    card.onclick = () => openGame(game);
+    card.onclick = () => openGamePreview(game);
     
     const img = document.createElement('img');
     img.src = game.img;
     img.alt = game.name;
     card.appendChild(img);
-    
-    const star = document.createElement('div');
-    star.className = `star ${favorites.includes(game.name) ? 'filled' : 'empty'}`;
-    star.innerHTML = favorites.includes(game.name) ? '★' : '☆';
-    star.onclick = (e) => {
-      e.stopPropagation();
-      toggleFavorite(game.name);
-    };
-    card.appendChild(star);
     
     const title = document.createElement('div');
     title.className = 'game-card-title';
@@ -690,191 +566,38 @@ function renderGames() {
   });
 }
 
-function filterGames() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  filteredGames = GAMES.filter(g => g.name.toLowerCase().includes(query));
-  renderGames();
+function openGamePreview(game) {
+  document.getElementById('gameTitle').textContent = game.name;
+  document.getElementById('gameFrame').src = game.url;
+  document.getElementById('gameModal').classList.add('show');
 }
 
-function openGame(game) {
-  // If the game should open in a new tab, do that instead
-  if (game.newTab) {
-    window.open(game.url, '_blank');
-    return;
-  }
-  
-  const modal = document.createElement('div');
-  modal.className = 'modal-window';
-  
-  const header = document.createElement('div');
-  header.className = 'modal-header';
-  header.innerHTML = `
-    <span>${game.name}</span>
-    <button onclick="this.closest('.modal-window').remove()">✕ Close</button>
-  `;
-  modal.appendChild(header);
-  
-  const content = document.createElement('div');
-  content.className = 'modal-content';
-  const iframe = document.createElement('iframe');
-  iframe.src = game.url;
-  iframe.sandbox.add('allow-same-origin', 'allow-scripts', 'allow-popups', 'allow-forms');
-  content.appendChild(iframe);
-  modal.appendChild(content);
-  
-  document.body.appendChild(modal);
+function closeGameModal() {
+  document.getElementById('gameModal').classList.remove('show');
+  document.getElementById('gameFrame').src = '';
 }
 
-function toggleFavorite(gameName) {
-  const idx = favorites.indexOf(gameName);
-  if (idx > -1) {
-    favorites.splice(idx, 1);
-  } else {
-    favorites.push(gameName);
-  }
-  localStorage.setItem('favorites', JSON.stringify(favorites));
-  renderGames();
-  updateMyListBadge();
-}
-
-function updateMyListBadge() {
-  const badge = document.getElementById('myListBadge');
-  badge.textContent = favorites.length;
-  badge.style.display = favorites.length > 0 ? 'flex' : 'none';
-}
-
-function openMyList() {
-  const grid = document.getElementById('myListGrid');
-  grid.innerHTML = '';
-  const favGames = GAMES.filter(g => favorites.includes(g.name));
-  
-  if (favGames.length === 0) {
-    grid.innerHTML = '<p style="grid-column: 1/-1; color: #666; text-align: center;">No favorites yet! Click the star on games to add them.</p>';
-  } else {
-    favGames.forEach(game => {
-      const card = document.createElement('div');
-      card.className = 'game-card';
-      card.style.cursor = 'pointer';
-      card.onclick = () => openGame(game);
-      
-      const img = document.createElement('img');
-      img.src = game.img;
-      card.appendChild(img);
-      
-      const title = document.createElement('div');
-      title.className = 'game-card-title';
-      title.textContent = game.name;
-      card.appendChild(title);
-      
-      grid.appendChild(card);
-    });
-  }
-  
-  document.getElementById('myListModal').classList.add('show');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function closeMyList() {
-  document.getElementById('myListModal').classList.remove('show');
-  document.getElementById('overlay').classList.remove('show');
-}
-
-function openWindow(type) {
-  const urls = {
-    'movies': 'movies.html',
-    'partners': 'partners.html',
-    'music': 'music.html',
-    'chat': 'https://t9oss.b-cdn.net/chat3.html',
-    'apps': 'https://isd901schoolboardlearning.b-cdn.net/a.html',
-  };
-  
-  if (type === 'unblocker') {
-    const modal = document.createElement('div');
-    modal.className = 'modal-window';
-    modal.style.background = '#000';
-    
-    const header = document.createElement('div');
-    header.className = 'modal-header';
-    header.innerHTML = `<span>UNBLOCKER</span><button onclick="this.closest('.modal-window').remove()">✕ Close</button>`;
-    modal.appendChild(header);
-    
-    const content = document.createElement('div');
-    content.className = 'modal-content';
-    const iframe = document.createElement('iframe');
-    iframe.src = 'https://classroomweb67123.b-cdn.net/';
-    iframe.sandbox.add('allow-scripts', 'allow-same-origin', 'allow-forms', 'allow-popups');
-    iframe.allowFullscreen = true;
-    content.appendChild(iframe);
-    modal.appendChild(content);
-    
-    document.body.appendChild(modal);
-    document.getElementById('overlay').classList.add('show');
-    return;
-  }
-  
-  if (type === 'settings') {
-    document.getElementById('settingsModal').classList.add('show');
-    document.getElementById('overlay').classList.add('show');
-    return;
-  }
-  
-  const modal = document.createElement('div');
-  modal.className = 'modal-window';
-  
-  const header = document.createElement('div');
-  header.className = 'modal-header';
-  header.innerHTML = `<span>${type.toUpperCase()}</span><button onclick="this.closest('.modal-window').remove()">✕ Close</button>`;
-  modal.appendChild(header);
-  
-  const content = document.createElement('div');
-  content.className = 'modal-content';
-  const iframe = document.createElement('iframe');
-  iframe.src = urls[type] || 'about:blank';
-  content.appendChild(iframe);
-  modal.appendChild(content);
-  
-  document.body.appendChild(modal);
-  document.getElementById('overlay').classList.add('show');
+function openSettings() {
+  document.querySelectorAll('.nav-icon').forEach(el => {
+    el.classList.remove('active');
+  });
+  document.getElementById('modalOverlay').classList.add('show');
 }
 
 function closeSettings() {
-  document.getElementById('settingsModal').classList.remove('show');
-  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('modalOverlay').classList.remove('show');
 }
 
 function applyCloaking() {
-  const name = document.getElementById('cloakInput').value.trim() || 'New Tab';
-  document.title = name;
+  const newTitle = document.getElementById('cloakInput').value.trim() || 'Google Classroom';
+  document.title = newTitle;
 }
 
-function openAboutBlank() {
+function openBlankTab() {
   window.open('about:blank', '_blank');
 }
 
-function closeAllModals() {
-  document.getElementById('overlay').classList.remove('show');
-  document.querySelectorAll('.modal-window').forEach(m => m.remove());
-  document.getElementById('settingsModal').classList.remove('show');
-  document.getElementById('myListModal').classList.remove('show');
-}
-
-function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
-setInterval(updateClock, 1000);
-
-document.getElementById('username')?.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') document.getElementById('password').focus();
-});
-
-document.getElementById('password')?.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') handleLogin();
-});
-
-window.addEventListener('load', () => {
-  document.getElementById('username').focus();
-});
+renderGames();
 </script>
 </body>
 </html>
