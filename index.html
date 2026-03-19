@@ -57,6 +57,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
 .movies-embed-label{font-size:14px;color:#4285F4;font-weight:600;text-transform:uppercase;letter-spacing:1px}
 .movies-frame{flex:1;border:none;width:100%;height:100%}
 </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -106,8 +107,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
   </div>
   <div class="content-section" id="music">
     <div class="embedded-section">
-      <!-- CHANGED: was music.html, now points to deployed GitHub file -->
-      <iframe src="https://raw.githack.com/classroomspotgames/lastclassroomspot-update-for-a-bit/main/cinify.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+      <iframe src="music.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
   </div>
   <div class="content-section" id="movies">
@@ -130,8 +130,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
   </div>
   <div class="content-section" id="chat">
     <div class="embedded-section">
-      <!-- CHANGED: was youcantpoopme CDN URL, now points to deployed GitHub file -->
-      <iframe src="https://raw.githack.com/classroomspotgames/lastclassroomspot-update-for-a-bit/main/classroomspot-chat.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+      <iframe src="chat.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
   </div>
   <div class="content-section" id="apps">
@@ -1024,8 +1023,7 @@ function openMovies(type) {
   } else {
     label.textContent = 'Live TV';
     frame.removeAttribute('srcdoc');
-    // CHANGED: was https://famelack.com, now points to deployed GitHub file
-    frame.src = 'https://raw.githack.com/classroomspotgames/lastclassroomspot-update-for-a-bit/main/classroomspot%20(3).html';
+    frame.src = 'livetv.html';
   }
 }
 function closeMovies() {
