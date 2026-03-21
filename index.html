@@ -57,6 +57,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
 .movies-embed-label{font-size:14px;color:#4285F4;font-weight:600;text-transform:uppercase;letter-spacing:1px}
 .movies-frame{flex:1;border:none;width:100%;height:100%}
 </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -85,7 +86,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
   </button>
   <button class="nav-icon" onclick="openSettings()" title="Settings">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c.59.24 1.13.57 1.62.94l2.39-.96c.22-.08.47 0-.59.22L2.1 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.1 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
   </button>
 </div>
 
@@ -106,7 +107,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
   </div>
   <div class="content-section" id="music">
     <div class="embedded-section">
-      <iframe src="https://raw.githubusercontent.com/classroomspotgames/lastclassroomspot-update-for-a-bit/main/cinify.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+      <iframe src="music.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
   </div>
   <div class="content-section" id="movies">
@@ -129,7 +130,7 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
   </div>
   <div class="content-section" id="chat">
     <div class="embedded-section">
-      <iframe src="https://raw.githubusercontent.com/classroomspotgames/lastclassroomspot-update-for-a-bit/main/classroomspot-chat.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+      <iframe src="chat.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
     </div>
   </div>
   <div class="content-section" id="apps">
@@ -583,7 +584,6 @@ const HUGGY_HTML = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Huggy Wuggy Shooter</title>
 <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
-<link rel="shortcut icon" href="TemplateData/favicon.ico">
 <link rel="stylesheet" href="TemplateData/style.css">
 <script src="https://raw.githack.com/gn-math/assets/main/yandex-sdk.js"><\/script>
 </head>
@@ -799,6 +799,7 @@ window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.heig
 </html>`;
 
 
+// Particle system
 const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
@@ -831,6 +832,7 @@ function showSection(id, btn) {
   }
 }
 
+// GAMES
 const ZONES_URL = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
 const COVER_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main/";
 const HTML_BASE = "https://cdn.jsdelivr.net/gh/gn-math/html@main/";
@@ -902,36 +904,29 @@ const NOAH_GAMES = [
   { name: "Friday Night Funkin", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/151.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/195.html" }
 ];
 
-function openGameInNewTab(name, htmlContent) {
-  const win = window.open('about:blank', '_blank');
-  if (win) {
-    win.document.open();
-    win.document.write(htmlContent);
-    win.document.close();
-    win.document.title = name;
-  }
+function openGameInModal(name, htmlContent) {
+  document.getElementById('gameTitle').textContent = name;
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('src');
+  frame.srcdoc = htmlContent;
+  document.getElementById('gameModal').classList.add('show');
 }
-
-function openGameUrlNewTab(name, url) {
-  const win = window.open('about:blank', '_blank');
-  if (win) {
-    win.document.open();
-    win.document.write('<!DOCTYPE html><html><head><title>' + name + '</title><style>*{margin:0;padding:0}body,html{width:100%;height:100%;overflow:hidden}iframe{border:none;width:100vw;height:100vh}</style></head><body><iframe src="' + url + '" allowfullscreen allow="autoplay;gamepad"></iframe></body></html>');
-    win.document.close();
-  } else {
-    window.open(url, '_blank');
-  }
+function openGameUrl(name, url) {
+  document.getElementById('gameTitle').textContent = name;
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('srcdoc');
+  frame.src = url;
+  document.getElementById('gameModal').classList.add('show');
 }
-
-function openNoahGameNewTab(g) {
+function openNoahGame(g) {
   const win = window.open('about:blank', '_blank');
   if (!win) { window.open(g.url, '_blank'); return; }
   fetch(g.url)
     .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-    .then(t => { win.document.open(); win.document.write(t); win.document.close(); win.document.title = g.name; })
+    .then(t => { win.document.open(); win.document.write(t); win.document.close(); })
     .catch(() => {
       win.document.open();
-      win.document.write('<!DOCTYPE html><html><head><title>' + g.name + '</title><style>*{margin:0;padding:0}body,html{width:100%;height:100%;overflow:hidden}iframe{border:none;width:100vw;height:100vh}</style></head><body><iframe src="' + g.url + '" allowfullscreen allow="autoplay"></iframe></body></html>');
+      win.document.write('<!DOCTYPE html><html><head><style>*{margin:0;padding:0}body,html{width:100%;height:100%;overflow:hidden}iframe{border:none;width:100vw;height:100vh}</style></head><body><iframe src="'+g.url+'" allowfullscreen allow="autoplay"></iframe></body></html>');
       win.document.close();
     });
 }
@@ -940,20 +935,20 @@ function buildGrid(grid, customList, noahList, apiList) {
   grid.innerHTML = '';
   customList.forEach(g => {
     const card = makeCard(g.name, g.img);
-    if(g.html) card.onclick = () => openGameInNewTab(g.name, g.html);
-    else card.onclick = () => openGameUrlNewTab(g.name, g.url);
+    if(g.html) card.onclick = () => openGameInModal(g.name, g.html);
+    else card.onclick = () => openGameUrl(g.name, g.url);
     grid.appendChild(card);
   });
   apiList.forEach(g => {
     const coverUrl = g.cover ? g.cover.replace('{COVER_URL}', COVER_BASE).replace('{HTML_URL}', HTML_BASE) : '';
     const gameUrl = g.url.replace('{HTML_URL}', HTML_BASE);
     const card = makeCard(g.name, coverUrl);
-    card.onclick = () => openGameUrlNewTab(g.name, gameUrl);
+    card.onclick = () => openGameModalFetch(g.name, gameUrl);
     grid.appendChild(card);
   });
   noahList.forEach(g => {
     const card = makeCard(g.name, g.img);
-    card.onclick = () => openNoahGameNewTab(g);
+    card.onclick = () => openNoahGame(g);
     grid.appendChild(card);
   });
   if(grid.children.length === 0) { grid.innerHTML = '<div>No games found.</div>'; }
@@ -997,6 +992,18 @@ function makeCard(name, imgUrl) {
   return card;
 }
 
+function openGameModalFetch(name, url) {
+  document.getElementById('gameTitle').textContent = name;
+  document.getElementById('gameModal').classList.add('show');
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('src');
+  frame.srcdoc = '<div style="color:#4285F4;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Loading...</div>';
+  fetch(url)
+    .then(r => { if(!r.ok) throw new Error(r.status); return r.text(); })
+    .then(html => { frame.srcdoc = html; })
+    .catch(() => { frame.srcdoc = '<div style="color:red;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Failed to load game.</div>'; });
+}
+
 function closeGameModal() {
   document.getElementById('gameModal').classList.remove('show');
   const frame = document.getElementById('gameFrame');
@@ -1015,7 +1022,7 @@ function openMovies(type) {
   } else {
     label.textContent = 'Live TV';
     frame.removeAttribute('srcdoc');
-    frame.src = 'https://raw.githubusercontent.com/classroomspotgames/lastclassroomspot-update-for-a-bit/main/classroomspot%20(3).html';
+    frame.src = 'livetv.html';
   }
 }
 function closeMovies() {
