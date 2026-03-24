@@ -2,508 +2,963 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>CodeLearn - Student Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClassroomSpot Games</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:'Segoe UI',sans-serif;background:#000;color:white;overflow-x:hidden}
-canvas#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.nav{padding:16px 24px;background:rgba(0,5,20,.9);backdrop-filter:blur(10px);display:flex;align-items:center;gap:12px;position:relative;z-index:10;border-bottom:1px solid rgba(59,130,246,.25)}
-.logo{font-size:22px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px;filter:drop-shadow(0 0 8px rgba(59,130,246,.7))}
-.topbar{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(59,130,246,.15);position:relative;z-index:10;background:rgba(0,5,20,.75)}
-#total{font-size:13px;color:#93c5fd;font-weight:600;letter-spacing:.5px;text-shadow:0 0 8px rgba(147,197,253,.5)}
-#search{padding:8px 16px;border-radius:20px;border:1px solid rgba(59,130,246,.35);background:rgba(0,10,30,.85);color:white;width:240px;font-size:13px;outline:none;transition:border .2s,box-shadow .2s}
-#search:focus{border-color:#3b82f6;box-shadow:0 0 12px rgba(59,130,246,.35)}
-#search::placeholder{color:#3a5070}
-.games-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:12px;padding:20px 24px;position:relative;z-index:10}
-.game-card{aspect-ratio:1;border-radius:8px;background-size:cover;background-position:center;background-color:#010a1a;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s;border:1px solid rgba(59,130,246,.18);position:relative;overflow:hidden}
-.game-card:hover{transform:scale(1.06);box-shadow:0 0 20px rgba(59,130,246,.55),0 0 40px rgba(59,130,246,.2);border-color:rgba(147,197,253,.65);z-index:5}
-.game-card::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.87) 100%);border-radius:8px}
-.game-name{position:relative;width:100%;text-align:center;font-size:10px;font-weight:600;padding:4px 4px 6px;line-height:1.3;color:#bfdbfe;text-shadow:0 0 6px rgba(147,197,253,.7),0 1px 3px rgba(0,0,0,.9);z-index:2}
-.preview-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:10000;flex-direction:column}
-.preview-overlay.active{display:flex}
-.preview-header{background:rgba(0,5,20,.97);padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(59,130,246,.2);height:48px;box-sizing:border-box}
-.preview-title{font-size:16px;font-weight:700;background:linear-gradient(135deg,#3b82f6,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.preview-close{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.3);border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
-.preview-close:hover{background:rgba(59,130,246,.35)}
-.preview-content{flex:1;position:relative;width:100%;overflow:hidden}
-.preview-frame{width:100%;height:100%;border:none;background:#000}
+*{margin:0;padding:0;box-sizing:border-box;cursor:none!important}
+body{font-family:'Segoe UI',Roboto,sans-serif;color:#fff;min-height:100vh;overflow:hidden;background:#000}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+#cursor-dot{position:fixed;width:10px;height:10px;background:#00aaff;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 6px #00aaff,0 0 18px #00aaff,0 0 35px rgba(0,170,255,0.35);will-change:transform}
+.topbar{position:fixed;top:0;left:0;width:100%;height:64px;background:rgba(0,6,28,0.97);border-bottom:2px solid #4285F4;display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;backdrop-filter:blur(14px)}
+.nav-icon{width:46px;height:46px;border-radius:10px;background:transparent;border:1.5px solid rgba(66,133,244,0.45);display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:#4285F4;position:relative}
+.nav-icon:hover{background:rgba(66,133,244,0.18);border-color:#4285F4;color:#fff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(66,133,244,0.3)}
+.nav-icon.active{background:rgba(66,133,244,0.28);border-color:#4285F4;color:#fff;box-shadow:0 0 14px rgba(66,133,244,0.45)}
+.nav-icon svg{width:22px;height:22px;display:block}
+.nav-label{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:9px;color:#4285F4;font-weight:600;white-space:nowrap;opacity:0;transition:opacity 0.15s;letter-spacing:0.5px;text-transform:uppercase;pointer-events:none}
+.nav-icon:hover .nav-label{opacity:1}
+.main-content{margin-top:64px;width:100%;height:calc(100vh - 64px);overflow:hidden;position:relative;z-index:2}
+.content-section{display:none;width:100%;height:100%;overflow:hidden}
+.content-section.active{display:flex;flex-direction:column}
+.home-section,.embedded-section{width:100%;height:100%}
+.home-section iframe,.embedded-section iframe{width:100%;height:100%;border:none}
+.games-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(0,6,28,0.92);border-bottom:1px solid #1e3a6e;flex-shrink:0;gap:16px}
+.games-total{font-size:13px;color:#4285F4;font-weight:600;white-space:nowrap}
+.games-search{padding:8px 18px;border-radius:22px;border:1.5px solid #4285F4;background:#060c24;color:white;font-size:14px;width:240px;outline:none;transition:border-color 0.2s}
+.games-search:focus{border-color:#34A853}
+.games-section{padding:18px 22px;overflow-y:auto;flex:1}
+.games-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:11px}
+.game-card{width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden;background:rgba(0,10,40,0.8);border:1.5px solid #4285F4;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s;position:relative;background-size:cover;background-position:center}
+.game-card:hover{transform:translateY(-5px) scale(1.05);border-color:#34A853;box-shadow:0 8px 22px rgba(52,168,83,0.35)}
+.game-card-title{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.92),transparent);color:white;padding:14px 6px 6px;font-size:10px;font-weight:600;text-align:center}
+.game-modal{position:fixed;top:64px;left:0;right:0;bottom:0;background:#000;z-index:50;display:none;flex-direction:column}
+.game-modal.show{display:flex}
+.game-modal-header{background:#0e1232;border-bottom:2px solid #4285F4;padding:13px 28px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.game-modal-header h2{color:#4285F4;font-size:18px;font-weight:700}
+.game-modal-header button{background:#4285F4;color:white;border:none;padding:7px 16px;border-radius:6px;font-weight:600;transition:all 0.2s}
+.game-modal-header button:hover{background:#34A853}
+.game-modal-content{flex:1;overflow:hidden}
+.game-modal-content iframe{width:100%;height:100%;border:none}
+
+
+
+
+
+
+
+
+.modal-input:focus{outline:none}
+
+
+
+
+.movies-menu{display:flex;align-items:center;justify-content:center;gap:30px;width:100%;height:100%;background:rgba(0,0,0,0.55)}
+.movies-btn{padding:20px 56px;font-size:20px;font-weight:700;border:2px solid #4285F4;border-radius:14px;background:rgba(66,133,244,0.14);color:#fff;text-transform:uppercase;transition:all 0.22s}
+.movies-btn:hover{background:#4285F4;transform:translateY(-4px) scale(1.05)}
+.movies-embed{display:flex;flex-direction:column;width:100%;height:100%}
+.movies-embed-bar{display:flex;align-items:center;gap:14px;padding:10px 20px;background:rgba(0,6,28,0.92);border-bottom:1px solid #1e3a6e;flex-shrink:0}
+.movies-back-btn{padding:6px 16px;background:#4285F4;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600}
+.movies-back-btn:hover{background:#34A853}
+.movies-embed-label{font-size:13px;color:#4285F4;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.movies-frame{flex:1;border:none;width:100%;height:100%}
 </style>
+<base target="_blank">
+<base target="_blank">
 </head>
 <body>
 
-<canvas id="particles"></canvas>
-
-<div id="previewOverlay" class="preview-overlay">
-  <div class="preview-header">
-    <span class="preview-title" id="previewTitle">Game Preview</span>
-    <button class="preview-close" onclick="closePreview()">✕</button>
-  </div>
-  <div class="preview-content">
-    <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-fullscreen"></iframe>
-  </div>
-</div>
-
-<nav class="nav">
-  <span class="logo">ClassroomSpot Games</span>
-</nav>
+<canvas id="particleCanvas"></canvas>
+<div id="cursor-dot"></div>
 
 <div class="topbar">
-  <span id="total">Loading games…</span>
-  <input id="search" placeholder="Search games…">
+  <button class="nav-icon active" onclick="showSection('home',this)" title="Home">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 10.5h3V21h5v-6h4v6h5V10.5h3z"/></svg>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('games',this)" title="Games">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm-10 9H9v-2H7v-2h2V9h2v2h2v2h-2v2zm5.5-.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm2-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+    <span class="nav-label">Games</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('music',this)" title="Music">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3v11.55A4 4 0 1 0 11 18V7h4V3H9z"/></svg>
+    <span class="nav-label">Music</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('movies',this)" title="Movies">
+    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 4v16M17 4v16M2 9h5M17 9h5M2 14h5M17 14h5"/><path d="M7 4v16M17 4v16M2 9h5M17 9h5M2 14h5M17 14h5" stroke="currentColor" stroke-width="2" fill="none"/><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="7" y1="4" x2="7" y2="20" stroke="currentColor" stroke-width="2"/><line x1="17" y1="4" x2="17" y2="20" stroke="currentColor" stroke-width="2"/><line x1="2" y1="9" x2="7" y2="9" stroke="currentColor" stroke-width="2"/><line x1="17" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="2"/><line x1="2" y1="15" x2="7" y2="15" stroke="currentColor" stroke-width="2"/><line x1="17" y1="15" x2="22" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+    <span class="nav-label">Movies</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('partners',this)" title="Partners">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10l-2-2H9L5 12v2h1l1.5 1.5"/><path d="M9.5 14l1 1 4-4 1 1-4 4 1 1 4-4 .5.5"/><path d="M19 12l-1.5-2H15l-3 3 4 4 1-1"/><path d="M6.5 15.5l3 3 1-1"/><path d="M4 14l-2-2 4-4 2 2"/><path d="M20 10l2 2-4 4-2-2"/></svg>
+    <span class="nav-label">Partners</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('chat',this)" title="Chat">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h3l3 3 3-3h7a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-2 8H6V8h12v2zm0-4H6V4h12v2z"/></svg>
+    <span class="nav-label">Chat</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('apps',this)" title="Apps">
+    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1"/><rect x="17" y="3" width="4" height="5" rx="1"/><rect x="3" y="10" width="5" height="5" rx="1"/><rect x="10" y="10" width="5" height="5" rx="1"/><rect x="17" y="10" width="4" height="5" rx="1"/><rect x="3" y="17" width="5" height="4" rx="1"/><rect x="10" y="17" width="5" height="4" rx="1"/><rect x="17" y="17" width="4" height="4" rx="1"/></svg>
+    <span class="nav-label">Apps</span>
+  </button>
+  <button class="nav-icon" onclick="window.open('https://discord.gg/UPCSF4UcMk','_blank')" title="Discord" style="padding:0;overflow:hidden;border-radius:10px;">
+    <img src="https://t9os.space/d.png" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;mix-blend-mode:screen;filter:brightness(1.1);">
+    <span class="nav-label">Discord</span>
+  </button>
 </div>
 
-<div id="games" class="games-grid"></div>
+<div class="main-content">
+  <div class="content-section active" id="home">
+    <div class="home-section">
+      <iframe src="http://ireadypracticetest.b-cdn.net/" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="games">
+    <div class="games-topbar">
+      <span class="games-total" id="gamesTotal">Total games: loading…</span>
+      <input class="games-search" id="gamesSearch" type="text" placeholder="Search games…" oninput="searchGames(this.value)">
+    </div>
+    <div class="games-section">
+      <div class="games-grid" id="gamesGrid"><div>Loading…</div></div>
+    </div>
+  </div>
+  <div class="content-section" id="music">
+    <div class="embedded-section">
+      <iframe src="music.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="movies">
+    <div id="moviesMenu" class="movies-menu">
+      <button class="movies-btn" onclick="openMovies('media')">TV / Movies</button>
+      <button class="movies-btn" onclick="openMovies('livetv')">Live TV</button>
+    </div>
+    <div id="moviesEmbed" class="movies-embed" style="display:none;">
+      <div class="movies-embed-bar">
+        <button class="movies-back-btn" onclick="closeMovies()">← Back</button>
+        <span id="moviesBtnLabel" class="movies-embed-label"></span>
+      </div>
+      <iframe id="moviesFrame" class="movies-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="partners">
+    <div class="embedded-section">
+      <iframe src="partners.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="chat">
+    <div class="embedded-section">
+      <iframe src="chat.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="apps">
+    <div class="embedded-section">
+      <iframe id="appsFrame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="game-modal" id="gameModal">
+  <div class="game-modal-header">
+    <h2 id="gameTitle">Game</h2>
+    <button onclick="closeGameModal()">Close</button>
+  </div>
+  <div class="game-modal-content">
+    <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-fullscreen"></iframe>
+  </div>
+</div>
+
 
 <script>
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let W, H, particles = [];
+const APPS_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>ClassroomSpot Apps</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(135deg,#001f3f 0%,#003366 50%,#004080 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;overflow-x:hidden;position:relative;cursor:none}.particles{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:1}.particle{position:absolute;width:4px;height:4px;background:rgba(135,206,250,0.6);border-radius:50%;animation:float 15s infinite;box-shadow:0 0 10px rgba(135,206,250,0.8)}@keyframes float{0%,100%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) rotate(720deg);opacity:0}}.container{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:40px 20px}.title{text-align:center;font-family:'Orbitron',sans-serif;font-size:4rem;font-weight:900;color:#00ffff;text-shadow:0 0 10px #00ffff,0 0 40px #00ccff,0 0 80px #0099ff;margin-bottom:50px;letter-spacing:4px;animation:pulse 2s ease-in-out infinite}@keyframes pulse{0%,100%{text-shadow:0 0 10px #00ffff,0 0 40px #00ccff}50%{text-shadow:0 0 20px #00ffff,0 0 80px #00ccff}}.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;margin-bottom:60px}.app-card{background:rgba(0,100,200,0.2);border:2px solid rgba(135,206,250,0.5);border-radius:20px;padding:25px;text-align:center;cursor:pointer;transition:all 0.4s;backdrop-filter:blur(10px)}.app-card:hover{transform:translateY(-10px) scale(1.05);background:rgba(0,150,255,0.3);border-color:#00ffff;box-shadow:0 10px 40px rgba(0,200,255,0.4)}.app-icon{width:100px;height:100px;border-radius:20px;margin-bottom:15px;object-fit:cover;transition:transform 0.3s}.app-card:hover .app-icon{transform:scale(1.1) rotate(5deg)}.app-name{color:#fff;font-size:1.2rem;font-weight:600}.no-images-section{margin-top:40px;padding:30px;background:rgba(0,50,100,0.3);border-radius:20px;border:1px solid rgba(135,206,250,0.3)}.section-title{color:#87ceeb;font-size:1.5rem;text-align:center;margin-bottom:25px;text-transform:uppercase;letter-spacing:3px}.text-apps{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}.text-app-btn{background:linear-gradient(135deg,rgba(0,150,255,0.4),rgba(0,100,200,0.4));border:2px solid rgba(135,206,250,0.6);color:#fff;padding:15px 30px;border-radius:50px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s;text-transform:uppercase}.text-app-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,0.6),rgba(0,150,255,0.6));border-color:#00ffff;transform:translateY(-3px)}.custom-cursor{position:fixed;width:20px;height:20px;background:radial-gradient(circle,#00ffff 0%,#0099ff 50%,transparent 70%);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 20px #00ffff}</style>
+<base target="_blank"></head>
+<body>
+<div class="custom-cursor" id="cursor"></div>
+<div class="particles" id="particles"></div>
+<div class="container">
+<h1 class="title">ClassroomSpot Apps</h1>
+<div class="apps-grid">
+<div class="app-card" onclick="window.open('https://blooketbot.schoolcheats.net/','_blank')"><img src="https://youcantpoopme.b-cdn.net/blk.png" alt="Blooket" class="app-icon"><div class="app-name">Blooket Cheats</div></div>
+<div class="app-card" onclick="window.open('https://youcantpoopme.b-cdn.net/emulatorjs.html','_blank')"><img src="https://youcantpoopme.b-cdn.net/emulatorjs.png" alt="Emulator JS" class="app-icon"><div class="app-name">Emulator JS</div></div>
+<div class="app-card" onclick="window.open('https://seraph.b-cdn.net/apps/windows11/index.html','_blank')"><img src="https://youcantpoopme.b-cdn.net/windows11.png" alt="Windows 11" class="app-icon"><div class="app-name">Windows 11</div></div>
+<div class="app-card" onclick="window.open('https://youcantpoopme.b-cdn.net/ruffle.html','_blank')"><img src="https://youcantpoopme.b-cdn.net/ruffle.png" alt="Ruffle" class="app-icon"><div class="app-name">Ruffle</div></div>
+<div class="app-card" onclick="window.open('https://seraph.b-cdn.net/apps/thirtydollarwebsite/index.html','_blank')"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/179.png" alt="30 Dollar" class="app-icon"><div class="app-name">Thirty Dollar Website</div></div>
+</div>
+<div class="no-images-section">
+<h2 class="section-title">Apps With No Images</h2>
+<div class="text-apps">
+<button class="text-app-btn" onclick="window.open('https://seraph.b-cdn.net/apps/godoblocks/index.html','_blank')">2005 Roblox</button>
+<button class="text-app-btn" onclick="window.open('https://seraph.b-cdn.net/apps/fluidsim/index.html','_blank')">FluidSim</button>
+<button class="text-app-btn" onclick="window.open('https://seraph.b-cdn.net/apps/calculator/index.html','_blank')">Calculator</button>
+</div></div></div>
+<script>
+const p=document.getElementById('particles');
+for(let i=0;i<50;i++){const d=document.createElement('div');d.className='particle';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*15+'s';d.style.animationDuration=(10+Math.random()*10)+'s';p.appendChild(d);}
+const c=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';});
+<\/script></body></html>`;
 
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = document.body.scrollHeight;
+const MEDIA_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ClassroomSpot Media</title>
+  <style>
+    :root{--rift-gray:#3B82F6;--rift-light:#60A5FA;--bg:#000000;--glass-bg:rgba(59,130,246,0.05);--glass-border:rgba(59,130,246,0.2);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background-color:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden;}
+    #starfield{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:var(--bg);}
+    header{padding:40px 20px;text-align:center;font-size:48px;font-weight:900;color:#3B82F6;letter-spacing:6px;text-transform:uppercase;position:relative;z-index:10;text-shadow:0 0 10px #3B82F6,0 0 20px #3B82F6,0 0 40px #60A5FA;}
+    .top-row{width:100%;display:flex;justify-content:center;gap:12px;margin:20px 0 40px;padding:0 20px;position:relative;z-index:10;}
+    .search-wrap{display:flex;align-items:center;gap:12px;width:920px;max-width:100%;}
+    #searchInput{flex:1;padding:16px 24px;font-size:18px;border-radius:50px;border:1px solid var(--glass-border);background:rgba(0,0,0,0.6);color:#fff;transition:all 0.3s;}
+    #searchInput:focus{outline:none;box-shadow:0 0 15px rgba(59,130,246,0.3);border-color:#3B82F6;}
+    #ratingSelect{min-width:170px;height:50px;border-radius:50px;padding:10px 20px;font-size:15px;background:rgba(0,0,0,0.6);color:#fff;border:1px solid var(--glass-border);appearance:none;transition:0.3s;}
+    #ratingSelect:hover{border-color:#3B82F6;}
+    #main{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:25px;padding:0 40px 60px;max-width:1400px;margin:0 auto;position:relative;z-index:10;}
+    .card{position:relative;background:rgba(0,0,0,0.6);border-radius:12px;overflow:hidden;border:1px solid rgba(59,130,246,0.1);transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;}
+    .card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 10px 30px rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.3);}
+    .card-image{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;}
+    .card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s;}
+    .card:hover img{transform:scale(1.05);}
+    .play-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;}
+    .card:hover .play-overlay{opacity:1;}
+    .play-button{width:50px;height:50px;background:rgba(59,130,246,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .play-button::after{content:'';width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px;}
+    .card h4{padding:16px;font-size:16px;text-align:center;color:#fff;background:rgba(0,0,0,0.8);font-weight:600;border-top:1px solid rgba(59,130,246,0.1);}
+    #modal{position:fixed;inset:0;background-color:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;opacity:0;transition:opacity 0.3s;}
+    #modal.active{display:flex;opacity:1;}
+    #modalContent{width:100%;max-width:1000px;background:#0a0a0a;border-radius:12px;overflow:hidden;padding:30px;position:relative;display:flex;flex-direction:column;gap:20px;border:1px solid rgba(59,130,246,0.2);}
+    #modalTitle{font-size:28px;text-align:center;color:#fff;font-weight:700;letter-spacing:2px;}
+    #modalRating{position:absolute;top:20px;left:24px;background:#000;color:#3B82F6;padding:8px 16px;border-radius:20px;font-size:14px;font-weight:700;border:1px solid #3B82F6;}
+    .modal-controls{display:flex;align-items:center;justify-content:center;gap:15px;flex-wrap:wrap;padding:10px;}
+    .modal-controls select{background-color:#000;color:#fff;border:1px solid rgba(59,130,246,0.2);padding:12px 20px;border-radius:30px;font-size:14px;appearance:none;}
+    #closeModal{position:absolute;top:20px;right:24px;background:transparent;color:#fff;border:1px solid #fff;padding:8px 16px;border-radius:30px;font-size:14px;font-weight:bold;cursor:pointer;transition:all 0.3s;}
+    #closeModal:hover{background:#fff;color:#000;}
+    #iframeWrap{width:100%;height:550px;border-radius:12px;overflow:hidden;background:#000;border:1px solid rgba(59,130,246,0.1);}
+    #modalIframe{width:100%;height:100%;border:none;background:#000;display:block;}
+    #loadingIndicator{display:none;justify-content:center;align-items:center;gap:15px;margin:40px auto;color:#3B82F6;font-weight:bold;letter-spacing:2px;}
+    @media(max-width:768px){header{font-size:32px;}#main{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px;padding:0 20px;}#iframeWrap{height:300px;}.search-wrap{flex-direction:column;}#ratingSelect{width:100%;}}
+  </style>
+<base target="_blank">
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <header>ClassroomSpot Media</header>
+  <div class="top-row">
+    <div class="search-wrap">
+      <input id="searchInput" placeholder="Search database..." autocomplete="off"/>
+      <select id="ratingSelect">
+        <option value="all">All Ratings</option>
+        <option value="gpg">G / PG</option>
+        <option value="pg13">PG-13</option>
+        <option value="r">R</option>
+        <option value="nc17">NC-17 / Other</option>
+      </select>
+    </div>
+  </div>
+  <div id="main"></div>
+  <div id="loadingIndicator"><div class="text">LOADING DATA</div></div>
+  <div id="modal">
+    <div id="modalContent">
+      <div id="modalRating">Rated: NR</div>
+      <button id="closeModal" onclick="closeModal()">CLOSE</button>
+      <div id="modalTitle"></div>
+      <div class="modal-controls">
+        <select id="seasonSelect" style="display:none;"></select>
+        <select id="episodeSelect" style="display:none;"></select>
+        <select id="sourceSelect"></select>
+      </div>
+      <div id="iframeWrap"><iframe id="modalIframe" allowfullscreen></iframe></div>
+    </div>
+  </div>
+  <script>
+    const canvas=document.getElementById('starfield'),ctx=canvas.getContext('2d');
+    let width,height,stars=[];
+    function initStars(){width=window.innerWidth;height=window.innerHeight;canvas.width=width;canvas.height=height;stars=[];for(let i=0;i<200;i++){stars.push({x:Math.random()*width,y:Math.random()*height,radius:Math.random()*1.5,vx:(Math.random()-0.5)*0.1,vy:(Math.random()-0.5)*0.1,alpha:Math.random(),grayShift:Math.random()*0.5+0.5});}}
+    function animateStars(){ctx.clearRect(0,0,width,height);stars.forEach(star=>{const g=100+star.grayShift*155;ctx.fillStyle='rgba('+g+','+g+','+g+','+star.alpha+')';ctx.beginPath();ctx.arc(star.x,star.y,star.radius,0,Math.PI*2);ctx.fill();star.x+=star.vx;star.y+=star.vy;if(star.x<0)star.x=width;if(star.x>width)star.x=0;if(star.y<0)star.y=height;if(star.y>height)star.y=0;});requestAnimationFrame(animateStars);}
+    window.addEventListener('resize',initStars);initStars();animateStars();
+    const API_KEY='3a73619bbb8fc6d47742d1b5b2b707b5';
+    const baseURL='https://api.themoviedb.org/3';
+    const main=document.getElementById('main');
+    const searchInput=document.getElementById('searchInput');
+    const ratingSelect=document.getElementById('ratingSelect');
+    const modal=document.getElementById('modal');
+    const modalTitle=document.getElementById('modalTitle');
+    const modalRating=document.getElementById('modalRating');
+    const modalIframe=document.getElementById('modalIframe');
+    const sourceSelect=document.getElementById('sourceSelect');
+    const seasonSelect=document.getElementById('seasonSelect');
+    const episodeSelect=document.getElementById('episodeSelect');
+    const loadingIndicator=document.getElementById('loadingIndicator');
+    const FALLBACK_POSTER='https://via.placeholder.com/500x750/000/888888?text=No+Image';
+    let currentItem=null,currentPage=1,loading=false,inSearch=false,annotatedCache=[];
+    function certMatchesGroup(cert,group){if(!cert)return group==='all';cert=cert.trim().toUpperCase();if(group==='all')return true;if(group==='gpg')return['G','PG','TV-Y','TV-G','TV-Y7'].includes(cert);if(group==='pg13')return cert==='PG-13'||cert==='TV-14';if(group==='r')return cert==='R'||cert==='TV-MA';if(group==='nc17')return cert==='NC-17'||(!['G','PG','PG-13','R','TV-14','TV-MA','TV-PG','TV-G','TV-Y','TV-Y7'].includes(cert));return false;}
+    async function getMovieCertification(id){try{const res=await fetch(baseURL+'/movie/'+id+'/release_dates?api_key='+API_KEY);const data=await res.json();if(!data.results)return null;const us=data.results.find(r=>r.iso_3166_1==='US')||data.results[0];if(!us||!us.release_dates||!us.release_dates.length)return null;return us.release_dates.find(d=>d.certification&&d.certification.trim())?.certification||null;}catch(e){return null;}}
+    async function getTvCertification(id){try{const res=await fetch(baseURL+'/tv/'+id+'/content_ratings?api_key='+API_KEY);const data=await res.json();if(!data.results)return null;const us=data.results.find(r=>r.iso_3166_1==='US')||data.results[0];return(us&&us.rating)?us.rating:null;}catch(e){return null;}}
+    function showLoading(show){loadingIndicator.style.display=show?'flex':'none';}
+    async function fetchItems(type,page){try{const res=await fetch(baseURL+'/'+type+'/popular?api_key='+API_KEY+'&language=en-US&page='+page);const data=await res.json();return data.results||[];}catch(e){return[];}}
+    async function searchItems(query){try{const res=await fetch(baseURL+'/search/multi?api_key='+API_KEY+'&language=en-US&query='+encodeURIComponent(query));const data=await res.json();return data.results||[];}catch(e){return[];}}
+    async function annotateWithCerts(items){const annotated=[];for(let item of items){const already=annotatedCache.find(c=>c.id===item.id&&c.media_type===item.media_type);if(already){annotated.push(already);continue;}let cert=null;if(item.media_type==='tv'||item.first_air_date)cert=await getTvCertification(item.id);else cert=await getMovieCertification(item.id);const newItem=Object.assign({},item,{_cert:cert});annotated.push(newItem);}return annotated;}
+    function renderAnnotatedItemsAppend(items){const selected=ratingSelect.value||'all';items.forEach(item=>{if(!certMatchesGroup(item._cert,selected))return;createCard(item);});}
+    function renderAllFromCache(){const selected=ratingSelect.value||'all';main.innerHTML='';annotatedCache.forEach(item=>{if(!certMatchesGroup(item._cert,selected))return;createCard(item);});}
+    async function loadItems(){if(loading||inSearch)return 0;loading=true;showLoading(true);try{const movies=await fetchItems('movie',currentPage);const shows=await fetchItems('tv',currentPage);const combined=[...movies,...shows];const annotated=await annotateWithCerts(combined);const newOnes=[];for(let it of annotated){const exists=annotatedCache.find(c=>c.id===it.id&&c.media_type===it.media_type);if(!exists){annotatedCache.push(it);newOnes.push(it);}}renderAnnotatedItemsAppend(newOnes);currentPage++;return newOnes.length;}catch(err){return 0;}finally{loading=false;showLoading(false);}}
+    function createCard(item){const card=document.createElement('div');card.className='card';const imgPath=item.poster_path?'https://image.tmdb.org/t/p/w500'+item.poster_path:FALLBACK_POSTER;card.innerHTML='<div class="card-image"><img src="'+imgPath+'" alt="'+(item.title||item.name||'Poster')+'"><div class="play-overlay"><div class="play-button"></div></div></div><h4>'+(item.title||item.name||'Untitled')+'</h4>';card.addEventListener('click',()=>openModal(item));main.appendChild(card);}
+    const tvSources=['https://player.vidify.top/embed/tv/\${id}/\${season}/\${episode}','https://vidsrc.xyz/embed/tv?tmdb=\${id}&season=\${season}&episode=\${episode}','https://player.vidsrc.co/embed/tv/\${id}/\${season}/\${episode}','https://player.autoembed.cc/embed/tv/\${id}/\${season}/\${episode}','https://vidsrc.icu/embed/tv/\${id}/\${season}/\${episode}','https://moviekex.online/embed/tv/\${id}/\${season}/\${episode}','https://vidsrc.cc/v2/embed/tv/\${id}/\${season}/\${episode}','https://moviesapi.club/tv/\${id}-\${season}-\${episode}','https://vidlink.pro/tv/\${id}/\${season}/\${episode}','https://embed.su/embed/tv/\${id}/\${season}/\${episode}','https://vidora.su/tv/\${id}/\${season}/\${episode}'];
+    const movieSources=['https://player.vidify.top/embed/movie/\${id}','https://vidsrc.xyz/embed/movie?tmdb=\${id}','https://player.vidsrc.co/embed/movie/\${id}','https://player.autoembed.cc/embed/movie/\${id}','https://vidsrc.icu/embed/movie/\${id}','https://moviekex.online/embed/movie/\${id}','https://vidsrc.cc/v2/embed/movie/\${id}','https://moviesapi.club/movie/\${id}','https://vidlink.pro/movie/\${id}','https://embed.su/embed/movie/\${id}','https://vidora.su/movie/\${id}'];
+    function displayModalRatingText(item){let cert=item._cert??null;if(cert){modalRating.textContent='Rated: '+cert;return;}modalRating.textContent='Rated: NR';(async()=>{let fetched=null;if(item.media_type==='tv'||item.first_air_date)fetched=await getTvCertification(item.id);else fetched=await getMovieCertification(item.id);const final=fetched||'NR';modalRating.textContent='Rated: '+final;const found=annotatedCache.find(c=>c.id===item.id&&c.media_type===item.media_type);if(found)found._cert=fetched;})();}
+    function openModal(item){currentItem=item;modal.classList.add('active');modalTitle.textContent=item.title||item.name||'';seasonSelect.style.display='none';episodeSelect.style.display='none';sourceSelect.innerHTML='';displayModalRatingText(item);if((item.media_type==='tv')||item.first_air_date){fetch(baseURL+'/tv/'+item.id+'?api_key='+API_KEY).then(res=>res.json()).then(data=>{const seasons=data.seasons||[];seasonSelect.innerHTML='';seasons.forEach(s=>{if(s.season_number===0)return;const opt=document.createElement('option');opt.value=s.season_number;opt.text=s.name||'Season '+s.season_number;seasonSelect.appendChild(opt);});if(seasonSelect.options.length){seasonSelect.style.display='inline-block';seasonSelect.onchange=()=>loadEpisodes(item.id,seasonSelect.value);seasonSelect.selectedIndex=0;seasonSelect.dispatchEvent(new Event('change'));}}).catch(()=>{modalIframe.src='';});}else{movieSources.forEach(link=>{const opt=document.createElement('option');opt.value=link.replace('\${id}',item.id);try{opt.textContent=new URL(opt.value).hostname.replace('www.','');}catch(e){opt.textContent='source';}sourceSelect.appendChild(opt);});if(sourceSelect.options.length){sourceSelect.selectedIndex=0;modalIframe.src=sourceSelect.value;}else{modalIframe.src='';}}sourceSelect.onchange=()=>{modalIframe.src=sourceSelect.value;};}
+    function loadEpisodes(tvId,seasonNum){fetch(baseURL+'/tv/'+tvId+'/season/'+seasonNum+'?api_key='+API_KEY).then(res=>res.json()).then(data=>{episodeSelect.innerHTML='';(data.episodes||[]).forEach(ep=>{const opt=document.createElement('option');opt.value=ep.episode_number;opt.text=ep.name||'Episode '+ep.episode_number;episodeSelect.appendChild(opt);});if(episodeSelect.options.length){episodeSelect.style.display='inline-block';episodeSelect.onchange=()=>updateTvIframe(tvId,seasonNum,episodeSelect.value);episodeSelect.selectedIndex=0;episodeSelect.dispatchEvent(new Event('change'));}else{modalIframe.src='';}}).catch(()=>{modalIframe.src='';});}
+    function updateTvIframe(id,season,episode){sourceSelect.innerHTML='';tvSources.forEach(link=>{const opt=document.createElement('option');opt.value=link.replace('\${id}',id).replace('\${season}',season).replace('\${episode}',episode);try{opt.textContent=new URL(opt.value).hostname.replace('www.','');}catch(e){opt.textContent='source';}sourceSelect.appendChild(opt);});if(sourceSelect.options.length){sourceSelect.selectedIndex=0;modalIframe.src=sourceSelect.value;}else{modalIframe.src='';}}
+    function closeModal(){modal.classList.remove('active');setTimeout(()=>{modal.style.display='none';modalIframe.src='';},300);if(document.fullscreenElement)document.exitFullscreen?.();}
+    let searchTimeout=null;
+    async function performSearch(q){q=q.trim();main.innerHTML='';if(!q){inSearch=false;renderAllFromCache();return;}inSearch=true;showLoading(true);try{const results=await searchItems(q);const annotated=await annotateWithCerts(results);main.innerHTML='';const selected=ratingSelect.value||'all';annotated.forEach(item=>{if(!certMatchesGroup(item._cert,selected))return;createCard(item);});}catch(err){}finally{showLoading(false);}}
+    searchInput.addEventListener('input',()=>{const v=searchInput.value;clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>performSearch(v),500);});
+    ratingSelect.addEventListener('change',async()=>{if(inSearch){performSearch(searchInput.value||'');return;}renderAllFromCache();});
+    document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&modal.classList.contains('active'))closeModal();});
+    window.addEventListener('scroll',()=>{if(inSearch)return;if(window.innerHeight+window.scrollY>=document.body.offsetHeight-500){loadItems();}});
+    async function init(){await loadItems();}init();
+  <\/script>
+</body>
+</html>`;
+
+const EPSTEIN_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:system-ui,sans-serif}#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}.game-frame{position:absolute;inset:0;width:100%;height:100%;display:none;background:#000}.game-iframe{width:100%;height:100%;border:0;display:block;background:#000}.game-preview{position:absolute;inset:0;overflow:hidden;z-index:5}.game-preview-bgi{position:absolute;inset:0;background-position:center;background-size:cover;filter:blur(10px);transform:scale(1.05)}.game-preview__content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:rgba(0,0,0,0.6);text-align:center;padding:24px;box-sizing:border-box}.game-preview__logo img{border-radius:12px;box-shadow:0 0 1rem rgba(255,255,255,0.45);max-width:200px;width:min(45vw,200px);height:auto;display:block}.game-preview__title{font-size:24px;font-weight:700;color:#fff;margin:20px 0;padding:14px 20px}.play-btn__ctrl{height:50px;overflow:hidden;appearance:none;z-index:2;box-shadow:0 0 1rem rgba(255,255,255,0.45);background:#ff3814;font-weight:700;color:#fff;font-size:22px;padding:0 32px;border-radius:16px;border:0;cursor:pointer;transition:background .15s,transform .1s}#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;outline:1px solid rgba(36,214,0,0.55);transition:transform .12s,opacity .12s;z-index:20}#fs-btn svg{width:18px;height:18px;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}</style></head>
+<body><div id="fs-root">
+<div class="game-preview" id="gamePreview">
+<div class="game-preview-bgi" style="background-image:url('https://static.wixstatic.com/media/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg/v1/fill/w_144,h_144,al_c,q_80,usm_0.66_1.00_0.01/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg');"></div>
+<div class="game-preview__content">
+<div class="game-preview__logo"><img src="https://static.wixstatic.com/media/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg/v1/fill/w_144,h_144,al_c,q_80,usm_0.66_1.00_0.01/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg" alt="Epstein Clicker"></div>
+<div class="game-preview__title">Epstein Clicker</div>
+<button id="show-embed" class="play-btn__ctrl" type="button">Play</button>
+</div></div>
+<div id="game-code" class="game-frame"><iframe class="game-iframe" id="gameFrame" src="about:blank" allow="autoplay;fullscreen;camera;gamepad" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-same-origin allow-downloads" allowfullscreen></iframe></div>
+<button id="fs-btn" type="button" aria-label="Fullscreen">
+<svg id="icon-expand" viewBox="0 0 24 24" style="display:block;"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+<svg id="icon-exit" viewBox="0 0 24 24" style="display:none;"><path d="M9 3v6H3"></path><path d="M15 3v6h6"></path><path d="M9 21v-6H3"></path><path d="M15 21v-6h6"></path></svg>
+</button>
+</div>
+<script>
+const btn=document.getElementById('fs-btn'),iconExpand=document.getElementById('icon-expand'),iconExit=document.getElementById('icon-exit'),playBtn=document.getElementById('show-embed'),preview=document.getElementById('gamePreview'),gameWrap=document.getElementById('game-code'),gameFrame=document.getElementById('gameFrame');
+let loaded=false;
+function syncUI(){const on=!!(document.fullscreenElement||document.webkitFullscreenElement);iconExpand.style.display=on?'none':'block';iconExit.style.display=on?'block':'none';}
+btn.addEventListener('click',()=>{if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document);}else{(document.getElementById('fs-root').requestFullscreen||document.getElementById('fs-root').webkitRequestFullscreen).call(document.getElementById('fs-root'));}});
+document.addEventListener('fullscreenchange',syncUI);document.addEventListener('webkitfullscreenchange',syncUI);
+playBtn.addEventListener('click',()=>{if(loaded)return;loaded=true;preview.style.display='none';gameWrap.style.display='block';gameFrame.src='https://topgames.gg/game/epstein-clicker/';const fsRoot=document.getElementById('fs-root');if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});});
+syncUI();
+<\/script></body></html>`;
+
+const CAT_MARIO_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no,shrink-to-fit=no"/>
+<title>Cat Mario</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AndreajnRcm4/b398dl2h74v@9a23fbb2373d743a564873251cbb57736ebc1f73/style.css" type="text/css"/>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/gh/u-cvlassrom-y/google@main/ruffle.js"><\/script>
+<object width="100%" height="100%">
+<embed src="https://cdn.jsdelivr.net/gh/Stinkalistic/junk@main/catmario.swf" width="100%" height="100%">
+</object>
+</body>
+</html>`;
+
+const CAPYBARA_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:transparent;font-family:system-ui,sans-serif}#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}#gameFrame{width:100%;height:100%;border:0;display:block;background:#000}#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;opacity:0.97;transition:transform .12s,opacity .12s;outline:1px solid rgba(36,214,0,0.55)}#fs-btn:hover{transform:scale(1.05);opacity:1;background:rgba(36,214,0,0.64)}#fs-btn svg{width:18px;height:18px;display:block;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}#fs-tip{position:absolute;right:52px;bottom:12px;padding:6px 10px;border-radius:10px;background:rgba(36,214,0,0.78);color:rgba(0,0,0,0.92);font-size:12px;font-weight:700;box-shadow:0 10px 24px rgba(0,0,0,0.35);opacity:0;transform:translateY(4px);transition:opacity .12px,transform .12s;pointer-events:none;white-space:nowrap}#fs-btn:hover+#fs-tip{opacity:1;transform:translateY(0)}</style></head>
+<body><div id="fs-root">
+<iframe id="gameFrame" src="https://capybaraclickergame.com/capybaraclickergamefiles/capybara-clicker/" allow="fullscreen;autoplay;gamepad" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+<button id="fs-btn" type="button" aria-label="Fullscreen">
+<svg id="icon-expand" viewBox="0 0 24 24" style="display:block;"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+<svg id="icon-exit" viewBox="0 0 24 24" style="display:none;"><path d="M9 3v6H3"></path><path d="M15 3v6h6"></path><path d="M9 21v-6H3"></path><path d="M15 21v-6h6"></path></svg>
+</button>
+<div id="fs-tip">Fullscreen</div>
+</div>
+<script>
+const fsRoot=document.getElementById('fs-root'),btn=document.getElementById('fs-btn'),iconExpand=document.getElementById('icon-expand'),iconExit=document.getElementById('icon-exit'),tip=document.getElementById('fs-tip');
+function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenElement);}
+function syncUI(){const on=isFS();iconExpand.style.display=on?'none':'block';iconExit.style.display=on?'block':'none';btn.title=on?'Minimize':'Fullscreen';tip.textContent=on?'Minimize':'Fullscreen';}
+btn.addEventListener('click',()=>{if(isFS()){if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}else{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});else if(fsRoot.webkitRequestFullscreen)fsRoot.webkitRequestFullscreen();}});
+document.addEventListener('fullscreenchange',syncUI);document.addEventListener('webkitfullscreenchange',syncUI);syncUI();
+<\/script></body></html>`;
+
+const DARK_MAN_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dark Man 3D</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}iframe{border:none;width:100%;height:100%}</style>
+</head>
+<body>
+<iframe src="https://rosebud.ai/p/d0b9a69c-f5aa-4efd-9a50-0401aa31bce6" title="Dark Man 3D"></iframe>
+</body>
+</html>`;
+
+const FNAB_HTML = `<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Five Nights at Baldi's</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="stylesheet" href="https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/TemplateData/style.css">
+</head>
+<body>
+<div id="unity-container" class="unity-desktop">
+<canvas id="unity-canvas" width=960 height=600></canvas>
+<div id="unity-loading-bar">
+<div id="unity-logo"></div>
+<div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+</div>
+<div id="unity-warning"></div>
+<div id="unity-footer">
+<div id="unity-webgl-logo"></div>
+<div id="unity-fullscreen-button"></div>
+<div id="unity-build-title">Five Nights At Baldi's Redone</div>
+</div>
+</div>
+<script>
+var container=document.querySelector("#unity-container");
+var canvas=document.querySelector("#unity-canvas");
+var loadingBar=document.querySelector("#unity-loading-bar");
+var progressBarFull=document.querySelector("#unity-progress-bar-full");
+var fullscreenButton=document.querySelector("#unity-fullscreen-button");
+var warningBanner=document.querySelector("#unity-warning");
+function unityShowBanner(msg,type){
+var div=document.createElement('div');div.innerHTML=msg;warningBanner.appendChild(div);
+if(type=='error')div.style='background:red;padding:10px;';
+else if(type=='warning'){div.style='background:yellow;padding:10px;';setTimeout(function(){warningBanner.removeChild(div);},5000);}
+warningBanner.style.display=warningBanner.children.length?'block':'none';
 }
+var buildUrl="";
+var loaderUrl=buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.loader.js";
+var config={
+dataUrl:buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.data",
+frameworkUrl:buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.framework.js",
+codeUrl:buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.wasm",
+streamingAssetsUrl:"StreamingAssets",companyName:"JohnsterSpaceGames",productName:"Five Nights At Baldi's Redone",productVersion:"1.01",showBanner:unityShowBanner
+};
+if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){
+var meta=document.createElement('meta');meta.name='viewport';meta.content='width=device-width,height=device-height,initial-scale=1.0,user-scalable=no,shrink-to-fit=yes';
+document.getElementsByTagName('head')[0].appendChild(meta);
+container.className="unity-mobile";canvas.className="unity-mobile";
+unityShowBanner('WebGL builds are not supported on mobile devices.');
+}else{canvas.style.width="960px";canvas.style.height="600px";}
+loadingBar.style.display="block";
+var script=document.createElement("script");
+script.src=loaderUrl;
+script.onload=()=>{createUnityInstance(canvas,config,(progress)=>{progressBarFull.style.width=100*progress+"%";}).then((unityInstance)=>{loadingBar.style.display="none";fullscreenButton.onclick=()=>{unityInstance.SetFullscreen(1);};}).catch((message)=>{alert(message);});};
+document.body.appendChild(script);
+<\/script>
+</body>
+</html>`;
 
-function initParticles() {
-  particles = [];
-  const count = Math.floor((W * H) / 12000);
-  for (let i = 0; i < count; i++) {
-    const shade = Math.random();
-    particles.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 2 + .5,
-      vx: (Math.random() - .5) * .4,
-      vy: (Math.random() - .5) * .4,
-      alpha: Math.random() * .6 + .15,
-      color: shade > .6 ? '#bfdbfe' : shade > .3 ? '#60a5fa' : '#93c5fd'
-    });
-  }
-}
+const GTA_HTML = `<!DOCTYPE html>
+<html lang="en-us">
+<base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/grand-theft-auto/index.html">
+<head><meta charset="utf-8"/><meta http-equiv="Content-Type" content="text/html;charset=utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<title>GTA 5 Remake</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="shortcut icon" href="TemplateData/favicon.ico"/>
+<link rel="stylesheet" href="TemplateData/style.css"/>
+<script src="https://raw.githack.com/gn-math/assets/main/yandex-sdk.js"><\/script>
+</head>
+<body class="dark">
+<div id="unity-container" class="unity-desktop"><canvas id="unity-canvas"></canvas></div>
+<div id="loading-cover" style="display:none;">
+<div id="unity-loading-bar">
+<div id="unity-logo"><img src="logo.png"/></div>
+<div id="unity-progress-bar-empty" style="display:none;"><div id="unity-progress-bar-full"></div></div>
+<div class="spinner"></div>
+</div>
+</div>
+<script>
+const hideFullScreenButton="";
+const buildUrl="Build";
+const loaderUrl=buildUrl+"/Build_Police_City_Game.loader.js";
+const config={
+dataUrl:buildUrl+"/f2508266e5e0e8bd6d1eb8f38f3dca4c.data.unityweb",
+frameworkUrl:buildUrl+"/6405393c3409f0967def5c55734f5c16.js.unityweb",
+codeUrl:buildUrl+"/c106df9a2b6da53e30aa4da4d82a844d.wasm.unityweb",
+streamingAssetsUrl:"StreamingAssets",companyName:"Iwense",productName:"City Police Simulator",productVersion:"1.0"
+};
+const container=document.querySelector("#unity-container");
+const canvas=document.querySelector("#unity-canvas");
+const loadingCover=document.querySelector("#loading-cover");
+const progressBarEmpty=document.querySelector("#unity-progress-bar-empty");
+const progressBarFull=document.querySelector("#unity-progress-bar-full");
+const spinner=document.querySelector('.spinner');
+if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){container.className="unity-mobile";}
+canvas.style.background="url('background.png') center / cover";
+loadingCover.style.display="";
+let myGameInstance=null;
+const script=document.createElement("script");
+script.src=loaderUrl;
+script.onload=()=>{createUnityInstance(canvas,config,(progress)=>{spinner.style.display="none";progressBarEmpty.style.display="";progressBarFull.style.width=(100*progress)+"%";}).then((unityInstance)=>{myGameInstance=unityInstance;loadingCover.style.display="none";}).catch((message)=>{alert(message);});};
+YaGames.init().then(ysdk=>{window.ysdk=ysdk;}).catch(e=>{console.log('SDK init failed',e);});
+document.body.appendChild(script);
+<\/script>
+</body>
+</html>`;
 
-function animateParticles() {
-  ctx.clearRect(0, 0, W, H);
-  particles.forEach(p => {
-    p.x += p.vx; p.y += p.vy;
-    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
-    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = p.color;
-    ctx.globalAlpha = p.alpha;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-  ctx.strokeStyle = '#93c5fd';
-  ctx.lineWidth = .5;
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      if (dist < 100) {
-        ctx.globalAlpha = .09 * (1 - dist/100);
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.stroke();
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
-  requestAnimationFrame(animateParticles);
-}
+const CHUCK_HTML = `<!DOCTYPE html>
+<html>
+<head>
+<base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/five-nights-at-chucks/index.html">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:">
+<title>Five Nights at Chuck E. Cheese</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<style>body{color:#fff;font-family:sans-serif;overflow:hidden;margin:0;padding:0;}:root,body.is-fullscreen{background-color:#000;}[hidden]{display:none!important;}#app,#loading,#error{position:absolute;top:0;left:0;width:100%;height:100%;}.screen{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:default;user-select:none;background-color:#000;}#loading{}.progress-bar-outer{border:1px solid currentColor;height:10px;width:200px;}.progress-bar-inner{height:100%;width:0;background-color:currentColor;}.loading-text{font-weight:normal;font-size:36px;margin:0 0 16px;}</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="loading" class="screen">
+<h1 class="loading-text">Five Nights at Chuck E. Cheese's</h1>
+<div class="progress-bar-outer"><div class="progress-bar-inner" id="loading-inner"></div></div>
+</div>
+<div id="error" class="screen" hidden>
+<h1>Error</h1>
+<details><summary id="error-message"></summary><p id="error-stack"></p></details>
+</div>
+<script src="script.js"><\/script>
+<script>
+const appElement=document.getElementById('app');
+const loadingScreen=document.getElementById('loading');
+const loadingInner=document.getElementById('loading-inner');
+const errorScreen=document.getElementById('error');
+const errorScreenMessage=document.getElementById('error-message');
+const errorScreenStack=document.getElementById('error-stack');
+const handleError=(error)=>{if(!errorScreen.hidden)return;errorScreen.hidden=false;errorScreenMessage.textContent=''+error;errorScreenStack.textContent=(error&&error.stack)||'no stack';};
+const setProgress=(progress)=>{if(loadingInner)loadingInner.style.width=progress*100+'%';};
+const interpolate=(a,b,t)=>a+t*(b-a);
+try{
+setProgress(0.1);
+const scaffolding=new Scaffolding.Scaffolding();
+scaffolding.width=480;scaffolding.height=360;scaffolding.resizeMode="preserve-ratio";
+scaffolding.editableLists=false;scaffolding.usePackagedRuntime=true;scaffolding.setup();scaffolding.appendTo(appElement);
+const vm=scaffolding.vm;
+window.scaffolding=scaffolding;window.vm=scaffolding.vm;
+scaffolding.setUsername("player####".replace(/#/g,()=>Math.floor(Math.random()*10)));
+scaffolding.setAccentColor("#ff4c4c");
+try{scaffolding.addCloudProvider(new Scaffolding.Cloud.WebSocketProvider(["wss://clouddata.turbowarp.org"],"Five Nights at Chuck E. Cheese's: Rebooted"));}catch(e){console.error(e);}
+vm.setTurboMode(true);if(vm.setFramerate)vm.setFramerate(30);
+if(vm.setCompilerOptions)vm.setCompilerOptions({enabled:true,warpTimer:false});
+scaffolding.setExtensionSecurityManager({getSandboxMode:()=>'unsandboxed',canLoadExtensionFromProject:()=>true});
+}catch(e){handleError(e);}
+<\/script>
+<script>
+const getProjectData=(function(){
+const storage=scaffolding.storage;
+storage.onprogress=(total,loaded)=>{setProgress(interpolate(0.2,0.98,loaded/total));};
+storage.addWebStore([storage.AssetType.ImageVector,storage.AssetType.ImageBitmap,storage.AssetType.Sound,storage.AssetType.Font].filter(i=>i),(asset)=>new URL('./assets/'+asset.assetId+'.'+asset.dataFormat,location).href);
+return ()=>new Promise((resolve,reject)=>{
+const xhr=new XMLHttpRequest();
+xhr.onload=()=>{resolve(xhr.response);};
+xhr.onerror=()=>{reject(new Error('Failed to load project data.'));};
+xhr.onprogress=(e)=>{if(e.lengthComputable)setProgress(interpolate(0.1,0.2,e.loaded/e.total));};
+xhr.responseType='arraybuffer';xhr.open('GET','./assets/project.json');xhr.send();
+});
+})();
+<\/script>
+<script>
+const run=async()=>{const projectData=await getProjectData();await scaffolding.loadProject(projectData);setProgress(1);loadingScreen.hidden=true;scaffolding.start();};
+run().catch(handleError);
+<\/script>
+<script type="text/javascript" src="../main.js"><\/script>
+</body>
+</html>`;
 
-resize();
-initParticles();
-animateParticles();
-window.addEventListener('resize', () => { resize(); initParticles(); });
+const HUGGY_HTML = `<!DOCTYPE html>
+<html lang="en-us">
+<base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/huggy-wuggy-shooter/index.html">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Huggy Wuggy Shooter</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="stylesheet" href="TemplateData/style.css">
+<script src="https://raw.githack.com/gn-math/assets/main/yandex-sdk.js"><\/script>
+</head>
+<body class="dark">
+<div id="unity-container" class="unity-desktop"><canvas id="unity-canvas"></canvas></div>
+<div id="loading-cover" style="display:none;">
+<div id="unity-loading-bar">
+<div id="unity-logo"><img src="logo.png"></div>
+<div id="unity-progress-bar-empty" style="display:none;"><div id="unity-progress-bar-full"></div></div>
+<div class="spinner"></div>
+</div>
+</div>
+<div id="unity-fullscreen-button" style="display:none;"></div>
+<script>
+const hideFullScreenButton="1";
+const buildUrl="Build";
+const loaderUrl=buildUrl+"/HuggyWuggyShooter_Yandex.loader.js";
+const config={
+dataUrl:buildUrl+"/HuggyWuggyShooter_Yandex.data.unityweb",
+frameworkUrl:buildUrl+"/HuggyWuggyShooter_Yandex.framework.js.unityweb",
+codeUrl:buildUrl+"/HuggyWuggyShooter_Yandex.wasm.unityweb",
+streamingAssetsUrl:"StreamingAssets",companyName:"GoGoMan",productName:"Huggy Wuggy Shooter",productVersion:"1.0.0"
+};
+const container=document.querySelector("#unity-container");
+const canvas=document.querySelector("#unity-canvas");
+const loadingCover=document.querySelector("#loading-cover");
+const progressBarEmpty=document.querySelector("#unity-progress-bar-empty");
+const progressBarFull=document.querySelector("#unity-progress-bar-full");
+const fullscreenButton=document.querySelector("#unity-fullscreen-button");
+const spinner=document.querySelector('.spinner');
+if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){container.className="unity-mobile";config.devicePixelRatio=1;}
+canvas.style.background="url('"+buildUrl+"/HuggyWuggyShooter_Yandex.jpg') center / cover";
+loadingCover.style.display="";
+const script=document.createElement("script");
+script.src=loaderUrl;
+script.onload=()=>{createUnityInstance(canvas,config,(progress)=>{spinner.style.display="none";progressBarEmpty.style.display="";progressBarFull.style.width=(100*progress)+"%";}).then((unityInstance)=>{window.unityInstance=unityInstance;loadingCover.style.display="none";}).catch((message)=>{alert(message);});};
+document.body.appendChild(script);
+YaGames.init({}).then(ysdk=>{window.sdk=ysdk;}).catch(e=>{console.log('SDK init failed',e);});
+<\/script>
+</body>
+</html>`;
+
+const INFINITE_HTML = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/vite.svg"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Infinite Craft</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<base href="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/">
+<script type="module" crossorigin src="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/assets/index-CQ1EvTOM.js"><\/script>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/assets/index-CzvCHSYC.css">
+</head>
+<body>
+<div id="root"></div>
+</body>
+</html>`;
+
+const DIDDY_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diddy Clicker</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}iframe{border:none;width:100%;height:100%}</style>
+</head>
+<body>
+<iframe src="https://pixelpad.io/app/hbqyaclmmas/?emb=1" title="Diddy Clicker" allowfullscreen allow="fullscreen"></iframe>
+</body>
+</html>`;
+
+const FNAD_HTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:transparent;font-family:system-ui,sans-serif}
+#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
+#gameFrame{width:100%;height:100%;border:0;display:block;background:#000}
+#menu-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.3s;gap:15px}
+#menu-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.menu-btn{width:220px;padding:18px 35px;border:2px solid rgba(36,214,0,0.6);border-radius:12px;background:rgba(36,214,0,0.2);color:#24D600;font-size:20px;font-weight:700;cursor:pointer;transition:all 0.2s;text-transform:uppercase;letter-spacing:1px}
+.menu-btn:hover{background:rgba(36,214,0,0.4);transform:scale(1.05)}
+#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;outline:1px solid rgba(36,214,0,0.55);transition:transform .12s,opacity .12s}
+#fs-btn svg{width:18px;height:18px;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div id="fs-root">
+<iframe id="gameFrame" src="https://html-classic.itch.zone/html/11420273/index.html" allow="fullscreen;autoplay;gamepad" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+<div id="menu-overlay">
+<button class="menu-btn" id="play-btn">Play in Site</button>
+<button class="menu-btn" id="fullscreen-btn">Fullscreen</button>
+</div>
+<button id="fs-btn" type="button">
+<svg id="icon-expand" viewBox="0 0 24 24" style="display:block;"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+<svg id="icon-exit" viewBox="0 0 24 24" style="display:none;"><path d="M9 3v6H3"></path><path d="M15 3v6h6"></path><path d="M9 21v-6H3"></path><path d="M15 21v-6h6"></path></svg>
+</button>
+</div>
+<script>
+const fsRoot=document.getElementById('fs-root'),btn=document.getElementById('fs-btn'),iconExpand=document.getElementById('icon-expand'),iconExit=document.getElementById('icon-exit');
+function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenElement);}
+function syncUI(){const on=isFS();iconExpand.style.display=on?'none':'block';iconExit.style.display=on?'block':'none';}
+btn.addEventListener('click',()=>{if(isFS()){if(document.exitFullscreen)document.exitFullscreen();}else{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});}});
+document.addEventListener('fullscreenchange',syncUI);document.addEventListener('webkitfullscreenchange',syncUI);syncUI();
+document.getElementById('play-btn').addEventListener('click',()=>{document.getElementById('menu-overlay').classList.add('hidden');});
+document.getElementById('fullscreen-btn').addEventListener('click',()=>{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});});
+<\/script>
+</body>
+</html>`;
+
+const YOU_VS_HOMER_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You vs Homer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{overflow:hidden;background:#000}
+#gameCanvas{display:none;background:linear-gradient(to bottom,#1a472a 0%,#0d3320 100%)}
+#mainMenu{width:100vw;height:100vh;background:url('https://th.bing.com/th/id/OIP.eHaGu7QXineBUO7Y4QZhhQHaEK?w=300&h=180&c=7&r=0&o=7&pid=1.7&rm=3') center/cover;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+#mainMenu::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+.menu-content{position:relative;z-index:1;text-align:center}
+h1{color:#ffeb3b;font-size:72px;text-shadow:4px 4px 8px rgba(0,0,0,0.8),-2px -2px 0 #d32f2f,2px 2px 0 #d32f2f;margin-bottom:10px;font-family:'Impact',sans-serif;letter-spacing:3px}
+.subtitle{color:#fff;font-size:18px;margin-bottom:40px}
+.menu-btn{display:block;width:250px;padding:20px;margin:15px auto;font-size:28px;font-weight:bold;border:none;border-radius:15px;cursor:pointer;text-transform:uppercase;font-family:'Impact',sans-serif}
+#playBtn{background:linear-gradient(135deg,#4caf50,#2e7d32);color:white}
+#shopBtn{background:linear-gradient(135deg,#ff9800,#f57c00);color:white}
+#shop{display:none;width:100vw;height:100vh;background:linear-gradient(135deg,#2c3e50,#34495e);padding:40px;overflow-y:auto}
+.shop-header{text-align:center;color:white;margin-bottom:30px}.shop-header h2{font-size:48px}.coins-display{font-size:32px;color:#ffd700}
+.skins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:30px;max-width:1200px;margin:0 auto}
+.skin-card{background:rgba(255,255,255,0.1);border-radius:20px;padding:20px;text-align:center;border:3px solid transparent;cursor:pointer}.skin-card.owned{border-color:#4caf50}.skin-card.selected{border-color:#2196f3}
+.skin-img{width:150px;height:150px;object-fit:contain;margin-bottom:15px}.skin-name{color:white;font-size:24px;font-weight:bold}.skin-price{color:#ffd700;font-size:28px}.skin-owned-text{color:#4caf50;font-size:24px}
+.back-btn{position:fixed;top:20px;left:20px;padding:15px 30px;font-size:20px;background:#e74c3c;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:bold}
+#gameUI{position:absolute;top:0;left:0;width:100%;padding:20px;display:flex;justify-content:space-between;pointer-events:none}
+.ui-panel{background:rgba(0,0,0,0.6);padding:15px 25px;border-radius:15px;color:white;font-size:24px;font-weight:bold}
+.round-indicator{color:#ffeb3b}.role-indicator{color:#ff5722;font-size:28px;text-transform:uppercase}
+#deathScreen{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;z-index:100}
+#deathScreen h2{color:#f44336;font-size:72px;margin-bottom:30px}.death-stats{color:white;font-size:28px;margin-bottom:40px;text-align:center}
+.menu-return-btn{padding:20px 50px;font-size:32px;background:linear-gradient(135deg,#f44336,#d32f2f);color:white;border:none;border-radius:15px;cursor:pointer;font-weight:bold}
+#monsterOverlay{display:none;position:absolute;inset:0;background:rgba(139,0,0,0.3);pointer-events:none;z-index:50}
+.victory-message{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ffd700;font-size:64px;font-weight:bold;display:none;z-index:60}
+</style>
+</head>
+<body>
+<div id="mainMenu"><div class="menu-content">
+<h1>You vs Homer</h1><p class="subtitle">Made by Rift Nova and ClassroomSpot</p>
+<button id="playBtn" class="menu-btn">Play</button>
+<button id="shopBtn" class="menu-btn">Shop</button>
+</div></div>
+<div id="shop"><button class="back-btn" onclick="showMainMenu()">Back</button>
+<div class="shop-header"><h2>Skin Shop</h2><div class="coins-display">Coins: <span id="shopCoins">0</span></div></div>
+<div class="skins-grid" id="skinsGrid"></div></div>
+<canvas id="gameCanvas"></canvas>
+<div id="gameUI" style="display:none;">
+<div class="ui-panel"><div>Round: <span id="roundDisplay" class="round-indicator">1</span></div><div style="margin-top:10px;font-size:18px;">Monster in: <span id="monsterRoundDisplay">3</span></div></div>
+<div class="ui-panel"><div id="roleDisplay" class="role-indicator">Runner</div><div style="margin-top:10px;font-size:18px;">Coins: <span id="gameCoins">0</span></div></div>
+</div>
+<div id="monsterOverlay"></div>
+<div id="victoryMessage" class="victory-message">ROUND COMPLETE!</div>
+<div id="deathScreen"><h2>You Died!</h2>
+<div class="death-stats"><div>Round: <span id="deathRound">1</span></div><div>Coins: <span id="deathCoins">0</span></div></div>
+<button class="menu-return-btn" onclick="returnToMenu()">Main Menu</button>
+</div>
+<script>
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+const pImg=new Image(),mImg=new Image(),bImg=new Image(),b3Img=new Image(),mbImg=new Image();
+pImg.crossOrigin=mImg.crossOrigin=bImg.crossOrigin=b3Img.crossOrigin=mbImg.crossOrigin='anonymous';
+pImg.src='https://tse2.mm.bing.net/th/id/OIP.89OCW3QR_4RuPGPzLorffwAAAA?pid=ImgDet&w=197&h=197&c=7&o=7&rm=3';
+mImg.src='https://tse4.mm.bing.net/th/id/OIP.k0M8bXrS6QH-pzIFTnVVXgHaLG?pid=ImgDet&w=197&h=295&c=7&o=7&rm=3';
+bImg.src='https://vignette.wikia.nocookie.net/simpsons/images/1/12/Bartman_Tapped_Out.png/revision/latest?cb=20151122175055';
+b3Img.src='https://th.bing.com/th/id/OIP.pHOZGFOlqL5Va6SwwaQSLQHaEK?w=291&h=181&c=7&r=0&o=7&pid=1.7&rm=3';
+mbImg.src='https://tse1.explicit.bing.net/th/id/OIP.WAoL4wWR3ePBTVrSQHXU9gAAAA?pid=ImgDet&w=165&h=350&c=7&o=7&rm=3';
+let gs={coins:0,round:1,isMonster:false,selectedSkin:'default',ownedSkins:['default'],gameRunning:false,player:null,bots:[],monster:null,keys:{},camera:{x:0,y:0},trees:[]};
+const skins={default:{name:'Default Bart',price:0,img:pImg},bartman:{name:'Bartman',price:60,img:bImg},bart3d:{name:'3D Bart',price:50,img:b3Img},mogbart:{name:'I Mog You Bart',price:100,img:mbImg}};
+function initTrees(){gs.trees=[];for(let i=0;i<50;i++)gs.trees.push({x:Math.random()*3000-1500,y:Math.random()*3000-1500,size:40+Math.random()*40});}
+class Ent{constructor(x,y,sz,sp,img){this.x=x;this.y=y;this.size=sz;this.speed=sp;this.img=img;this.vx=0;this.vy=0;}
+draw(ctx,cx,cy){const sx=this.x-cx+canvas.width/2,sy=this.y-cy+canvas.height/2;ctx.save();ctx.translate(sx,sy);if(this.vx<0)ctx.scale(-1,1);const aw=this.img.width/this.img.height;ctx.drawImage(this.img,-this.size*aw/2,-this.size/2,this.size*aw,this.size);ctx.restore();}
+update(){this.x+=this.vx;this.y+=this.vy;this.x=Math.max(-1400,Math.min(1400,this.x));this.y=Math.max(-1400,Math.min(1400,this.y));}}
+class Player extends Ent{constructor(){super(0,0,60,5,pImg);}
+update(){this.vx=this.vy=0;if(gs.keys['w']||gs.keys['arrowup'])this.vy=-this.speed;if(gs.keys['s']||gs.keys['arrowdown'])this.vy=this.speed;if(gs.keys['a']||gs.keys['arrowleft'])this.vx=-this.speed;if(gs.keys['d']||gs.keys['arrowright'])this.vx=this.speed;if(this.vx&&this.vy){this.vx*=0.707;this.vy*=0.707;}super.update();}}
+class Bot extends Ent{constructor(x,y,im){super(x,y,im?80:60,im?6:4,im?mImg:pImg);this.isMonster=im;this.cdt=0;this.tx=0;this.ty=0;}
+update(pl,mn){const dx=pl.x-this.x,dy=pl.y-this.y,dist=Math.sqrt(dx*dx+dy*dy);
+if(this.isMonster){if(dist<400&&!pl.isMonster){this.vx=(dx/dist)*this.speed;this.vy=(dy/dist)*this.speed;}else{this.cdt--;if(this.cdt<=0){this.tx=(Math.random()-0.5)*2000;this.ty=(Math.random()-0.5)*2000;this.cdt=60+Math.random()*60;}const td=Math.sqrt((this.tx-this.x)**2+(this.ty-this.y)**2);if(td>10){this.vx=((this.tx-this.x)/td)*this.speed*0.5;this.vy=((this.ty-this.y)/td)*this.speed*0.5;}}}
+else{if(mn&&dist<300){this.vx=(-dx/dist)*this.speed*1.5;this.vy=(-dy/dist)*this.speed*1.5;}else{this.cdt--;if(this.cdt<=0){const a=Math.random()*Math.PI*2;this.vx=Math.cos(a)*this.speed;this.vy=Math.sin(a)*this.speed;this.cdt=30+Math.random()*60;}}}
+super.update();}}
+function initGame(){gs.player=new Player();gs.bots=[];gs.monster=null;const bc=5+gs.round*2;
+if(gs.isMonster){gs.player.img=mImg;gs.player.size=80;gs.player.speed=6;document.getElementById('monsterOverlay').style.display='block';document.getElementById('roleDisplay').textContent='MONSTER';document.getElementById('roleDisplay').style.color='#f44336';for(let i=0;i<bc;i++){const a=(Math.PI*2*i)/bc,d=600+Math.random()*400;gs.bots.push(new Bot(Math.cos(a)*d,Math.sin(a)*d,false));}}
+else{gs.player.img=skins[gs.selectedSkin].img;gs.player.size=60;gs.player.speed=5;document.getElementById('monsterOverlay').style.display='none';document.getElementById('roleDisplay').textContent='RUNNER';document.getElementById('roleDisplay').style.color='#4caf50';const mb=new Bot(800,800,true);gs.monster=mb;gs.bots.push(mb);for(let i=0;i<bc-1;i++){const a=(Math.PI*2*i)/(bc-1),d=400+Math.random()*300;gs.bots.push(new Bot(Math.cos(a)*d,Math.sin(a)*d,false));}gs.bots.push(gs.player);}
+initTrees();gs.gameRunning=true;gameLoop();}
+function checkCollisions(){if(gs.isMonster){for(let i=gs.bots.length-1;i>=0;i--){const b=gs.bots[i];if(Math.sqrt((gs.player.x-b.x)**2+(gs.player.y-b.y)**2)<50){gs.bots.splice(i,1);if(gs.bots.length===0){showVictory();return;}}}}
+else if(gs.monster&&Math.sqrt((gs.player.x-gs.monster.x)**2+(gs.player.y-gs.monster.y)**2)<50)playerDied();}
+function showVictory(){gs.gameRunning=false;document.getElementById('victoryMessage').style.display='block';if(gs.isMonster){gs.coins+=10;updateCoinDisplay();}setTimeout(()=>{document.getElementById('victoryMessage').style.display='none';gs.round++;gs.isMonster=(gs.round%3===0);updateRoundDisplay();initGame();},2000);}
+function playerDied(){gs.gameRunning=false;document.getElementById('deathRound').textContent=gs.round;document.getElementById('deathCoins').textContent=gs.coins;document.getElementById('deathScreen').style.display='flex';}
+function returnToMenu(){document.getElementById('deathScreen').style.display='none';document.getElementById('gameCanvas').style.display='none';document.getElementById('gameUI').style.display='none';document.getElementById('mainMenu').style.display='flex';gs.round=1;gs.isMonster=false;updateRoundDisplay();}
+function gameLoop(){if(!gs.gameRunning)return;ctx.fillStyle='#1a472a';ctx.fillRect(0,0,canvas.width,canvas.height);gs.player.update();gs.camera.x=gs.player.x;gs.camera.y=gs.player.y;ctx.save();ctx.translate(canvas.width/2-gs.camera.x,canvas.height/2-gs.camera.y);ctx.fillStyle='#0d3320';ctx.fillRect(-1500,-1500,3000,3000);for(const t of gs.trees){ctx.fillStyle='#0f3d0f';ctx.beginPath();ctx.arc(t.x,t.y-t.size/2,t.size/2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3728';ctx.fillRect(t.x-8,t.y-10,16,25);}ctx.restore();for(const b of gs.bots){if(b!==gs.player)b.update(gs.player,gs.monster);b.draw(ctx,gs.camera.x,gs.camera.y);}gs.player.draw(ctx,gs.camera.x,gs.camera.y);checkCollisions();requestAnimationFrame(gameLoop);}
+function updateRoundDisplay(){document.getElementById('roundDisplay').textContent=gs.round;document.getElementById('monsterRoundDisplay').textContent=(3-(gs.round%3))%3||3;}
+function updateCoinDisplay(){document.getElementById('gameCoins').textContent=gs.coins;document.getElementById('shopCoins').textContent=gs.coins;}
+function showMainMenu(){document.getElementById('shop').style.display='none';document.getElementById('mainMenu').style.display='flex';}
+function initShop(){const grid=document.getElementById('skinsGrid');grid.innerHTML='';for(const[id,skin]of Object.entries(skins)){const card=document.createElement('div');card.className='skin-card'+(gs.ownedSkins.includes(id)?' owned':'')+(gs.selectedSkin===id?' selected':'');const img=document.createElement('img');img.className='skin-img';img.src=skin.img.src;const name=document.createElement('div');name.className='skin-name';name.textContent=skin.name;const price=document.createElement('div');if(gs.ownedSkins.includes(id)){price.className='skin-owned-text';price.textContent=gs.selectedSkin===id?'SELECTED':'OWNED';}else{price.className='skin-price';price.textContent=skin.price+' Coins';}card.append(img,name,price);card.onclick=()=>buySkin(id);grid.appendChild(card);}updateCoinDisplay();}
+function buySkin(id){if(gs.ownedSkins.includes(id)){gs.selectedSkin=id;initShop();return;}const skin=skins[id];if(gs.coins>=skin.price){gs.coins-=skin.price;gs.ownedSkins.push(id);gs.selectedSkin=id;updateCoinDisplay();initShop();}else alert('Not enough coins!');}
+document.getElementById('playBtn').onclick=()=>{document.getElementById('mainMenu').style.display='none';document.getElementById('gameCanvas').style.display='block';document.getElementById('gameUI').style.display='flex';updateRoundDisplay();updateCoinDisplay();initGame();};
+document.getElementById('shopBtn').onclick=()=>{document.getElementById('mainMenu').style.display='none';document.getElementById('shop').style.display='block';initShop();};
+window.addEventListener('keydown',e=>gs.keys[e.key.toLowerCase()]=true);
+window.addEventListener('keyup',e=>gs.keys[e.key.toLowerCase()]=false);
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+<\/script>
+</body>
+</html>`;
+
+const pCanvas = document.getElementById('particleCanvas');
+const pCtx = pCanvas.getContext('2d');
+let particles = [];
 
 function resizeCanvas() {
-  const newH = document.body.scrollHeight;
-  if (newH !== H) { H = canvas.height = newH; initParticles(); }
+  pCanvas.width = window.innerWidth;
+  pCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() { this.reset(true); }
+  reset(init) {
+    this.x = Math.random() * pCanvas.width;
+    this.y = init ? Math.random() * pCanvas.height : pCanvas.height + 5;
+    this.size = Math.random() * 1.8 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.25;
+    this.speedY = -(Math.random() * 0.5 + 0.15);
+    this.alpha = Math.random() * 0.45 + 0.1;
+    this.hue = 210 + Math.random() * 30;
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.y < -8) this.reset(false);
+  }
+  draw() {
+    pCtx.globalAlpha = this.alpha;
+    pCtx.fillStyle = `hsl(${this.hue},90%,65%)`;
+    pCtx.beginPath();
+    pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    pCtx.fill();
+  }
 }
 
-const gamesEl = document.getElementById("games");
-const searchEl = document.getElementById("search");
-const totalEl = document.getElementById("total");
-const previewOverlay = document.getElementById("previewOverlay");
-const previewFrame = document.getElementById("previewFrame");
-const previewTitle = document.getElementById("previewTitle");
+for (let i = 0; i < 120; i++) particles.push(new Particle());
 
-const ZONES = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
-const COVER = "https://cdn.jsdelivr.net/gh/gn-math/covers@main/";
-const HTML  = "https://cdn.jsdelivr.net/gh/gn-math/html@main/";
+function animateParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  pCtx.globalAlpha = 1;
+  particles.forEach(p => { p.update(); p.draw(); });
+  pCtx.globalAlpha = 1;
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
 
-function openPreview(htmlContent, title) {
-  previewTitle.textContent = title || "Game Preview";
-  previewOverlay.classList.add('active');
-  previewFrame.srcdoc = htmlContent;
-}
-function closePreview() {
-  previewOverlay.classList.remove('active');
-  previewFrame.srcdoc = '';
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && previewOverlay.classList.contains('active')) closePreview();
+const cursorDot = document.getElementById('cursor-dot');
+document.addEventListener('mousemove', e => {
+  cursorDot.style.left = e.clientX + 'px';
+  cursorDot.style.top = e.clientY + 'px';
 });
 
-const NOAH_GAMES = [
-  { title: "Alien Hominid", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/393.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/382.png" },
-  { title: "Customer Support", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/383.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/383.jpg" },
-  { title: "The Deadseat", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/395.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/384.jpg" },
-  { title: "Fireboy & Watergirl: Forest Temple", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/385.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/385.jpg" },
-  { title: "Deltatraveler", url: "https://script.google.com/macros/s/AKfycbx137PRDh0Of0SDaXqu2fKaJ8Ht8Os5Nabi3xeIWYs_dCA0jP4SKRjQ9P9nC1xeruWK/exec?game=388", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/386.jpg" },
-  { title: "Needy Streamer Overload", url: "https://script.google.com/macros/s/AKfycbx137PRDh0Of0SDaXqu2fKaJ8Ht8Os5Nabi3xeIWYs_dCA0jP4SKRjQ9P9nC1xeruWK/exec?game=389", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/387.jpg" },
-  { title: "Pizza Tower", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/394.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/388.png" },
-  { title: "TileTopia", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/391.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/389.png" },
-  { title: "Earn to Die", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/378.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/378.jpg" },
-  { title: "Earn to Die 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/379.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/379.jpg" },
-  { title: "Bart Blast", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/380.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/380.jpg" },
-  { title: "Bendy and the Ink Machine", url: "https://script.google.com/macros/s/AKfycby_6uwHt90FuvgGfTLTHhveJVw0nEJ_bMxq8GTaA1KjFfpmu0g08RlArFt61GAw7WOw/exec?game=374", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/374.jpg" },
-  { title: "Gacha Life", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/375.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/375.jpg" },
-  { title: "Gacha Verse", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/376.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/376.jpg" },
-  { title: "Tung Sahur Horror", url: "https://script.google.com/macros/s/AKfycby_6uwHt90FuvgGfTLTHhveJVw0nEJ_bMxq8GTaA1KjFfpmu0g08RlArFt61GAw7WOw/exec?game=377", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/377.jpg" },
-  { title: "Horror Tale", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/373.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/373.jpg" },
-  { title: "Dumb Ways to Die", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/372.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/images/372.jpg" },
-  { title: "Bloons Tower Defense 1", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/367.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/367.jpg" },
-  { title: "Bloons Tower Defense 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/368.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/368.jpg" },
-  { title: "Bloons Tower Defense 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/369.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/369.jpg" },
-  { title: "Bloons Tower Defense 4", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/370.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/370.jpg" },
-  { title: "Bloons Tower Defense 5", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/371.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/371.jpg" },
-  { title: "Brotato", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/366.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/366.jpg" },
-  { title: "Endoparasitic 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/365.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/365.jpg" },
-  { title: "Endoparasitic", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/364.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/364.jpg" },
-  { title: "Baby Sniper In Vietnam", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/363.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/363.jpg" },
-  { title: "Shift at Midnight", url: "https://script.google.com/macros/s/AKfycbxbf7DaEtTxZVBBPow6r-L0q2mvgkI4D7xYUU-_sbldBlrXfiB4jK1f4ACNiR0LPuCt/exec?game=362.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/356.jpg" },
-  { title: "Road of Fury", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/361.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/355.jpg" },
-  { title: "Roulette Hero", url: "https://script.google.com/macros/s/AKfycbxbf7DaEtTxZVBBPow6r-L0q2mvgkI4D7xYUU-_sbldBlrXfiB4jK1f4ACNiR0LPuCt/exec?game=360.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/354.jpg" },
-  { title: "Fear Assessment", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/359.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/353.png" },
-  { title: "Dimension Incident", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/358.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/352.jpg" },
-  { title: "Raldi's Crackhouse", url: "https://script.google.com/macros/s/AKfycbxbf7DaEtTxZVBBPow6r-L0q2mvgkI4D7xYUU-_sbldBlrXfiB4jK1f4ACNiR0LPuCt/exec?game=357.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/360.jpg" },
-  { title: "Christmas Massacre", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/356.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/359.jpg" },
-  { title: "Boxing Random", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/355.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/358.jpg" },
-  { title: "Volley Random", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/354.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/357.jpg" },
-  { title: "Basket Random", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/353.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/362.png" },
-  { title: "Soccer Random", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/352.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/361.jpg" },
-  { title: "Little Big Planet", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/351.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/images/351.jpg" },
-  { title: "Binding of Isaac: Rebirth", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/350.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/350.jpg" },
-  { title: "Littlest Pet Shop City Friends", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/348.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/349.jpg" },
-  { title: "Cloverpit", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=342.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/343.jpg" },
-  { title: "Peaks of Yore", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/343.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/344.jpg" },
-  { title: "Silent Hill", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/344.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/345.jpg" },
-  { title: "Dad 'n Me", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/345.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/346.jpg" },
-  { title: "Five Nights at Candy's", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/346.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/347.jpg" },
-  { title: "Five Nights at Candy's 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/347.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/348.jpg" },
-  { title: "Untitled Goose Game", url: "https://script.google.com/macros/s/AKfycbzyj-ClxB2ouG-p6WKb1f3vRqmapP4DA9kn9ZHPRYQ1d9_Ynk4nMOjyLpceGUfaTKFB/exec?game=341.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/342.jpg" },
-  { title: "Deltarune Ch. 3 & 4", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/340.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/341.jpg" },
-  { title: "Earthbound", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/339.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/340.jpg" },
-  { title: "Hamtaro: Ham-Ham Heartbreak", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/336.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/337.jpg" },
-  { title: "Class of '09", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=337.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/338.jpg" },
-  { title: "Antonblast", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/338.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/339.jpg" },
-  { title: "Super Monkey Ball", url: "https://rawcdn.githack.com/slqntdevss/quasar/main/public/assets/storage/html/smb/index.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/336.jpg" },
-  { title: "Iron Lung", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=306.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/328.jpg" },
-  { title: "Superhot", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/299.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/321.jpg" },
-  { title: "OMORI", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=290.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/312.jpg" },
-  { title: "Fear & Hunger", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=305.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/327.jpg" },
-  { title: "Doodle Jump", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=298.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/320.jpg" },
-  { title: "Karlson", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/289.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/311.jpg" },
-  { title: "Toss The Turtle", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/311.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/334.jpg" },
-  { title: "Survivor.io", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=310.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/333.jpg" },
-  { title: "People Playground", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=309.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/332.jpg" },
-  { title: "Papers, Please", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=308.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/331.jpg" },
-  { title: "Scrap Divers", url: "https://rawcdn.githack.com/gameinclassroom/scrap-divers/a856e0b0dfafba00718e3b8dd05976376bf2b71b/index.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/330.jpg" },
-  { title: "Beeswarm Simulator", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/312.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/335.jpg" },
-  { title: "Time Shooter 3: SWAT", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/303.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/325.jpg" },
-  { title: "Time Shooter 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/302.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/324.jpg" },
-  { title: "Time Shooter 1", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/301.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/323.jpg" },
-  { title: "The Man From The Window", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/293.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/315.jpg" },
-  { title: "Real Flight Simulator", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/294.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/316.jpg" },
-  { title: "Johnny Trigger", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/288.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/310.jpg" },
-  { title: "Kirby Soft & Wet", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/292.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/314.jpg" },
-  { title: "VS Rewrite: ROUND 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/304.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/326.jpg" },
-  { title: "Speed Stars", url: "https://rawcdn.githack.com/BeezBumba/SpeedStarsv2/67d3a926357cf35e2a2efc5ac5fc29c786c8cbda/index.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/317.jpg" },
-  { title: "Stickman Destruction", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/296.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/318.jpg" },
-  { title: "Stickman Fight Ragdoll", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/297.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/319.jpg" },
-  { title: "Gobble", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/291.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/313.jpg" },
-  { title: "Tag", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/300.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/322.png" },
-  { title: "BitPlanes", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/307.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/329.jpg" },
-  { title: "Half Life: Opposing Force", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/269.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/296.jpg" },
-  { title: "A Difficult Game About Climbing", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=172.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/294.jpg" },
-  { title: "Stick War Legacy", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=171.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/293.jpg" },
-  { title: "Buster Jam", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/170.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/292.jpg" },
-  { title: "Dungeons & Degenerate Gamblers", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/173.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/295.jpg" },
-  { title: "Minecraft 1.12.1", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/164.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/291.jpg" },
-  { title: "Gorilla Tag", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=161.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/289.jpg" },
-  { title: "Goblin Goopmaxxing", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/160.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/288.jpg" },
-  { title: "Midnight Shift", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/159.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/287.jpg" },
-  { title: "Orange Roulette", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/158.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/286.jpg" },
-  { title: "Five Nights at Winstons", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/157.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/285.jpg" },
-  { title: "Final Fantasy VII", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/156.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/284.jpg" },
-  { title: "Please Dont Touch Anything", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/155.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/283.jpg" },
-  { title: "Minesweeper Classic", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/162.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/290.jpg" },
-  { title: "Doom 3", url: "https://doom3kaidensarcade.netlify.app/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/282.jpg" },
-  { title: "Slendy Tubbies", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/273.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/281.jpg" },
-  { title: "Pixel Gun 3D", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/272.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/280.jpg" },
-  { title: "Flying Gorilla", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/271.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/279.jpg" },
-  { title: "Eat The Rich", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/270.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/278.jpg" },
-  { title: "Grand Theft Auto Vice City", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/149.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/272.jpg" },
-  { title: "Heretic", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/150.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/273.jpg" },
-  { title: "Bacon May Die", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/151.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/274.jpg" },
-  { title: "Oneshot", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/152.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/275.jpg" },
-  { title: "Jelly Drift", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/153.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/276.jpg" },
-  { title: "FNF Rewrite", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/154.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/277.jpg" },
-  { title: "Terraria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/165.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/271.jpg" },
-  { title: "Celeste", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/147.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/270.jpg" },
-  { title: "Burrito Bison", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/267.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/130.jpg" },
-  { title: "Tanuki Sunset", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/146.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/269.jpg" },
-  { title: "SwordFight!!", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=145.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/268.jpg" },
-  { title: "Station Saturn", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=144.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/267.jpg" },
-  { title: "Spelunky Classic HD", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/143.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/266.jpg" },
-  { title: "Sonic.EXE", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/142.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/265.jpg" },
-  { title: "Minesweeper Plus", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/141.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/264.jpg" },
-  { title: "Kitty Toy", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/140.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/263.jpg" },
-  { title: "Happy Wheels", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/139.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/174.jpg" },
-  { title: "Google Feud", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/138.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/262.jpg" },
-  { title: "Basketball Stars", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/137.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/261.jpg" },
-  { title: "Daggerfall", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/136.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/252.jpg" },
-  { title: "Portal", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/135.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/253.jpg" },
-  { title: "Ice Dodo", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/134.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/254.jpg" },
-  { title: "Doom", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/133.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/255.jpg" },
-  { title: "Doom 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/257.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/257.jpg" },
-  { title: "Call of Duty: World at War", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/130.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/258.jpg" },
-  { title: "Call of Duty 4: Modern Warfare", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/129.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/259.jpg" },
-  { title: "Kart Bros", url: "https://kartbros.io/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/260.jpg" },
-  { title: "Peggle", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=127.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/251.jpg" },
-  { title: "Ace Attorney", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/126.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/250.jpg" },
-  { title: "FNF Agoti", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/125.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/249.jpg" },
-  { title: "FNF Black Betrayal", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/124.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/248.jpg" },
-  { title: "FNF B-Side", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/123.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/247.jpg" },
-  { title: "FNF Camellia", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/122.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/246.jpg" },
-  { title: "FNF Impostor V4", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/121.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/245.jpg" },
-  { title: "FNF Indie Cross", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/120.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/244.jpg" },
-  { title: "FNF Kapi", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/119.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/243.jpg" },
-  { title: "FNF Mario Madness", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/118.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/242.jpg" },
-  { title: "FNF Pibby Apocalypse", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/117.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/241.jpg" },
-  { title: "FNF Shaggy X Matt", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/116.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/240.jpg" },
-  { title: "FNF Sonic.exe", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/115.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/239.jpg" },
-  { title: "FNF Garcello", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/114.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/238.jpg" },
-  { title: "FNF Hit Single", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/113.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/237.jpg" },
-  { title: "Papa's Donuteria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/275.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/297.jpg" },
-  { title: "Papa's Burgeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/276.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/298.jpg" },
-  { title: "Papa's Cheeseria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/277.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/299.png" },
-  { title: "Papa's Cupcakeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/278.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/300.jpg" },
-  { title: "Papa's Freezeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/279.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/301.jpg" },
-  { title: "Papa's Hot Doggeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/280.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/302.jpg" },
-  { title: "Papa's Pancakeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/281.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/303.jpg" },
-  { title: "Papa's Pastaria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/282.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/304.jpg" },
-  { title: "Papa's Scooperia", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/283.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/305.jpg" },
-  { title: "Papa's Sushiria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/284.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/306.jpg" },
-  { title: "Papa's Taco Mia", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/285.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/307.jpg" },
-  { title: "Papa's Wingeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/286.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/308.png" },
-  { title: "Papa's Pizzeria", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/287.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/309.jpg" },
-  { title: "Achilles 2", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=112.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/236.jpg" },
-  { title: "Russian Counter Strike", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=111.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/235.jpg" },
-  { title: "Deltarune", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/110.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/234.jpg" },
-  { title: "Learn to Fly 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/109.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/233.jpg" },
-  { title: "Lego Batman 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/108.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/232.jpg" },
-  { title: "Lego Star Wars Complete Saga", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/107.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/231.jpg" },
-  { title: "Madness Interactive", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/106.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/230.jpg" },
-  { title: "Tony Hawks Pro Skater", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/105.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/229.jpg" },
-  { title: "Postal", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/104.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/228.jpg" },
-  { title: "Resident Evil 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/103.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/227.jpg" },
-  { title: "Scribblenauts", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/102.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/226.jpg" },
-  { title: "Sprunki", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/101.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/225.jpg" },
-  { title: "Strange Rope Police", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/100.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/224.jpg" },
-  { title: "Street Fighter III", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/99.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/223.jpg" },
-  { title: "Super Liquid Soccer", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/98.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/222.jpg" },
-  { title: "Tempoverdose", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/97.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/221.jpg" },
-  { title: "Abandoned", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/96.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/220.jpg" },
-  { title: "Plants vs Zombies 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/92.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/197.jpg" },
-  { title: "Hotline Miami", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/16.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/22.jpg" },
-  { title: "Balatro", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/268.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/195.jpg" },
-  { title: "Wolfenstein 3D", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/95.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/219.jpg" },
-  { title: "Zombotron Reboot", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/94.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/218.jpg" },
-  { title: "Mortal Kombat 4", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/93.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/fuckthis.jpg" },
-  { title: "Undertale", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/91.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/217.jpg" },
-  { title: "Zelda: Majora's Mask", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/90.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/216.jpg" },
-  { title: "Cooking Mama 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/89.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/215.jpg" },
-  { title: "Cooking Mama 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/88.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/214.jpg" },
-  { title: "Cooking Mama", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/87.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/213.jpg" },
-  { title: "BloodMoney", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/86.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/212.jpg" },
-  { title: "Big Shot Boxing", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/85.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/211.jpg" },
-  { title: "Assessment Examination", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/84.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/210.jpg" },
-  { title: "Schoolboy Runaway", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=83.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/209.jpg" },
-  { title: "Fears to Fathom: Home Alone", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/82.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/208.jpg" },
-  { title: "Dan The Man", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/81.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/207.jpg" },
-  { title: "Resident Evil 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/80.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/205.jpg" },
-  { title: "Get Yoked", url: "https://rawcdn.githack.com/ahrdevelopers/get-yoked-extreme-bodybuilding/5584024f6f0dc9fed26b21529b7578057d306fd5/index.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/204.jpg" },
-  { title: "Douche Bag Life", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=78.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/203.jpg" },
-  { title: "Donkey Kong", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/77.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/202.jpg" },
-  { title: "Apple Worm", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/75.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/201.jpg" },
-  { title: "Chess", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/74.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/200.jpg" },
-  { title: "Doki Doki Literature Club", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/73.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/199.jpg" },
-  { title: "Getting Over It", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=72.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/198.jpg" },
-  { title: "Toca Boca World", url: "https://ud-gles3games.shared-osj.k8s.n2i.io/?deeplinksURI=null%3A%2F%2F&deeplinksApp=com.tocaboca.tocalifeworld&quotaBytes=89000000&naturalOrientation=portrait&invertNaturalOrientation&forcedNaturalOrientation&jitterBufferMin=0&deeplinksService=true&backOnDisconnected=true&disconnectedMessage=null&api=%7B%22back%22%3Afalse%7D&title=Toca+Boca+World", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/206.jpg" },
-  { title: "Tattletail", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/71.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/196.jpg" },
-  { title: "Sonic the Hedgehog 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/69.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/189.jpg" },
-  { title: "Sonic the Hedgehog 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/68.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/190.jpg" },
-  { title: "Sonic Mania", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/67.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/191.jpg" },
-  { title: "Sonic CD", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/66.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/192.jpg" },
-  { title: "War The Knights", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=70.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/193.jpg" },
-  { title: "Football Bros", url: "https://fb.crispyclean.org/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/194.jpg" },
-  { title: "Buckshot Roulette", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/63.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/187.jpg" },
-  { title: "Cup Head", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/266.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/188.jpg" },
-  { title: "Slime Rancher", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/64.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/186.jpg" },
-  { title: "FNAF: Pizza Sim", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/1.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/1.jpg" },
-  { title: "Baseball Bros", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/265.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/2.jpg" },
-  { title: "A Dance of Fire and Ice", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/3.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/3.jpg" },
-  { title: "Smashy Kart", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/264.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/4.jpg" },
-  { title: "Deepest Sword", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/263.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/8.jpg" },
-  { title: "Tomodachi Life", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/5.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/9.jpg" },
-  { title: "FNAF: Sister Location", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/6.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/10.jpg" },
-  { title: "Fallout", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/7.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/11.jpg" },
-  { title: "Rocket League", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/262.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/12.jpg" },
-  { title: "Street Fighter II", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/261.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/13.jpg" },
-  { title: "Bad Piggies", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/10.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/16.jpg" },
-  { title: "Among Us (real)", url: "https://ud-gles3games.shared-osj.k8s.n2i.io/?deeplinksURI=null%3A%2F%2F&deeplinksApp=com.innersloth.spacemafia&naturalOrientation=landscape&forcedNaturalOrientation&autofitOnConnect&jitterBufferMin=0&deeplinksService=true&backOnDisconnected=true&disconnectedMessage=null&api=%7B%22back%22%3Afalse%7D&title=Among+Us", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/17.jpg" },
-  { title: "Yandere Simulator", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/12.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/18.jpg" },
-  { title: "Quake III", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=14.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/20.jpg" },
-  { title: "10 Minutes Till Dawn", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/15.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/21.jpg" },
-  { title: "Nubby's Number Factory", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/17.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/23.jpg" },
-  { title: "Death Run 3D", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/19.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/25.jpg" },
-  { title: "Clash Royale", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/andurdingus.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/26.jpg" },
-  { title: "PaRappa The Rapper", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/22.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/27.jpg" },
-  { title: "Hollow Knight", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=23.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/28.jpg" },
-  { title: "Binding of Isaac WOTL", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=24.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/29.jpg" },
-  { title: "Angry Birds", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=29.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/34.jpg" },
-  { title: "FNAF: World", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/30.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/36.jpg" },
-  { title: "Solar Smash", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=31.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/37.jpg" },
-  { title: "Idle Mining Empire", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/260.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/37.jpg" },
-  { title: "Bounce Masters", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/33.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/39.jpg" },
-  { title: "Raft", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/35.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/41.jpg" },
-  { title: "Slender", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/37.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/43.jpg" },
-  { title: "Kindergarten 3", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=39.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/45.jpg" },
-  { title: "Kindergarten 2", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=40.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/46.jpg" },
-  { title: "Kindergarten", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=41.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/47.jpg" },
-  { title: "Granny 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/259.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/48.jpg" },
-  { title: "Granny 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/258.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/49.jpg" },
-  { title: "Granny", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/257.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/50.jpg" },
-  { title: "Baldi's Basics", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=43.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/52.jpg" },
-  { title: "Candy Crush", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/45.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/54.jpg" },
-  { title: "Geometry Dash", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/46.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/55.jpg" },
-  { title: "That's Not My Neighbor", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/47.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/56.jpg" },
-  { title: "ULTRAKILL", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=48.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/57.jpg" },
-  { title: "WebFishing", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/49.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/58.jpg" },
-  { title: "Super Falling Fred", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/256.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/59.jpg" },
-  { title: "Pokemon Emerald", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/255.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/62.jpg" },
-  { title: "Impossible Quiz 2", url: "https://xoriushourz.github.io/ImpossibleQuiz2/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/63.jpg" },
-  { title: "Super Smash Flash 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/253.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/64.jpg" },
-  { title: "Idle Breakout", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/252.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/65.jpg" },
-  { title: "Gun Mayhem 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/251.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/66.jpg" },
-  { title: "Gun Mayhem", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/250.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/67.jpg" },
-  { title: "Big Tower Tiny Square", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/249.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/68.jpg" },
-  { title: "Big Tower Tiny Square 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/248.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/69.jpg" },
-  { title: "Pokemon Firered", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/247.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/72.jpg" },
-  { title: "Stake Mines", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/246.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/73.jpg" },
-  { title: "Blumgi Rocket", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/245.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/74.jpg" },
-  { title: "Raft Wars 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/244.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/75.jpg" },
-  { title: "8Ball Pool", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/243.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/79.jpg" },
-  { title: "Escape Road", url: "https://raw.githack.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/master/games/242.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/81.jpg" },
-  { title: "OvO", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/241.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/82.jpg" },
-  { title: "Fruit Ninja", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/240.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/84.jpg" },
-  { title: "They're Coming", url: "https://raw.githack.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/d689b42d2c441f234879d5e4da51fc61f07b078d/games/52.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/86.jpg" },
-  { title: "Flappy Bird", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/239.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/87.jpg" },
-  { title: "Recoil", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/238.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/88.jpg" },
-  { title: "Twitch Tetris", url: "https://godlover89.github.io/Twitch-Tetris/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/89.jpg" },
-  { title: "Ultimate Car Driving", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/237.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/90.jpg" },
-  { title: "Crazy Cattle 3D", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/236.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/91.jpg" },
-  { title: "Run 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/235.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/92.jpg" },
-  { title: "Vex 8", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/234.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/93.jpg" },
-  { title: "Apple Shooter", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/233.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/94.jpg" },
-  { title: "Running Fred", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/232.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/95.jpg" },
-  { title: "Jelly Truck", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/230.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/97.jpg" },
-  { title: "Rooftop Snipers 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/229.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/98.jpg" },
-  { title: "Hole.io", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/228.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/100.jpg" },
-  { title: "Wrassling", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/227.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/102.jpg" },
-  { title: "Level Devil", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/225.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/105.jpg" },
-  { title: "Temple Run 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/224.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/106.jpg" },
-  { title: "Boxing Live 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/223.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/107.jpg" },
-  { title: "Super Mario 64", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/222.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/109.jpg" },
-  { title: "Wheelie Bike 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/221.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/111.jpg" },
-  { title: "Bloxorz", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/219.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/113.jpg" },
-  { title: "World's Hardest Game", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/218.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/115.jpg" },
-  { title: "Impossible Quiz", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/217.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/117.jpg" },
-  { title: "Stickman Hook", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/216.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/118.jpg" },
-  { title: "Rio Rex", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/215.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/119.jpg" },
-  { title: "Stacktris", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/214.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/123.jpg" },
-  { title: "Plinko", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/213.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/125.jpg" },
-  { title: "Blocky Snakes", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/212.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/127.jpg" },
-  { title: "Crossy Road", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/211.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/128.jpg" },
-  { title: "Happy Room", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/210.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/129.jpg" },
-  { title: "Zombocalypse 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/209.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/131.jpg" },
-  { title: "Backrooms", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/208.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/134.jpg" },
-  { title: "Getaway Shootout", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/207.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/135.jpg" },
-  { title: "Snow Rider 3D", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/206.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/136.jpg" },
-  { title: "Gladihoppers", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/205.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/137.jpg" },
-  { title: "Paper.io 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/204.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/138.jpg" },
-  { title: "Poly Track", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/203.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/139.jpg" },
-  { title: "Club Penguin", url: "https://play.cplegacy.com/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/140.jpg" },
-  { title: "Ragdoll Hit", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/202.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/142.jpg" },
-  { title: "Gun Spin", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/201.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/143.jpg" },
-  { title: "Subway Surfers", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/200.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/145.jpg" },
-  { title: "Block Blast", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/199.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/146.jpg" },
-  { title: "Plants vs Zombies", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/197.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/148.jpg" },
-  { title: "Drift Boss", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/196.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/150.jpg" },
-  { title: "Friday Night Funkin", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/195.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/151.jpg" },
-  { title: "COD Nazi Zombies Portable", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/194.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/152.jpg" },
-  { title: "Adventure Capitalist", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/193.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/153.jpg" },
-  { title: "1v1.lol", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=313.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/154.jpg" },
-  { title: "Ragdoll Archers", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/192.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/155.jpg" },
-  { title: "Retro Bowl", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/191.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/158.jpg" },
-  { title: "Half Life", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/190.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/159.jpg" },
-  { title: "Jetpack Joyride", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/189.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/160.jpg" },
-  { title: "Bloons TD 4", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/188.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/161.jpg" },
-  { title: "Sand Game", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/187.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/162.jpg" },
-  { title: "FNAF", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/166.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/164.jpg" },
-  { title: "FNAF 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/167.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/165.jpg" },
-  { title: "FNAF 3", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/168.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/166.jpg" },
-  { title: "FNAF 4", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/169.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/167.jpg" },
-  { title: "Tiny Fishing", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/185.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/169.jpg" },
-  { title: "Chrome Dino", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/184.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/170.jpg" },
-  { title: "Dodge Ball", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/dskadlwasdmw-a@main/Dodge%20Ball%20(4).html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/171.jpg" },
-  { title: "Age of War 2", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/183.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/172.jpg" },
-  { title: "Slope", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/182.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/175.jpg" },
-  { title: "Sprinter", url: "https://noahsamazingtutoringhelp.github.io/sprinter/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/176.jpg" },
-  { title: "Cookie Clicker", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/181.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/177.jpg" },
-  { title: "Bitlife", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/180.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/178.jpg" },
-  { title: "Drift Hunters", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/179.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/179.jpg" },
-  { title: "Cut The Rope", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/178.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/180.jpg" },
-  { title: "Sort The Court", url: "https://noahsamazingtutoringhelp.github.io/skdpiwjamoksld/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/181.jpg" },
-  { title: "Tomb of the Mask", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/177.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/182.jpg" },
-  { title: "Wordle", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/176.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/183.jpg" },
-  { title: "Monkey Mart", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/175.html", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/184.jpg" },
-  { title: "Thorns and Balloons", url: "https://noahsamazingtutoringhelp.github.io/ScienceStudyBuddy/", image: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/144.jpg" }
+function showSection(id, btn) {
+  document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'games') loadGames();
+  if (id === 'apps') {
+    const af = document.getElementById('appsFrame');
+    if (!af.srcdoc) af.srcdoc = APPS_HTML;
+  }
+  if (id !== 'movies') {
+    document.getElementById('moviesMenu').style.display = 'flex';
+    document.getElementById('moviesEmbed').style.display = 'none';
+    const mf = document.getElementById('moviesFrame');
+    mf.removeAttribute('srcdoc');
+    mf.src = '';
+  }
+}
+
+const ZONES_URL = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
+const COVER_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main/";
+const HTML_BASE = "https://cdn.jsdelivr.net/gh/gn-math/html@main/";
+
+let gamesLoaded = false;
+let allApiGames = [];
+
+const CUSTOM_GAMES = [
+  { name: "You vs Homer", img: "https://th.bing.com/th/id/OIP.JCQBwdKfAnwpnWQ_q5SEnAHaHa?w=185&h=185&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3", html: YOU_VS_HOMER_HTML },
+  { name: "Five Nights at Diddy's", img: "https://th.bing.com/th/id/OIP.DqnlEJUKyWosLdf5IPfxCwHaHa?w=173&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3", html: FNAD_HTML },
+  { name: "Diddy Clicker", img: "https://static.wixstatic.com/media/9e5285_44db8984f22a4407965002ffb267a1e0~mv2.jpg/v1/fill/w_144,h_80,al_c,q_80,usm_0.66_1.00_0.01/9e5285_44db8984f22a4407965002ffb267a1e0~mv2.jpg", html: DIDDY_HTML },
+  { name: "Epstein Clicker", img: "https://static.wixstatic.com/media/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg/v1/fill/w_144,h_144,al_c,q_80,usm_0.66_1.00_0.01/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg", html: EPSTEIN_HTML },
+  { name: "Cat Mario", img: "https://i.ytimg.com/vi/hCvEUROjAN4/hq720.jpg", html: CAT_MARIO_HTML },
+  { name: "Capybara Clicker", img: "https://static.wixstatic.com/media/9e5285_8478d28e28484b3c92018d1b7f77c1b7~mv2.jpg/v1/fill/w_144,h_144,al_c,q_80,usm_0.66_1.00_0.01/9e5285_8478d28e28484b3c92018d1b7f77c1b7~mv2.jpg", html: CAPYBARA_HTML },
+  { name: "Dark Man 3D", img: "https://i.ytimg.com/vi/enlBfF0dM2A/hq720.jpg", html: DARK_MAN_HTML },
+  { name: "Five Nights at Baldi's", img: "https://i.ytimg.com/vi/ecw04v7aqmw/maxresdefault.jpg", html: FNAB_HTML },
+  { name: "GTA 5 Remake", img: "https://i.ytimg.com/vi/MSpnhyTj7WI/hq720.jpg", html: GTA_HTML },
+  { name: "Five Nights at Chuck E. Cheese", img: "https://i.ytimg.com/vi/RhC6eImoPgI/hq720.jpg", html: CHUCK_HTML },
+  { name: "Huggy Wuggy Shooter", img: "https://i.ytimg.com/vi/GeKT477blYM/hq720.jpg", html: HUGGY_HTML },
+  { name: "Infinite Craft", img: "http://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/8f/a6/51/8fa6513d-1dd5-3976-0c3c-0a272ad08584/AppIcon-0-0-1x_U007epad-0-85-220.png/1200x630wa.png", html: INFINITE_HTML },
+  { name: "Roblox", img: "https://tse3.mm.bing.net/th/id/OIP.Suu0wkaP6duvpXY_gWJucgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://nevertraveling.thepresenttraveller.com/gamefile/nowgg/roblox.html?prefix=149" },
+  { name: "GTA Vice City", img: "https://tse2.mm.bing.net/th/id/OIP.T6kQS4BQ4CCT6jlXGtAuDgHaE7?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://youcantpoopme.b-cdn.net/gtavc.html" }
 ];
 
-function makeCard(title, imageUrl, onClickFn) {
-  const card = document.createElement("div");
-  card.className = "game-card";
-  if (imageUrl) card.style.backgroundImage = "url(" + imageUrl + ")";
-  const label = document.createElement("div");
-  label.className = "game-name";
-  label.textContent = title;
-  card.appendChild(label);
-  card.onclick = onClickFn;
-  return card;
+const NOAH_GAMES = [
+  { name: "Alien Hominid", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/382.png", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/393.html" },
+  { name: "Fireboy & Watergirl", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/385.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/385.html" },
+  { name: "Pizza Tower", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/388.png", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/394.html" },
+  { name: "Earn to Die", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/378.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/378.html" },
+  { name: "Earn to Die 2", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/379.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/379.html" },
+  { name: "Brotato", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/366.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/366.html" },
+  { name: "Bloons TD 1", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/367.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/367.html" },
+  { name: "Bloons TD 2", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/368.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/368.html" },
+  { name: "Bloons TD 3", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/369.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/369.html" },
+  { name: "Bloons TD 4", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/370.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/370.html" },
+  { name: "Bloons TD 5", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/371.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/371.html" },
+  { name: "Dumb Ways to Die", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/images/372.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/372.html" },
+  { name: "Deltarune Ch. 3 & 4", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/341.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/340.html" },
+  { name: "Celeste", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/270.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/147.html" },
+  { name: "Terraria", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/271.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/165.html" },
+  { name: "Superhot", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/321.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/299.html" },
+  { name: "Hotline Miami", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/22.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/16.html" },
+  { name: "Balatro", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/195.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/268.html" },
+  { name: "Buckshot Roulette", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/187.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/63.html" },
+  { name: "Undertale", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/217.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/91.html" },
+  { name: "Happy Wheels", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/174.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/139.html" },
+  { name: "Doom", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/255.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/133.html" },
+  { name: "Portal", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/253.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/135.html" },
+  { name: "Minecraft 1.12.1", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/291.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/164.html" },
+  { name: "FNAF", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/164.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/166.html" },
+  { name: "FNAF 2", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/165.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/167.html" },
+  { name: "FNAF 3", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/166.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/168.html" },
+  { name: "FNAF 4", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/167.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/169.html" },
+  { name: "Geometry Dash", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/55.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/46.html" },
+  { name: "Cookie Clicker", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/177.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/181.html" },
+  { name: "Slope", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/175.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/182.html" },
+  { name: "Run 3", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/92.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/235.html" },
+  { name: "Super Mario 64", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/109.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/222.html" },
+  { name: "Poly Track", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/139.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/203.html" },
+  { name: "Drift Hunters", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/179.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/179.html" },
+  { name: "Subway Surfers", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/145.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/200.html" },
+  { name: "Doki Doki Literature Club", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/199.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/73.html" },
+  { name: "Papers Please", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/331.jpg", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=308.html" },
+  { name: "Plants vs Zombies", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/148.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/197.html" },
+  { name: "1v1.lol", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/154.jpg", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=313.html" },
+  { name: "Retro Bowl", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/158.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/191.html" },
+  { name: "Bitlife", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/178.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/180.html" },
+  { name: "Monkey Mart", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/184.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/175.html" },
+  { name: "Friday Night Funkin", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/151.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/195.html" }
+];
+
+function openGameInModal(name, htmlContent) {
+  document.getElementById('gameTitle').textContent = name;
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('src');
+  frame.srcdoc = htmlContent;
+  document.getElementById('gameModal').classList.add('show');
+}
+
+function openGameUrl(name, url) {
+  document.getElementById('gameTitle').textContent = name;
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('srcdoc');
+  frame.src = url;
+  document.getElementById('gameModal').classList.add('show');
 }
 
 function openNoahGame(g) {
-  const win = window.open("about:blank", "_blank");
+  const win = window.open('about:blank', '_blank');
   if (!win) { window.open(g.url, '_blank'); return; }
   fetch(g.url)
-    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
     .then(t => { win.document.open(); win.document.write(t); win.document.close(); })
     .catch(() => {
       win.document.open();
@@ -512,57 +967,113 @@ function openNoahGame(g) {
     });
 }
 
-function openCsGame(g) {
-  const win = window.open("about:blank", "_blank");
-  if (!win) return;
-  fetch(g.url.replace("{HTML_URL}", HTML))
-    .then(r => r.text())
-    .then(t => { win.document.open(); win.document.write(t); win.document.close(); })
-    .catch(() => win.document.write("<h1 style='color:white;background:#000;padding:20px'>Error loading game</h1>"));
+function buildGrid(grid, customList, noahList, apiList) {
+  grid.innerHTML = '';
+  customList.forEach(g => {
+    const card = makeCard(g.name, g.img);
+    if (g.html) card.onclick = () => openGameInModal(g.name, g.html);
+    else card.onclick = () => openGameUrl(g.name, g.url);
+    grid.appendChild(card);
+  });
+  apiList.forEach(g => {
+    const coverUrl = g.cover ? g.cover.replace('{COVER_URL}', COVER_BASE).replace('{HTML_URL}', HTML_BASE) : '';
+    const gameUrl = g.url.replace('{HTML_URL}', HTML_BASE);
+    const card = makeCard(g.name, coverUrl);
+    card.onclick = () => openGameModalFetch(g.name, gameUrl);
+    grid.appendChild(card);
+  });
+  noahList.forEach(g => {
+    const card = makeCard(g.name, g.img);
+    card.onclick = () => openNoahGame(g);
+    grid.appendChild(card);
+  });
+  if (grid.children.length === 0) { grid.innerHTML = '<div>No games found.</div>'; }
 }
 
-let allCsGames = [];
-let searchQuery = '';
+function renderGames(apiList) { buildGrid(document.getElementById('gamesGrid'), CUSTOM_GAMES, NOAH_GAMES, apiList); }
 
-function doRender() {
-  gamesEl.innerHTML = "";
-  const q = searchQuery.toLowerCase();
-  const seen = new Set();
-
-  const filteredCs = q ? allCsGames.filter(g => g.name.toLowerCase().includes(q)) : allCsGames;
-  filteredCs.forEach(g => {
-    const key = g.name.toLowerCase().trim();
-    if (seen.has(key)) return;
-    seen.add(key);
-    const coverUrl = g.cover ? g.cover.replace("{COVER_URL}", COVER).replace("{HTML_URL}", HTML) : '';
-    gamesEl.appendChild(makeCard(g.name, coverUrl, () => openCsGame(g)));
-  });
-
-  const filteredNoah = q ? NOAH_GAMES.filter(g => g.title.toLowerCase().includes(q)) : NOAH_GAMES;
-  filteredNoah.forEach(g => {
-    if (!g.url || g.url === 'h') return;
-    const key = g.title.toLowerCase().trim();
-    if (seen.has(key)) return;
-    seen.add(key);
-    gamesEl.appendChild(makeCard(g.title, g.image, () => openNoahGame(g)));
-  });
-
-  setTimeout(resizeCanvas, 100);
-  totalEl.textContent = "Total games: " + document.querySelectorAll('.game-card').length;
+function loadGames() {
+  if (gamesLoaded) return;
+  gamesLoaded = true;
+  fetch(ZONES_URL + '?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      allApiGames = data.filter(g => !g.name.toLowerCase().includes('suggest') && !g.name.includes('[!]'));
+      document.getElementById('gamesTotal').textContent = 'Total games: ' + (CUSTOM_GAMES.length + NOAH_GAMES.length + allApiGames.length);
+      renderGames(allApiGames);
+    })
+    .catch(() => {
+      document.getElementById('gamesTotal').textContent = 'Total games: ' + (CUSTOM_GAMES.length + NOAH_GAMES.length);
+      renderGames([]);
+    });
 }
 
-searchEl.oninput = () => { searchQuery = searchEl.value; doRender(); };
+function searchGames(query) {
+  const q = query.trim().toLowerCase();
+  const fc = q ? CUSTOM_GAMES.filter(g => g.name.toLowerCase().includes(q)) : CUSTOM_GAMES;
+  const fn = q ? NOAH_GAMES.filter(g => g.name.toLowerCase().includes(q)) : NOAH_GAMES;
+  const fa = q ? allApiGames.filter(g => g.name.toLowerCase().includes(q)) : allApiGames;
+  document.getElementById('gamesTotal').textContent = 'Total games: ' + (fc.length + fn.length + fa.length);
+  buildGrid(document.getElementById('gamesGrid'), fc, fn, fa);
+}
 
-fetch(ZONES + "?t=" + Date.now())
-  .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-  .then(data => {
-    allCsGames = data.filter(g => !g.name.toLowerCase().includes("suggest") && !g.name.includes("[!]"));
-    doRender();
-  })
-  .catch(err => {
-    console.error("Error loading CS games:", err);
-    doRender();
-  });
+function makeCard(name, imgUrl) {
+  const card = document.createElement('div');
+  card.className = 'game-card';
+  if (imgUrl) card.style.backgroundImage = 'url(' + imgUrl + ')';
+  const title = document.createElement('div');
+  title.className = 'game-card-title';
+  title.textContent = name;
+  card.appendChild(title);
+  return card;
+}
+
+function openGameModalFetch(name, url) {
+  document.getElementById('gameTitle').textContent = name;
+  document.getElementById('gameModal').classList.add('show');
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('src');
+  frame.srcdoc = '<div style="color:#4285F4;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Loading...</div>';
+  fetch(url)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(html => { frame.srcdoc = html; })
+    .catch(() => { frame.srcdoc = '<div style="color:red;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Failed to load game.</div>'; });
+}
+
+function closeGameModal() {
+  document.getElementById('gameModal').classList.remove('show');
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('srcdoc');
+  frame.src = '';
+}
+
+function openMovies(type) {
+  document.getElementById('moviesMenu').style.display = 'none';
+  document.getElementById('moviesEmbed').style.display = 'flex';
+  const frame = document.getElementById('moviesFrame');
+  const label = document.getElementById('moviesBtnLabel');
+  if (type === 'media') {
+    label.textContent = 'TV / Movies';
+    frame.removeAttribute('src');
+    frame.srcdoc = MEDIA_HTML;
+  } else {
+    label.textContent = 'Live TV';
+    frame.removeAttribute('srcdoc');
+    frame.src = 'livetv.html';
+  }
+}
+
+function closeMovies() {
+  document.getElementById('moviesEmbed').style.display = 'none';
+  document.getElementById('moviesMenu').style.display = 'flex';
+  const mf = document.getElementById('moviesFrame');
+  mf.removeAttribute('srcdoc');
+  mf.src = '';
+}
+
+
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGameModal(); });
 </script>
 </body>
 </html>
