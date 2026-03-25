@@ -39,18 +39,6 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
 .game-modal-content{flex:1;overflow:hidden}
 .game-modal-content iframe{width:100%;height:100%;border:none}
 
-
-
-
-
-
-
-
-.modal-input:focus{outline:none}
-
-
-
-
 .movies-menu{display:flex;align-items:center;justify-content:center;gap:30px;width:100%;height:100%;background:rgba(0,0,0,0.55)}
 .movies-btn{padding:20px 56px;font-size:20px;font-weight:700;border:2px solid #4285F4;border-radius:14px;background:rgba(66,133,244,0.14);color:#fff;text-transform:uppercase;transition:all 0.22s}
 .movies-btn:hover{background:#4285F4;transform:translateY(-4px) scale(1.05)}
@@ -61,7 +49,6 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
 .movies-embed-label{font-size:13px;color:#4285F4;font-weight:600;text-transform:uppercase;letter-spacing:1px}
 .movies-frame{flex:1;border:none;width:100%;height:100%}
 </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -164,13 +151,12 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
   </div>
 </div>
 
-
 <script>
 const APPS_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>ClassroomSpot Apps</title>
 <style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(135deg,#001f3f 0%,#003366 50%,#004080 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;overflow-x:hidden;position:relative;cursor:none}.particles{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:1}.particle{position:absolute;width:4px;height:4px;background:rgba(135,206,250,0.6);border-radius:50%;animation:float 15s infinite;box-shadow:0 0 10px rgba(135,206,250,0.8)}@keyframes float{0%,100%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) rotate(720deg);opacity:0}}.container{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:40px 20px}.title{text-align:center;font-family:'Orbitron',sans-serif;font-size:4rem;font-weight:900;color:#00ffff;text-shadow:0 0 10px #00ffff,0 0 40px #00ccff,0 0 80px #0099ff;margin-bottom:50px;letter-spacing:4px;animation:pulse 2s ease-in-out infinite}@keyframes pulse{0%,100%{text-shadow:0 0 10px #00ffff,0 0 40px #00ccff}50%{text-shadow:0 0 20px #00ffff,0 0 80px #00ccff}}.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;margin-bottom:60px}.app-card{background:rgba(0,100,200,0.2);border:2px solid rgba(135,206,250,0.5);border-radius:20px;padding:25px;text-align:center;cursor:pointer;transition:all 0.4s;backdrop-filter:blur(10px)}.app-card:hover{transform:translateY(-10px) scale(1.05);background:rgba(0,150,255,0.3);border-color:#00ffff;box-shadow:0 10px 40px rgba(0,200,255,0.4)}.app-icon{width:100px;height:100px;border-radius:20px;margin-bottom:15px;object-fit:cover;transition:transform 0.3s}.app-card:hover .app-icon{transform:scale(1.1) rotate(5deg)}.app-name{color:#fff;font-size:1.2rem;font-weight:600}.no-images-section{margin-top:40px;padding:30px;background:rgba(0,50,100,0.3);border-radius:20px;border:1px solid rgba(135,206,250,0.3)}.section-title{color:#87ceeb;font-size:1.5rem;text-align:center;margin-bottom:25px;text-transform:uppercase;letter-spacing:3px}.text-apps{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}.text-app-btn{background:linear-gradient(135deg,rgba(0,150,255,0.4),rgba(0,100,200,0.4));border:2px solid rgba(135,206,250,0.6);color:#fff;padding:15px 30px;border-radius:50px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s;text-transform:uppercase}.text-app-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,0.6),rgba(0,150,255,0.6));border-color:#00ffff;transform:translateY(-3px)}.custom-cursor{position:fixed;width:20px;height:20px;background:radial-gradient(circle,#00ffff 0%,#0099ff 50%,transparent 70%);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 20px #00ffff}</style>
-<base target="_blank"></head>
+</head>
 <body>
 <div class="custom-cursor" id="cursor"></div>
 <div class="particles" id="particles"></div>
@@ -240,7 +226,6 @@ const MEDIA_HTML = `<!DOCTYPE html>
     #loadingIndicator{display:none;justify-content:center;align-items:center;gap:15px;margin:40px auto;color:#3B82F6;font-weight:bold;letter-spacing:2px;}
     @media(max-width:768px){header{font-size:32px;}#main{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px;padding:0 20px;}#iframeWrap{height:300px;}.search-wrap{flex-direction:column;}#ratingSelect{width:100%;}}
   </style>
-<base target="_blank">
 </head>
 <body>
   <canvas id="starfield"></canvas>
@@ -1070,8 +1055,6 @@ function closeMovies() {
   mf.removeAttribute('srcdoc');
   mf.src = '';
 }
-
-
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGameModal(); });
 </script>
