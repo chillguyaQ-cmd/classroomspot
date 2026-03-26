@@ -38,7 +38,6 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
 .game-modal-header button:hover{background:#34A853}
 .game-modal-content{flex:1;overflow:hidden}
 .game-modal-content iframe{width:100%;height:100%;border:none}
-
 .movies-menu{display:flex;align-items:center;justify-content:center;gap:30px;width:100%;height:100%;background:rgba(0,0,0,0.55)}
 .movies-btn{padding:20px 56px;font-size:20px;font-weight:700;border:2px solid #4285F4;border-radius:14px;background:rgba(66,133,244,0.14);color:#fff;text-transform:uppercase;transition:all 0.22s}
 .movies-btn:hover{background:#4285F4;transform:translateY(-4px) scale(1.05)}
@@ -52,10 +51,8 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
 <base target="_blank">
 </head>
 <body>
-
 <canvas id="particleCanvas"></canvas>
 <div id="cursor-dot"></div>
-
 <div class="topbar">
   <button class="nav-icon active" onclick="showSection('home',this)" title="Home">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 10.5h3V21h5v-6h4v6h5V10.5h3z"/></svg>
@@ -90,11 +87,10 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
     <span class="nav-label">Discord</span>
   </button>
 </div>
-
 <div class="main-content">
   <div class="content-section active" id="home">
     <div class="home-section">
-      <iframe src="http://ireadypracticetest.b-cdn.net/" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+      <iframe src="https://ireadypracticetest.b-cdn.net/" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" allowfullscreen></iframe>
     </div>
   </div>
   <div class="content-section" id="games">
@@ -140,7 +136,6 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
     </div>
   </div>
 </div>
-
 <div class="game-modal" id="gameModal">
   <div class="game-modal-header">
     <h2 id="gameTitle">Game</h2>
@@ -150,7 +145,6 @@ canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-
     <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-fullscreen"></iframe>
   </div>
 </div>
-
 <script>
 const APPS_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -182,7 +176,6 @@ for(let i=0;i<50;i++){const d=document.createElement('div');d.className='particl
 const c=document.getElementById('cursor');
 document.addEventListener('mousemove',e=>{c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';});
 <\/script></body></html>`;
-
 const MEDIA_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -306,7 +299,6 @@ const MEDIA_HTML = `<!DOCTYPE html>
   <\/script>
 </body>
 </html>`;
-
 const EPSTEIN_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:system-ui,sans-serif}#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}.game-frame{position:absolute;inset:0;width:100%;height:100%;display:none;background:#000}.game-iframe{width:100%;height:100%;border:0;display:block;background:#000}.game-preview{position:absolute;inset:0;overflow:hidden;z-index:5}.game-preview-bgi{position:absolute;inset:0;background-position:center;background-size:cover;filter:blur(10px);transform:scale(1.05)}.game-preview__content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:rgba(0,0,0,0.6);text-align:center;padding:24px;box-sizing:border-box}.game-preview__logo img{border-radius:12px;box-shadow:0 0 1rem rgba(255,255,255,0.45);max-width:200px;width:min(45vw,200px);height:auto;display:block}.game-preview__title{font-size:24px;font-weight:700;color:#fff;margin:20px 0;padding:14px 20px}.play-btn__ctrl{height:50px;overflow:hidden;appearance:none;z-index:2;box-shadow:0 0 1rem rgba(255,255,255,0.45);background:#ff3814;font-weight:700;color:#fff;font-size:22px;padding:0 32px;border-radius:16px;border:0;cursor:pointer;transition:background .15s,transform .1s}#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;outline:1px solid rgba(36,214,0,0.55);transition:transform .12s,opacity .12s;z-index:20}#fs-btn svg{width:18px;height:18px;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}</style></head>
 <body><div id="fs-root">
 <div class="game-preview" id="gamePreview">
@@ -331,7 +323,6 @@ document.addEventListener('fullscreenchange',syncUI);document.addEventListener('
 playBtn.addEventListener('click',()=>{if(loaded)return;loaded=true;preview.style.display='none';gameWrap.style.display='block';gameFrame.src='https://topgames.gg/game/epstein-clicker/';const fsRoot=document.getElementById('fs-root');if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});});
 syncUI();
 <\/script></body></html>`;
-
 const CAT_MARIO_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -349,7 +340,6 @@ const CAT_MARIO_HTML = `<!DOCTYPE html>
 </object>
 </body>
 </html>`;
-
 const CAPYBARA_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:transparent;font-family:system-ui,sans-serif}#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}#gameFrame{width:100%;height:100%;border:0;display:block;background:#000}#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;opacity:0.97;transition:transform .12s,opacity .12s;outline:1px solid rgba(36,214,0,0.55)}#fs-btn:hover{transform:scale(1.05);opacity:1;background:rgba(36,214,0,0.64)}#fs-btn svg{width:18px;height:18px;display:block;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}#fs-tip{position:absolute;right:52px;bottom:12px;padding:6px 10px;border-radius:10px;background:rgba(36,214,0,0.78);color:rgba(0,0,0,0.92);font-size:12px;font-weight:700;box-shadow:0 10px 24px rgba(0,0,0,0.35);opacity:0;transform:translateY(4px);transition:opacity .12px,transform .12s;pointer-events:none;white-space:nowrap}#fs-btn:hover+#fs-tip{opacity:1;transform:translateY(0)}</style></head>
 <body><div id="fs-root">
 <iframe id="gameFrame" src="https://capybaraclickergame.com/capybaraclickergamefiles/capybara-clicker/" allow="fullscreen;autoplay;gamepad" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -366,7 +356,6 @@ function syncUI(){const on=isFS();iconExpand.style.display=on?'none':'block';ico
 btn.addEventListener('click',()=>{if(isFS()){if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}else{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});else if(fsRoot.webkitRequestFullscreen)fsRoot.webkitRequestFullscreen();}});
 document.addEventListener('fullscreenchange',syncUI);document.addEventListener('webkitfullscreenchange',syncUI);syncUI();
 <\/script></body></html>`;
-
 const DARK_MAN_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -380,7 +369,6 @@ const DARK_MAN_HTML = `<!DOCTYPE html>
 <iframe src="https://rosebud.ai/p/d0b9a69c-f5aa-4efd-9a50-0401aa31bce6" title="Dark Man 3D"></iframe>
 </body>
 </html>`;
-
 const FNAB_HTML = `<!DOCTYPE html>
 <html lang="en-us">
 <head>
@@ -439,7 +427,6 @@ document.body.appendChild(script);
 <\/script>
 </body>
 </html>`;
-
 const GTA_HTML = `<!DOCTYPE html>
 <html lang="en-us">
 <base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/grand-theft-auto/index.html">
@@ -487,7 +474,6 @@ document.body.appendChild(script);
 <\/script>
 </body>
 </html>`;
-
 const CHUCK_HTML = `<!DOCTYPE html>
 <html>
 <head>
@@ -556,7 +542,6 @@ run().catch(handleError);
 <script type="text/javascript" src="../main.js"><\/script>
 </body>
 </html>`;
-
 const HUGGY_HTML = `<!DOCTYPE html>
 <html lang="en-us">
 <base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/huggy-wuggy-shooter/index.html">
@@ -607,7 +592,6 @@ YaGames.init({}).then(ysdk=>{window.sdk=ysdk;}).catch(e=>{console.log('SDK init 
 <\/script>
 </body>
 </html>`;
-
 const INFINITE_HTML = `<!doctype html>
 <html lang="en">
 <head>
@@ -624,7 +608,6 @@ const INFINITE_HTML = `<!doctype html>
 <div id="root"></div>
 </body>
 </html>`;
-
 const DIDDY_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -638,7 +621,6 @@ const DIDDY_HTML = `<!DOCTYPE html>
 <iframe src="https://pixelpad.io/app/hbqyaclmmas/?emb=1" title="Diddy Clicker" allowfullscreen allow="fullscreen"></iframe>
 </body>
 </html>`;
-
 const FNAD_HTML = `<!DOCTYPE html>
 <html>
 <head>
@@ -679,7 +661,6 @@ document.getElementById('fullscreen-btn').addEventListener('click',()=>{if(fsRoo
 <\/script>
 </body>
 </html>`;
-
 const YOU_VS_HOMER_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -779,18 +760,15 @@ window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.heig
 <\/script>
 </body>
 </html>`;
-
 const pCanvas = document.getElementById('particleCanvas');
 const pCtx = pCanvas.getContext('2d');
 let particles = [];
-
 function resizeCanvas() {
   pCanvas.width = window.innerWidth;
   pCanvas.height = window.innerHeight;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
-
 class Particle {
   constructor() { this.reset(true); }
   reset(init) {
@@ -815,9 +793,7 @@ class Particle {
     pCtx.fill();
   }
 }
-
 for (let i = 0; i < 120; i++) particles.push(new Particle());
-
 function animateParticles() {
   pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
   pCtx.globalAlpha = 1;
@@ -826,13 +802,11 @@ function animateParticles() {
   requestAnimationFrame(animateParticles);
 }
 animateParticles();
-
 const cursorDot = document.getElementById('cursor-dot');
 document.addEventListener('mousemove', e => {
   cursorDot.style.left = e.clientX + 'px';
   cursorDot.style.top = e.clientY + 'px';
 });
-
 function showSection(id, btn) {
   document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
@@ -851,14 +825,11 @@ function showSection(id, btn) {
     mf.src = '';
   }
 }
-
 const ZONES_URL = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
 const COVER_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main/";
 const HTML_BASE = "https://cdn.jsdelivr.net/gh/gn-math/html@main/";
-
 let gamesLoaded = false;
 let allApiGames = [];
-
 const CUSTOM_GAMES = [
   { name: "You vs Homer", img: "https://th.bing.com/th/id/OIP.JCQBwdKfAnwpnWQ_q5SEnAHaHa?w=185&h=185&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3", html: YOU_VS_HOMER_HTML },
   { name: "Five Nights at Diddy's", img: "https://th.bing.com/th/id/OIP.DqnlEJUKyWosLdf5IPfxCwHaHa?w=173&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3", html: FNAD_HTML },
@@ -875,7 +846,6 @@ const CUSTOM_GAMES = [
   { name: "Roblox", img: "https://tse3.mm.bing.net/th/id/OIP.Suu0wkaP6duvpXY_gWJucgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://nevertraveling.thepresenttraveller.com/gamefile/nowgg/roblox.html?prefix=149" },
   { name: "GTA Vice City", img: "https://tse2.mm.bing.net/th/id/OIP.T6kQS4BQ4CCT6jlXGtAuDgHaE7?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://youcantpoopme.b-cdn.net/gtavc.html" }
 ];
-
 const NOAH_GAMES = [
   { name: "Alien Hominid", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/382.png", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/393.html" },
   { name: "Fireboy & Watergirl", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/385.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/385.html" },
@@ -922,7 +892,6 @@ const NOAH_GAMES = [
   { name: "Monkey Mart", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/184.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/175.html" },
   { name: "Friday Night Funkin", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/151.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/195.html" }
 ];
-
 function openGameInModal(name, htmlContent) {
   document.getElementById('gameTitle').textContent = name;
   const frame = document.getElementById('gameFrame');
@@ -930,7 +899,6 @@ function openGameInModal(name, htmlContent) {
   frame.srcdoc = htmlContent;
   document.getElementById('gameModal').classList.add('show');
 }
-
 function openGameUrl(name, url) {
   document.getElementById('gameTitle').textContent = name;
   const frame = document.getElementById('gameFrame');
@@ -938,7 +906,6 @@ function openGameUrl(name, url) {
   frame.src = url;
   document.getElementById('gameModal').classList.add('show');
 }
-
 function openNoahGame(g) {
   const win = window.open('about:blank', '_blank');
   if (!win) { window.open(g.url, '_blank'); return; }
@@ -951,7 +918,6 @@ function openNoahGame(g) {
       win.document.close();
     });
 }
-
 function buildGrid(grid, customList, noahList, apiList) {
   grid.innerHTML = '';
   customList.forEach(g => {
@@ -974,9 +940,7 @@ function buildGrid(grid, customList, noahList, apiList) {
   });
   if (grid.children.length === 0) { grid.innerHTML = '<div>No games found.</div>'; }
 }
-
 function renderGames(apiList) { buildGrid(document.getElementById('gamesGrid'), CUSTOM_GAMES, NOAH_GAMES, apiList); }
-
 function loadGames() {
   if (gamesLoaded) return;
   gamesLoaded = true;
@@ -992,7 +956,6 @@ function loadGames() {
       renderGames([]);
     });
 }
-
 function searchGames(query) {
   const q = query.trim().toLowerCase();
   const fc = q ? CUSTOM_GAMES.filter(g => g.name.toLowerCase().includes(q)) : CUSTOM_GAMES;
@@ -1001,7 +964,6 @@ function searchGames(query) {
   document.getElementById('gamesTotal').textContent = 'Total games: ' + (fc.length + fn.length + fa.length);
   buildGrid(document.getElementById('gamesGrid'), fc, fn, fa);
 }
-
 function makeCard(name, imgUrl) {
   const card = document.createElement('div');
   card.className = 'game-card';
@@ -1012,7 +974,6 @@ function makeCard(name, imgUrl) {
   card.appendChild(title);
   return card;
 }
-
 function openGameModalFetch(name, url) {
   document.getElementById('gameTitle').textContent = name;
   document.getElementById('gameModal').classList.add('show');
@@ -1024,14 +985,12 @@ function openGameModalFetch(name, url) {
     .then(html => { frame.srcdoc = html; })
     .catch(() => { frame.srcdoc = '<div style="color:red;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Failed to load game.</div>'; });
 }
-
 function closeGameModal() {
   document.getElementById('gameModal').classList.remove('show');
   const frame = document.getElementById('gameFrame');
   frame.removeAttribute('srcdoc');
   frame.src = '';
 }
-
 function openMovies(type) {
   document.getElementById('moviesMenu').style.display = 'none';
   document.getElementById('moviesEmbed').style.display = 'flex';
@@ -1047,7 +1006,6 @@ function openMovies(type) {
     frame.src = 'livetv.html';
   }
 }
-
 function closeMovies() {
   document.getElementById('moviesEmbed').style.display = 'none';
   document.getElementById('moviesMenu').style.display = 'flex';
@@ -1055,7 +1013,6 @@ function closeMovies() {
   mf.removeAttribute('srcdoc');
   mf.src = '';
 }
-
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGameModal(); });
 </script>
 </body>
