@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CodeLearn - Student Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,sans-serif;color:#fff;min-height:100vh;overflow:hidden;background:#000}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.topbar{position:fixed;top:0;left:0;width:100%;height:64px;background:rgba(0,6,28,0.97);border-bottom:2px solid #4285F4;display:flex;align-items:center;justify-content:center;gap:10px;z-index:100;backdrop-filter:blur(14px)}
+.nav-icon{width:46px;height:46px;border-radius:10px;background:transparent;border:1.5px solid rgba(66,133,244,0.45);display:flex;align-items:center;justify-content:center;transition:all 0.2s;color:#4285F4;position:relative}
+.nav-icon:hover{background:rgba(66,133,244,0.18);border-color:#4285F4;color:#fff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(66,133,244,0.3)}
+.nav-icon.active{background:rgba(66,133,244,0.28);border-color:#4285F4;color:#fff;box-shadow:0 0 14px rgba(66,133,244,0.45)}
+.nav-icon svg{width:22px;height:22px;display:block}
+.nav-label{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:9px;color:#4285F4;font-weight:600;white-space:nowrap;opacity:0;transition:opacity 0.15s;letter-spacing:0.5px;text-transform:uppercase;pointer-events:none}
+.nav-icon:hover .nav-label{opacity:1}
+.main-content{margin-top:64px;width:100%;height:calc(100vh - 64px);overflow:hidden;position:relative;z-index:2}
+.content-section{display:none;width:100%;height:100%;overflow:hidden}
+.content-section.active{display:flex;flex-direction:column}
+.home-section,.embedded-section{width:100%;height:100%}
+.home-section iframe,.embedded-section iframe{width:100%;height:100%;border:none}
+.games-topbar{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px 10px;background:transparent;flex-shrink:0;flex-wrap:wrap}
+.games-title{font-size:36px;font-weight:900;color:#fff;text-align:center;width:100%;margin-bottom:4px;letter-spacing:2px;text-shadow:0 0 24px rgba(66,133,244,0.5)}
+.games-total{font-size:12px;color:#7ab3f5;font-weight:600;white-space:nowrap;background:rgba(0,30,80,0.6);padding:5px 12px;border-radius:20px;border:1px solid rgba(66,133,244,0.3)}
+.games-search{padding:8px 16px;border-radius:8px;border:1.5px solid rgba(66,133,244,0.45);background:rgba(0,10,40,0.8);color:white;font-size:13px;width:240px;outline:none;transition:border-color 0.2s}
+.games-search::placeholder{color:#4a6a9e}
+.games-search:focus{border-color:#4285F4}
+.games-sort{padding:8px 12px;border-radius:8px;border:1.5px solid rgba(66,133,244,0.45);background:rgba(0,10,40,0.8);color:#ccc;font-size:13px;outline:none;cursor:pointer}
+.games-section{padding:6px 10px 10px;overflow-y:auto;flex:1;position:relative}
+#gamesParticleCanvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));grid-auto-rows:118px;gap:5px;position:relative;z-index:1}
+.game-card{border-radius:10px;overflow:hidden;background:#0d1b2e;border:none;transition:transform 0.13s,box-shadow 0.13s;display:flex;flex-direction:column;cursor:pointer}
+.game-card:hover{transform:scale(1.07);box-shadow:0 6px 20px rgba(66,133,244,0.45);z-index:10}
+.game-card.featured{grid-column:span 3;grid-row:span 3}
+.game-card-img{flex:1;min-height:0;width:100%;background-size:cover;background-position:center;background-color:#0d1b2e}
+.game-card-title{height:22px;padding:3px 5px;font-size:10px;font-weight:700;text-align:center;color:#c8d8f5;background:#0b1525;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.game-card.featured .game-card-title{height:26px;font-size:12px;padding:4px 6px}
+.game-modal{position:fixed;top:64px;left:0;right:0;bottom:0;background:#000;z-index:50;display:none;flex-direction:column}
+.game-modal.show{display:flex}
+.game-modal-header{background:#0e1232;border-bottom:2px solid #4285F4;padding:13px 28px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.game-modal-header h2{color:#4285F4;font-size:18px;font-weight:700}
+.game-modal-header button{background:#4285F4;color:white;border:none;padding:7px 16px;border-radius:6px;font-weight:600;transition:all 0.2s}
+.game-modal-header button:hover{background:#34A853}
+.game-modal-content{flex:1;overflow:hidden}
+.game-modal-content iframe{width:100%;height:100%;border:none}
+.movies-menu{display:flex;align-items:center;justify-content:center;gap:30px;width:100%;height:100%;background:rgba(0,0,0,0.55)}
+.movies-btn{padding:20px 56px;font-size:20px;font-weight:700;border:2px solid #4285F4;border-radius:14px;background:rgba(66,133,244,0.14);color:#fff;text-transform:uppercase;transition:all 0.22s}
+.movies-btn:hover{background:#4285F4;transform:translateY(-4px) scale(1.05)}
+.movies-embed{display:flex;flex-direction:column;width:100%;height:100%}
+.movies-embed-bar{display:flex;align-items:center;gap:14px;padding:10px 20px;background:rgba(0,6,28,0.92);border-bottom:1px solid #1e3a6e;flex-shrink:0}
+.movies-back-btn{padding:6px 16px;background:#4285F4;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600}
+.movies-back-btn:hover{background:#34A853}
+.movies-embed-label{font-size:13px;color:#4285F4;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.movies-frame{flex:1;border:none;width:100%;height:100%}
+</style>
+<base target="_blank">
+</head>
+<body>
+<canvas id="particleCanvas"></canvas>
+<div class="topbar">
+  <button class="nav-icon active" onclick="showSection('home',this)" title="Home">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 10.5h3V21h5v-6h4v6h5V10.5h3z"/></svg>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('games',this)" title="Games">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm-10 9H9v-2H7v-2h2V9h2v2h2v2h-2v2zm5.5-.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm2-3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+    <span class="nav-label">Games</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('music',this)" title="Music">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3v11.55A4 4 0 1 0 11 18V7h4V3H9z"/></svg>
+    <span class="nav-label">Music</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('movies',this)" title="Movies">
+    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 4v16M17 4v16M2 9h5M17 9h5M2 14h5M17 14h5"/><path d="M7 4v16M17 4v16M2 9h5M17 9h5M2 14h5M17 14h5" stroke="currentColor" stroke-width="2" fill="none"/><rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><line x1="7" y1="4" x2="7" y2="20" stroke="currentColor" stroke-width="2"/><line x1="17" y1="4" x2="17" y2="20" stroke="currentColor" stroke-width="2"/><line x1="2" y1="9" x2="7" y2="9" stroke="currentColor" stroke-width="2"/><line x1="17" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="2"/><line x1="2" y1="15" x2="7" y2="15" stroke="currentColor" stroke-width="2"/><line x1="17" y1="15" x2="22" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+    <span class="nav-label">Movies</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('partners',this)" title="Partners">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10l-2-2H9L5 12v2h1l1.5 1.5"/><path d="M9.5 14l1 1 4-4 1 1-4 4 1 1 4-4 .5.5"/><path d="M19 12l-1.5-2H15l-3 3 4 4 1-1"/><path d="M6.5 15.5l3 3 1-1"/><path d="M4 14l-2-2 4-4 2 2"/><path d="M20 10l2 2-4 4-2-2"/></svg>
+    <span class="nav-label">Partners</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('chat',this)" title="Chat">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h3l3 3 3-3h7a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-2 8H6V8h12v2zm0-4H6V4h12v2z"/></svg>
+    <span class="nav-label">Chat</span>
+  </button>
+  <button class="nav-icon" onclick="showSection('settings',this)" title="Settings">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.02 7.02 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.12 7.12 0 0 0-1.61.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.1 7.1 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 0 1 8.4 12 3.6 3.6 0 0 1 12 8.4 3.6 3.6 0 0 1 15.6 12 3.6 3.6 0 0 1 12 15.6z"/></svg>
+    <span class="nav-label">Settings</span>
+  </button>
+  <button class="nav-icon" onclick="window.open('https://discord.gg/UPCSF4UcMk','_blank')" title="Discord" style="padding:0;overflow:hidden;border-radius:10px;">
+    <img src="https://mathballz.b-cdn.net/d.png" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;mix-blend-mode:screen;filter:brightness(1.1);">
+    <span class="nav-label">Discord</span>
+  </button>
+</div>
+<div class="main-content">
+  <div class="content-section active" id="home">
+    <div class="home-section">
+      <iframe src="https://ireadypracticetest.b-cdn.net/" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" allowfullscreen></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="games" style="background:#060f1e;">
+    <div class="games-topbar">
+      <div class="games-title">games</div>
+      <input class="games-search" id="gamesSearch" type="text" placeholder="search here..." oninput="searchGames(this.value)">
+      <select class="games-sort" id="gamesSort" onchange="searchGames(document.getElementById('gamesSearch').value)">
+        <option value="default">a - z (default)</option>
+        <option value="z-a">z - a</option>
+      </select>
+      <span class="games-total" id="gamesTotal">loading…</span>
+    </div>
+    <div class="games-section" id="gamesSectionWrapper">
+      <canvas id="gamesParticleCanvas"></canvas>
+      <div class="games-grid" id="gamesGrid"><div>Loading…</div></div>
+    </div>
+  </div>
+  <div class="content-section" id="music">
+    <div class="embedded-section">
+      <iframe src="music.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="movies">
+    <div id="moviesMenu" class="movies-menu">
+      <button class="movies-btn" onclick="openMovies('media')">TV / Movies</button>
+      <button class="movies-btn" onclick="openMovies('livetv')">Live TV</button>
+    </div>
+    <div id="moviesEmbed" class="movies-embed" style="display:none;">
+      <div class="movies-embed-bar">
+        <button class="movies-back-btn" onclick="closeMovies()">← Back</button>
+        <span id="moviesBtnLabel" class="movies-embed-label"></span>
+      </div>
+      <iframe id="moviesFrame" class="movies-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="partners">
+    <div class="embedded-section">
+      <iframe src="partners.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="chat">
+    <div class="embedded-section">
+      <iframe src="chat.html" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+  </div>
+  <div class="content-section" id="settings">
+    <div style="padding:40px 32px;overflow-y:auto;height:100%;background:rgba(0,6,28,0.98);">
+      <h2 style="color:#4285F4;font-size:22px;font-weight:700;margin-bottom:28px;letter-spacing:1px;">⚙ Settings</h2>
+      <div style="background:rgba(66,133,244,0.1);border:1.5px solid rgba(66,133,244,0.35);border-radius:14px;padding:24px;max-width:560px;">
+        <h3 style="color:#fff;font-size:16px;font-weight:600;margin-bottom:6px;">Tab Cloak</h3>
+        <p style="color:#7aa2e6;font-size:13px;margin-bottom:18px;">Change the tab title &amp; icon to disguise this page. Or open in about:blank to hide the URL.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="cloakOptions">
+          <button class="cloak-btn" onclick="applyCloak('ixl')" style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:rgba(66,133,244,0.12);border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;color:#fff;font-size:14px;font-weight:500;text-align:left;transition:all 0.18s;">
+            <img src="https://th.bing.com/th/id/ODF.HSYSODtWd2R0pkIWmgplFQ?w=32&h=32&o=6&pid=AdsPlus" style="width:24px;height:24px;border-radius:4px;flex-shrink:0;">
+            <span>IXL | Math, Language Arts, Science, Social Studies, and Spanish</span>
+          </button>
+          <button class="cloak-btn" onclick="applyCloak('canvas')" style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:rgba(66,133,244,0.12);border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;color:#fff;font-size:14px;font-weight:500;text-align:left;transition:all 0.18s;">
+            <img src="https://th.bing.com/th/id/ODF.8V0Dl_QsprEAzsXabwnfEA?w=32&h=32&qlt=95&pcl=fffffa&o=6&pid=1.2" style="width:24px;height:24px;border-radius:4px;flex-shrink:0;">
+            <span>Canvas Home</span>
+          </button>
+          <button class="cloak-btn" onclick="applyCloak('gc')" style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:rgba(66,133,244,0.12);border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;color:#fff;font-size:14px;font-weight:500;text-align:left;transition:all 0.18s;">
+            <img src="https://th.bing.com/th/id/ODF.clCBNhLM1Dz6um2Q2mQpUQ?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2" style="width:24px;height:24px;border-radius:4px;flex-shrink:0;">
+            <span>Classroom Home</span>
+          </button>
+          <button class="cloak-btn" onclick="applyCloak('google')" style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:rgba(66,133,244,0.12);border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;color:#fff;font-size:14px;font-weight:500;text-align:left;transition:all 0.18s;">
+            <img src="https://th.bing.com/th/id/ODF.cQGDzDdW-31GYqwCeCzTrw?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2" style="width:24px;height:24px;border-radius:4px;flex-shrink:0;">
+            <span>Google — How does simplifying work</span>
+          </button>
+          <button class="cloak-btn" onclick="openAboutBlank()" style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:rgba(66,133,244,0.12);border:1.5px solid rgba(66,133,244,0.35);border-radius:10px;color:#fff;font-size:14px;font-weight:500;text-align:left;transition:all 0.18s;">
+            <span style="width:24px;height:24px;background:#222;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;flex-shrink:0;">ab</span>
+            <span>Open in about:blank</span>
+          </button>
+        </div>
+        <div id="cloakStatus" style="margin-top:14px;font-size:13px;color:#34A853;display:none;">✓ Cloak applied!</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="game-modal" id="gameModal">
+  <div class="game-modal-header">
+    <h2 id="gameTitle">Game</h2>
+    <button onclick="closeGameModal()">Close</button>
+  </div>
+  <div class="game-modal-content">
+    <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-fullscreen"></iframe>
+  </div>
+</div>
+<script>
+const APPS_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>ClassroomSpot Apps</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(135deg,#001f3f 0%,#003366 50%,#004080 100%);min-height:100vh;font-family:'Segoe UI',sans-serif;overflow-x:hidden;position:relative}.particles{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:1}.particle{position:absolute;width:4px;height:4px;background:rgba(135,206,250,0.6);border-radius:50%;animation:float 15s infinite;box-shadow:0 0 10px rgba(135,206,250,0.8)}@keyframes float{0%,100%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) rotate(720deg);opacity:0}}.container{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:40px 20px}.title{text-align:center;font-family:'Orbitron',sans-serif;font-size:4rem;font-weight:900;color:#00ffff;text-shadow:0 0 10px #00ffff,0 0 40px #00ccff,0 0 80px #0099ff;margin-bottom:50px;letter-spacing:4px;animation:pulse 2s ease-in-out infinite}@keyframes pulse{0%,100%{text-shadow:0 0 10px #00ffff,0 0 40px #00ccff}50%{text-shadow:0 0 20px #00ffff,0 0 80px #00ccff}}.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:30px;margin-bottom:60px}.app-card{background:rgba(0,100,200,0.2);border:2px solid rgba(135,206,250,0.5);border-radius:20px;padding:25px;text-align:center;cursor:pointer;transition:all 0.4s;backdrop-filter:blur(10px)}.app-card:hover{transform:translateY(-10px) scale(1.05);background:rgba(0,150,255,0.3);border-color:#00ffff;box-shadow:0 10px 40px rgba(0,200,255,0.4)}.app-icon{width:100px;height:100px;border-radius:20px;margin-bottom:15px;object-fit:cover;transition:transform 0.3s}.app-card:hover .app-icon{transform:scale(1.1) rotate(5deg)}.app-name{color:#fff;font-size:1.2rem;font-weight:600}.no-images-section{margin-top:40px;padding:30px;background:rgba(0,50,100,0.3);border-radius:20px;border:1px solid rgba(135,206,250,0.3)}.section-title{color:#87ceeb;font-size:1.5rem;text-align:center;margin-bottom:25px;text-transform:uppercase;letter-spacing:3px}.text-apps{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}.text-app-btn{background:linear-gradient(135deg,rgba(0,150,255,0.4),rgba(0,100,200,0.4));border:2px solid rgba(135,206,250,0.6);color:#fff;padding:15px 30px;border-radius:50px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s;text-transform:uppercase}.text-app-btn:hover{background:linear-gradient(135deg,rgba(0,200,255,0.6),rgba(0,150,255,0.6));border-color:#00ffff;transform:translateY(-3px)}.custom-cursor{position:fixed;width:20px;height:20px;background:radial-gradient(circle,#00ffff 0%,#0099ff 50%,transparent 70%);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 20px #00ffff}</style>
+</head>
+<body>
+<div class="custom-cursor" id="cursor"></div>
+<div class="particles" id="particles"></div>
+<div class="container">
+<h1 class="title">ClassroomSpot Apps</h1>
+<div class="apps-grid">
+<div class="app-card" onclick="window.open('https://blooketbot.schoolcheats.net/','_blank')"><img src="https://youcantpoopme.b-cdn.net/blk.png" alt="Blooket" class="app-icon"><div class="app-name">Blooket Cheats</div></div>
+<div class="app-card" onclick="window.open('https://youcantpoopme.b-cdn.net/emulatorjs.html','_blank')"><img src="https://youcantpoopme.b-cdn.net/emulatorjs.png" alt="Emulator JS" class="app-icon"><div class="app-name">Emulator JS</div></div>
+<div class="app-card" onclick="window.open('https://seraph.b-cdn.net/apps/windows11/index.html','_blank')"><img src="https://youcantpoopme.b-cdn.net/windows11.png" alt="Windows 11" class="app-icon"><div class="app-name">Windows 11</div></div>
+<div class="app-card" onclick="window.open('https://youcantpoopme.b-cdn.net/ruffle.html','_blank')"><img src="https://youcantpoopme.b-cdn.net/ruffle.png" alt="Ruffle" class="app-icon"><div class="app-name">Ruffle</div></div>
+<div class="app-card" onclick="window.open('https://seraph.b-cdn.net/apps/thirtydollarwebsite/index.html','_blank')"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/179.png" alt="30 Dollar" class="app-icon"><div class="app-name">Thirty Dollar Website</div></div>
+</div>
+<div class="no-images-section">
+<h2 class="section-title">Apps With No Images</h2>
+<div class="text-apps">
+<button class="text-app-btn" onclick="window.open('https://seraph.b-cdn.net/apps/godoblocks/index.html','_blank')">2005 Roblox</button>
+<button class="text-app-btn" onclick="window.open('https://seraph.b-cdn.net/apps/fluidsim/index.html','_blank')">FluidSim</button>
+<button class="text-app-btn" onclick="window.open('https://seraph.b-cdn.net/apps/calculator/index.html','_blank')">Calculator</button>
+</div></div></div>
+<script>
+const p=document.getElementById('particles');
+for(let i=0;i<50;i++){const d=document.createElement('div');d.className='particle';d.style.left=Math.random()*100+'%';d.style.animationDelay=Math.random()*15+'s';d.style.animationDuration=(10+Math.random()*10)+'s';p.appendChild(d);}
+const c=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';});
+<\/script></body></html>`;
+const MEDIA_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ClassroomSpot Media</title>
+  <style>
+    :root{--rift-gray:#3B82F6;--rift-light:#60A5FA;--bg:#000000;--glass-bg:rgba(59,130,246,0.05);--glass-border:rgba(59,130,246,0.2);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background-color:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden;}
+    #starfield{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:var(--bg);}
+    header{padding:40px 20px;text-align:center;font-size:48px;font-weight:900;color:#3B82F6;letter-spacing:6px;text-transform:uppercase;position:relative;z-index:10;text-shadow:0 0 10px #3B82F6,0 0 20px #3B82F6,0 0 40px #60A5FA;}
+    .top-row{width:100%;display:flex;justify-content:center;gap:12px;margin:20px 0 40px;padding:0 20px;position:relative;z-index:10;}
+    .search-wrap{display:flex;align-items:center;gap:12px;width:920px;max-width:100%;}
+    #searchInput{flex:1;padding:16px 24px;font-size:18px;border-radius:50px;border:1px solid var(--glass-border);background:rgba(0,0,0,0.6);color:#fff;transition:all 0.3s;}
+    #searchInput:focus{outline:none;box-shadow:0 0 15px rgba(59,130,246,0.3);border-color:#3B82F6;}
+    #ratingSelect{min-width:170px;height:50px;border-radius:50px;padding:10px 20px;font-size:15px;background:rgba(0,0,0,0.6);color:#fff;border:1px solid var(--glass-border);appearance:none;transition:0.3s;}
+    #ratingSelect:hover{border-color:#3B82F6;}
+    #main{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:25px;padding:0 40px 60px;max-width:1400px;margin:0 auto;position:relative;z-index:10;}
+    .card{position:relative;background:rgba(0,0,0,0.6);border-radius:12px;overflow:hidden;border:1px solid rgba(59,130,246,0.1);transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;}
+    .card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 10px 30px rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.3);}
+    .card-image{position:relative;width:100%;aspect-ratio:2/3;overflow:hidden;}
+    .card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s;}
+    .card:hover img{transform:scale(1.05);}
+    .play-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;}
+    .card:hover .play-overlay{opacity:1;}
+    .play-button{width:50px;height:50px;background:rgba(59,130,246,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+    .play-button::after{content:'';width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px;}
+    .card h4{padding:16px;font-size:16px;text-align:center;color:#fff;background:rgba(0,0,0,0.8);font-weight:600;border-top:1px solid rgba(59,130,246,0.1);}
+    #modal{position:fixed;inset:0;background-color:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:1000;padding:24px;opacity:0;transition:opacity 0.3s;}
+    #modal.active{display:flex;opacity:1;}
+    #modalContent{width:100%;max-width:1000px;background:#0a0a0a;border-radius:12px;overflow:hidden;padding:30px;position:relative;display:flex;flex-direction:column;gap:20px;border:1px solid rgba(59,130,246,0.2);}
+    #modalTitle{font-size:28px;text-align:center;color:#fff;font-weight:700;letter-spacing:2px;}
+    #modalRating{position:absolute;top:20px;left:24px;background:#000;color:#3B82F6;padding:8px 16px;border-radius:20px;font-size:14px;font-weight:700;border:1px solid #3B82F6;}
+    .modal-controls{display:flex;align-items:center;justify-content:center;gap:15px;flex-wrap:wrap;padding:10px;}
+    .modal-controls select{background-color:#000;color:#fff;border:1px solid rgba(59,130,246,0.2);padding:12px 20px;border-radius:30px;font-size:14px;appearance:none;}
+    #closeModal{position:absolute;top:20px;right:24px;background:transparent;color:#fff;border:1px solid #fff;padding:8px 16px;border-radius:30px;font-size:14px;font-weight:bold;cursor:pointer;transition:all 0.3s;}
+    #closeModal:hover{background:#fff;color:#000;}
+    #iframeWrap{width:100%;height:550px;border-radius:12px;overflow:hidden;background:#000;border:1px solid rgba(59,130,246,0.1);}
+    #modalIframe{width:100%;height:100%;border:none;background:#000;display:block;}
+    #loadingIndicator{display:none;justify-content:center;align-items:center;gap:15px;margin:40px auto;color:#3B82F6;font-weight:bold;letter-spacing:2px;}
+    @media(max-width:768px){header{font-size:32px;}#main{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:15px;padding:0 20px;}#iframeWrap{height:300px;}.search-wrap{flex-direction:column;}#ratingSelect{width:100%;}}
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <header>ClassroomSpot Media</header>
+  <div class="top-row">
+    <div class="search-wrap">
+      <input id="searchInput" placeholder="Search database..." autocomplete="off"/>
+      <select id="ratingSelect">
+        <option value="all">All Ratings</option>
+        <option value="gpg">G / PG</option>
+        <option value="pg13">PG-13</option>
+        <option value="r">R</option>
+        <option value="nc17">NC-17 / Other</option>
+      </select>
+    </div>
+  </div>
+  <div id="main"></div>
+  <div id="loadingIndicator"><div class="text">LOADING DATA</div></div>
+  <div id="modal">
+    <div id="modalContent">
+      <div id="modalRating">Rated: NR</div>
+      <button id="closeModal" onclick="closeModal()">CLOSE</button>
+      <div id="modalTitle"></div>
+      <div class="modal-controls">
+        <select id="seasonSelect" style="display:none;"></select>
+        <select id="episodeSelect" style="display:none;"></select>
+        <select id="sourceSelect"></select>
+      </div>
+      <div id="iframeWrap"><iframe id="modalIframe" allowfullscreen></iframe></div>
+    </div>
+  </div>
+  <script>
+    const canvas=document.getElementById('starfield'),ctx=canvas.getContext('2d');
+    let width,height,stars=[];
+    function initStars(){width=window.innerWidth;height=window.innerHeight;canvas.width=width;canvas.height=height;stars=[];for(let i=0;i<200;i++){stars.push({x:Math.random()*width,y:Math.random()*height,radius:Math.random()*1.5,vx:(Math.random()-0.5)*0.1,vy:(Math.random()-0.5)*0.1,alpha:Math.random(),grayShift:Math.random()*0.5+0.5});}}
+    function animateStars(){ctx.clearRect(0,0,width,height);stars.forEach(star=>{const g=100+star.grayShift*155;ctx.fillStyle='rgba('+g+','+g+','+g+','+star.alpha+')';ctx.beginPath();ctx.arc(star.x,star.y,star.radius,0,Math.PI*2);ctx.fill();star.x+=star.vx;star.y+=star.vy;if(star.x<0)star.x=width;if(star.x>width)star.x=0;if(star.y<0)star.y=height;if(star.y>height)star.y=0;});requestAnimationFrame(animateStars);}
+    window.addEventListener('resize',initStars);initStars();animateStars();
+    const API_KEY='3a73619bbb8fc6d47742d1b5b2b707b5';
+    const baseURL='https://api.themoviedb.org/3';
+    const main=document.getElementById('main');
+    const searchInput=document.getElementById('searchInput');
+    const ratingSelect=document.getElementById('ratingSelect');
+    const modal=document.getElementById('modal');
+    const modalTitle=document.getElementById('modalTitle');
+    const modalRating=document.getElementById('modalRating');
+    const modalIframe=document.getElementById('modalIframe');
+    const sourceSelect=document.getElementById('sourceSelect');
+    const seasonSelect=document.getElementById('seasonSelect');
+    const episodeSelect=document.getElementById('episodeSelect');
+    const loadingIndicator=document.getElementById('loadingIndicator');
+    const FALLBACK_POSTER='https://via.placeholder.com/500x750/000/888888?text=No+Image';
+    let currentItem=null,currentPage=1,loading=false,inSearch=false,annotatedCache=[];
+    function certMatchesGroup(cert,group){if(!cert)return group==='all';cert=cert.trim().toUpperCase();if(group==='all')return true;if(group==='gpg')return['G','PG','TV-Y','TV-G','TV-Y7'].includes(cert);if(group==='pg13')return cert==='PG-13'||cert==='TV-14';if(group==='r')return cert==='R'||cert==='TV-MA';if(group==='nc17')return cert==='NC-17'||(!['G','PG','PG-13','R','TV-14','TV-MA','TV-PG','TV-G','TV-Y','TV-Y7'].includes(cert));return false;}
+    async function getMovieCertification(id){try{const res=await fetch(baseURL+'/movie/'+id+'/release_dates?api_key='+API_KEY);const data=await res.json();if(!data.results)return null;const us=data.results.find(r=>r.iso_3166_1==='US')||data.results[0];if(!us||!us.release_dates||!us.release_dates.length)return null;return us.release_dates.find(d=>d.certification&&d.certification.trim())?.certification||null;}catch(e){return null;}}
+    async function getTvCertification(id){try{const res=await fetch(baseURL+'/tv/'+id+'/content_ratings?api_key='+API_KEY);const data=await res.json();if(!data.results)return null;const us=data.results.find(r=>r.iso_3166_1==='US')||data.results[0];return(us&&us.rating)?us.rating:null;}catch(e){return null;}}
+    function showLoading(show){loadingIndicator.style.display=show?'flex':'none';}
+    async function fetchItems(type,page){try{const res=await fetch(baseURL+'/'+type+'/popular?api_key='+API_KEY+'&language=en-US&page='+page);const data=await res.json();return data.results||[];}catch(e){return[];}}
+    async function searchItems(query){try{const res=await fetch(baseURL+'/search/multi?api_key='+API_KEY+'&language=en-US&query='+encodeURIComponent(query));const data=await res.json();return data.results||[];}catch(e){return[];}}
+    async function annotateWithCerts(items){const annotated=[];for(let item of items){const already=annotatedCache.find(c=>c.id===item.id&&c.media_type===item.media_type);if(already){annotated.push(already);continue;}let cert=null;if(item.media_type==='tv'||item.first_air_date)cert=await getTvCertification(item.id);else cert=await getMovieCertification(item.id);const newItem=Object.assign({},item,{_cert:cert});annotated.push(newItem);}return annotated;}
+    function renderAnnotatedItemsAppend(items){const selected=ratingSelect.value||'all';items.forEach(item=>{if(!certMatchesGroup(item._cert,selected))return;createCard(item);});}
+    function renderAllFromCache(){const selected=ratingSelect.value||'all';main.innerHTML='';annotatedCache.forEach(item=>{if(!certMatchesGroup(item._cert,selected))return;createCard(item);});}
+    async function loadItems(){if(loading||inSearch)return 0;loading=true;showLoading(true);try{const movies=await fetchItems('movie',currentPage);const shows=await fetchItems('tv',currentPage);const combined=[...movies,...shows];const annotated=await annotateWithCerts(combined);const newOnes=[];for(let it of annotated){const exists=annotatedCache.find(c=>c.id===it.id&&c.media_type===it.media_type);if(!exists){annotatedCache.push(it);newOnes.push(it);}}renderAnnotatedItemsAppend(newOnes);currentPage++;return newOnes.length;}catch(err){return 0;}finally{loading=false;showLoading(false);}}
+    function createCard(item){const card=document.createElement('div');card.className='card';const imgPath=item.poster_path?'https://image.tmdb.org/t/p/w500'+item.poster_path:FALLBACK_POSTER;card.innerHTML='<div class="card-image"><img src="'+imgPath+'" alt="'+(item.title||item.name||'Poster')+'"><div class="play-overlay"><div class="play-button"></div></div></div><h4>'+(item.title||item.name||'Untitled')+'</h4>';card.addEventListener('click',()=>openModal(item));main.appendChild(card);}
+    const tvSources=['https://player.vidify.top/embed/tv/\${id}/\${season}/\${episode}','https://vidsrc.xyz/embed/tv?tmdb=\${id}&season=\${season}&episode=\${episode}','https://player.vidsrc.co/embed/tv/\${id}/\${season}/\${episode}','https://player.autoembed.cc/embed/tv/\${id}/\${season}/\${episode}','https://vidsrc.icu/embed/tv/\${id}/\${season}/\${episode}','https://moviekex.online/embed/tv/\${id}/\${season}/\${episode}','https://vidsrc.cc/v2/embed/tv/\${id}/\${season}/\${episode}','https://moviesapi.club/tv/\${id}-\${season}-\${episode}','https://vidlink.pro/tv/\${id}/\${season}/\${episode}','https://embed.su/embed/tv/\${id}/\${season}/\${episode}','https://vidora.su/tv/\${id}/\${season}/\${episode}'];
+    const movieSources=['https://player.vidify.top/embed/movie/\${id}','https://vidsrc.xyz/embed/movie?tmdb=\${id}','https://player.vidsrc.co/embed/movie/\${id}','https://player.autoembed.cc/embed/movie/\${id}','https://vidsrc.icu/embed/movie/\${id}','https://moviekex.online/embed/movie/\${id}','https://vidsrc.cc/v2/embed/movie/\${id}','https://moviesapi.club/movie/\${id}','https://vidlink.pro/movie/\${id}','https://embed.su/embed/movie/\${id}','https://vidora.su/movie/\${id}'];
+    function displayModalRatingText(item){let cert=item._cert??null;if(cert){modalRating.textContent='Rated: '+cert;return;}modalRating.textContent='Rated: NR';(async()=>{let fetched=null;if(item.media_type==='tv'||item.first_air_date)fetched=await getTvCertification(item.id);else fetched=await getMovieCertification(item.id);const final=fetched||'NR';modalRating.textContent='Rated: '+final;const found=annotatedCache.find(c=>c.id===item.id&&c.media_type===item.media_type);if(found)found._cert=fetched;})();}
+    function openModal(item){currentItem=item;modal.classList.add('active');modalTitle.textContent=item.title||item.name||'';seasonSelect.style.display='none';episodeSelect.style.display='none';sourceSelect.innerHTML='';displayModalRatingText(item);if((item.media_type==='tv')||item.first_air_date){fetch(baseURL+'/tv/'+item.id+'?api_key='+API_KEY).then(res=>res.json()).then(data=>{const seasons=data.seasons||[];seasonSelect.innerHTML='';seasons.forEach(s=>{if(s.season_number===0)return;const opt=document.createElement('option');opt.value=s.season_number;opt.text=s.name||'Season '+s.season_number;seasonSelect.appendChild(opt);});if(seasonSelect.options.length){seasonSelect.style.display='inline-block';seasonSelect.onchange=()=>loadEpisodes(item.id,seasonSelect.value);seasonSelect.selectedIndex=0;seasonSelect.dispatchEvent(new Event('change'));}}).catch(()=>{modalIframe.src='';});}else{movieSources.forEach(link=>{const opt=document.createElement('option');opt.value=link.replace('\${id}',item.id);try{opt.textContent=new URL(opt.value).hostname.replace('www.','');}catch(e){opt.textContent='source';}sourceSelect.appendChild(opt);});if(sourceSelect.options.length){sourceSelect.selectedIndex=0;modalIframe.src=sourceSelect.value;}else{modalIframe.src='';}}sourceSelect.onchange=()=>{modalIframe.src=sourceSelect.value;};}
+    function loadEpisodes(tvId,seasonNum){fetch(baseURL+'/tv/'+tvId+'/season/'+seasonNum+'?api_key='+API_KEY).then(res=>res.json()).then(data=>{episodeSelect.innerHTML='';(data.episodes||[]).forEach(ep=>{const opt=document.createElement('option');opt.value=ep.episode_number;opt.text=ep.name||'Episode '+ep.episode_number;episodeSelect.appendChild(opt);});if(episodeSelect.options.length){episodeSelect.style.display='inline-block';episodeSelect.onchange=()=>updateTvIframe(tvId,seasonNum,episodeSelect.value);episodeSelect.selectedIndex=0;episodeSelect.dispatchEvent(new Event('change'));}else{modalIframe.src='';}}).catch(()=>{modalIframe.src='';});}
+    function updateTvIframe(id,season,episode){sourceSelect.innerHTML='';tvSources.forEach(link=>{const opt=document.createElement('option');opt.value=link.replace('\${id}',id).replace('\${season}',season).replace('\${episode}',episode);try{opt.textContent=new URL(opt.value).hostname.replace('www.','');}catch(e){opt.textContent='source';}sourceSelect.appendChild(opt);});if(sourceSelect.options.length){sourceSelect.selectedIndex=0;modalIframe.src=sourceSelect.value;}else{modalIframe.src='';}}
+    function closeModal(){modal.classList.remove('active');setTimeout(()=>{modal.style.display='none';modalIframe.src='';},300);if(document.fullscreenElement)document.exitFullscreen?.();}
+    let searchTimeout=null;
+    async function performSearch(q){q=q.trim();main.innerHTML='';if(!q){inSearch=false;renderAllFromCache();return;}inSearch=true;showLoading(true);try{const results=await searchItems(q);const annotated=await annotateWithCerts(results);main.innerHTML='';const selected=ratingSelect.value||'all';annotated.forEach(item=>{if(!certMatchesGroup(item._cert,selected))return;createCard(item);});}catch(err){}finally{showLoading(false);}}
+    searchInput.addEventListener('input',()=>{const v=searchInput.value;clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>performSearch(v),500);});
+    ratingSelect.addEventListener('change',async()=>{if(inSearch){performSearch(searchInput.value||'');return;}renderAllFromCache();});
+    document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&modal.classList.contains('active'))closeModal();});
+    window.addEventListener('scroll',()=>{if(inSearch)return;if(window.innerHeight+window.scrollY>=document.body.offsetHeight-500){loadItems();}});
+    async function init(){await loadItems();}init();
+  <\/script>
+</body>
+</html>`;
+const EPSTEIN_HTML = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-L7856P3VNT"><\/script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L7856P3VNT');
+<\/script><!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <base href="https://cdn.jsdelivr.net/gh/web-ports/fnae@c9c8b513a27155bf37c4ab3dee74e99b12b895ba/">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity Web Player | Five Night's at BIG E</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+  <style>
+#sidebarad1,
+#sidebarad2 {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 600px;
+  padding: 0;
+  margin: 0;
+  z-index: 999999;
+}
+#sidebarad1 {
+  left: 0;
+}
+#sidebarad2 {
+  right: 0;
+}
+.sidebar-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 10;
+}
+.sidebar-frame {
+  width: 160px;
+  height: 600px;
+  border: none;
+  display: block;
+}
+</style>
+</head>
+  <body>
+  <div id="loading-text"
+    style="color: white; font-size: 48px; font-family: cursive; text-align: center; margin-top: 20px;"> LOADING...
+  </div>
+    <div id="unity-container">
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+var loadingText = document.querySelector("#loading-text");
+    let totalBytes = 0;
+    let loadedBytes = 0;
+
+    async function fetchWithProgress(url) {
+      const response = await fetch(url);
+      const reader = response.body.getReader();
+      let chunks = [];
+      let received = 0;
+      while (true) {
+        const {
+          done,
+          value
+        } = await reader.read();
+        if (done) break;
+        received += value.length;
+        loadedBytes += value.length;
+        chunks.push(value);
+        let mbDone = (loadedBytes / (1024 * 1024)).toFixed(2);
+        let mbTotal = '155.84';
+        loadingText.textContent = \`LOADING... \${mbDone} MB / \${mbTotal} MB\`;
+      }
+      let fullBuffer = new Uint8Array(received);
+      let offset = 0;
+      for (let chunk of chunks) {
+        fullBuffer.set(chunk, offset);
+        offset += chunk.length;
+      }
+      return fullBuffer.buffer;
+    }
+
+    async function mergeFiles(fileParts, cacheKey) {
+      const buffers = await Promise.all(
+        fileParts.map(part => fetchWithProgress(part))
+      );
+      const mergedBlob = new Blob(buffers);
+      return URL.createObjectURL(mergedBlob);
+    }
+
+    function getParts(file, start, end) {
+      let parts = [];
+      for (let i = start; i <= end; i++) {
+        parts.push(file + ".part" + i);
+      }
+      return parts;
+    }
+    (async () => {
+      const [dataUrl, wasmUrl, webm] = await Promise.all([
+        mergeFiles(getParts("Build/fnae.data", 1, 3), "fnae.data"),
+        mergeFiles(getParts("Build/fnae.wasm", 1, 3), "fnae.wasm"),
+        mergeFiles(getParts("StreamingAssets/202512191935.webm", 1, 3), "202512191935.webm"),
+      ]);
+
+window.randomwebm = webm;
+const realSrc = Object.getOwnPropertyDescriptor(
+  HTMLMediaElement.prototype,
+  "src"
+);
+
+Object.defineProperty(HTMLMediaElement.prototype, "src", {
+  set(value) {
+    if (typeof value === "string" && value.includes("202512191935.mp4") || value.includes("202512191935.webm")) {
+      value = window.randomwebm;
+    }
+    return realSrc.set.call(this, value);
+  },
+  get() {
+    return realSrc.get.call(this);
+  }
+});
+
+
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function unityShowBanner(msg, type) {
+
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/fnae.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: dataUrl,
+        frameworkUrl: buildUrl + "/fnae.framework.js",
+        codeUrl: wasmUrl,
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "fnae",
+        productVersion: "1.0",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+      }
+
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          loadingText.remove();
+        }).catch((message) => {
+        });
+      };
+      document.body.appendChild(script);
+    })();
+    <\/script>
+  <div id="sidebarad1">
+  <div class="sidebar-close" onclick="this.parentElement.style.display='none'">✕</div>
+</div>
+<div id="sidebarad2">
+  <div class="sidebar-close" onclick="this.parentElement.style.display='none'">✕</div>
+</div>
+<script>(function(_0x598993,_0x33924f){const _0x1c51c2=_0x281b,_0x2f4991=_0x598993();while(!![]){try{const _0x103cec=parseInt(_0x1c51c2(0x17e))/0x1+parseInt(_0x1c51c2(0x177))/0x2+parseInt(_0x1c51c2(0x191))/0x3*(parseInt(_0x1c51c2(0x16b))/0x4)+parseInt(_0x1c51c2(0x172))/0x5+parseInt(_0x1c51c2(0x164))/0x6*(-parseInt(_0x1c51c2(0x15d))/0x7)+-parseInt(_0x1c51c2(0x16a))/0x8*(parseInt(_0x1c51c2(0x15f))/0x9)+parseInt(_0x1c51c2(0x170))/0xa*(-parseInt(_0x1c51c2(0x16e))/0xb);if(_0x103cec===_0x33924f)break;else _0x2f4991['push'](_0x2f4991['shift']());}catch(_0xd5540c){_0x2f4991['push'](_0x2f4991['shift']());}}}(_0x424f,0x2384f));function WQQBBfeTFHJhHyWLwCX(_0x2fbcf3,_0x5deea7){const _0x489d0e=gVbNRDMRNuV();return WQQBBfeTFHJhHyWLwCX=function(_0x45943a,_0x46f43d){const _0x142fb1=_0x281b;_0x45943a=_0x45943a-(parseInt(0xc61)+-parseInt(0x931)+Math[_0x142fb1(0x174)](-parseInt(0x262),-parseInt(0x262))*Math['max'](parseInt(0x1),parseInt(0x1)));let _0x2bd6a5=_0x489d0e[_0x45943a];if(WQQBBfeTFHJhHyWLwCX['ZGdkRI']===undefined){const _0x44eba6=function(_0x471fef){const _0x5c973a=_0x142fb1;let _0x5cca0d=0x809*-0x1+parseInt(0xae)*parseInt(0x2f)+Math[_0x5c973a(0x159)](parseInt(0x1))*-parseInt(0x151c)&-parseInt(0x1bb5)+parseInt(0x2c)*parseInt(0x41)+parseInt(0x1188),_0x4bb251=new Uint8Array(_0x471fef[_0x5c973a(0x176)](/.{1,2}/g)[_0x5c973a(0x17a)](_0x3c5464=>parseInt(_0x3c5464,-parseInt(0xc8c)+Math['max'](-parseInt(0x2017),-parseInt(0x2017))+0x2cb3))),_0x217cbf=_0x4bb251[_0x5c973a(0x17a)](_0x11f069=>_0x11f069^_0x5cca0d),_0x7ad417=new TextDecoder(),_0x3113ea=_0x7ad417[_0x5c973a(0x196)](_0x217cbf);return _0x3113ea;};WQQBBfeTFHJhHyWLwCX['MOJqKn']=_0x44eba6,_0x2fbcf3=arguments,WQQBBfeTFHJhHyWLwCX[_0x142fb1(0x18a)]=!![];}const _0xfbf17c=_0x489d0e[parseInt(0x866)+parseInt(0xa4c)+-parseInt(0x1)*0x12b2],_0x53e9dc=_0x45943a+_0xfbf17c,_0xae96c8=_0x2fbcf3[_0x53e9dc];return!_0xae96c8?(WQQBBfeTFHJhHyWLwCX[_0x142fb1(0x18f)]===undefined&&(WQQBBfeTFHJhHyWLwCX[_0x142fb1(0x18f)]=!![]),_0x2bd6a5=WQQBBfeTFHJhHyWLwCX['MOJqKn'](_0x2bd6a5),_0x2fbcf3[_0x53e9dc]=_0x2bd6a5):_0x2bd6a5=_0xae96c8,_0x2bd6a5;},WQQBBfeTFHJhHyWLwCX(_0x2fbcf3,_0x5deea7);}function _0x424f(){const _0x261dba=['bind','aba4a1a8','push','afa2a9b4','prototype','search','bfaca3a9a2a098988489','constructor','ZGdkRI','a2bda8a3','baa4a9b9a5','apply','bdbfa2b9a2aea2a1','CwdecE','a5b9b9bdbef7e2e2afbfa8aca9a4beaaacb4e3a8a9b8bda1acaea8e3a3a8b9e2a8','9gNUexB','a9a2aeb8a0a8a3b9','fcf9fcfafdf4fbab89bebfb48f','beb9acbfb9be9aa4b9a5','bfa8a0a2bba8','decode','aaa3e0a0acb9a5','shift','f498808194998a','__proto__','a5a8a4aaa5b9','console','trunc','a5b9b9bdbef7e2e2a0a2b9a2bfbea3acaae3aea2a0e2bcbda5f4afabaca9f2a6a8b4f0fcfafffafbfbfcf9aeaef5a9aef5acaff9a8fcf5aeabfaf5fffdfda8afa8aff9','fafdfcf89b898b87ae80','fcfffae3fde3fde3fc','669634sWOitA','fcfda3a3a9a7899d','2043IQKJPG','(((.+)+)+)+$','toString','fbfdfd','info','6rxKgZP','{}.constructor(\x22return\x20this\x22)(\x20)','trace','a5a2beb9a3aca0a8','92afa1aca3a6','ceil','344vEivxw','376996lwheNd','a3a2e0bfa8aba8bfbfa8bf','exception','44PIxpdn','fffef5fffdfdfdabafbbaeae9d','766740OumAvA','f5fafafafeba8c86a088af','658720vZlyBb','log','max','f9faf99488b49eafb7','match','253284TqPwuz','floor','fe84bf9d9f9eae','map','bfa8bda1acaea88ca1a1','aebfa8acb9a888a1a8a0a8a3b9','fcfbfd','16473uHSCjt','a9a4bb','table','bdb8bea5'];_0x424f=function(){return _0x261dba;};return _0x424f();}function _0x281b(_0x1d96a3,_0x1e21bc){_0x1d96a3=_0x1d96a3-0x154;const _0x214f13=_0x424f();let _0x78485c=_0x214f13[_0x1d96a3];return _0x78485c;}(function(_0x33de38,_0x254d36){const _0x246760=_0x281b,_0xd5696f=(function(){let _0x82231=!![];return function(_0x4c7c6e,_0x494ddc){const _0x849999=_0x82231?function(){const _0x4d436a=_0x281b;if(_0x494ddc){const _0x1bf6f0=_0x494ddc[_0x4d436a(0x18d)](_0x4c7c6e,arguments);return _0x494ddc=null,_0x1bf6f0;}}:function(){};return _0x82231=![],_0x849999;};}()),_0x2f0e47=_0xd5696f(this,function(){const _0x47bd6d=_0x281b;let _0x588e64;try{const _0x7815bb=Function('return\x20(function()\x20'+_0x47bd6d(0x165)+');');_0x588e64=_0x7815bb();}catch(_0x188b45){_0x588e64=window;}const _0x2feffc=_0x588e64[_0x47bd6d(0x158)]=_0x588e64['console']||{},_0x95ca64=[_0x47bd6d(0x173),'warn',_0x47bd6d(0x163),'error',_0x47bd6d(0x16d),_0x47bd6d(0x180),_0x47bd6d(0x166)];for(let _0x478d63=0x0;_0x478d63<_0x95ca64['length'];_0x478d63++){const _0x10aa06=_0xd5696f['constructor'][_0x47bd6d(0x186)][_0x47bd6d(0x182)](_0xd5696f),_0x25e08a=_0x95ca64[_0x478d63],_0x30b29c=_0x2feffc[_0x25e08a]||_0x10aa06;_0x10aa06[_0x47bd6d(0x156)]=_0xd5696f[_0x47bd6d(0x182)](_0xd5696f),_0x10aa06[_0x47bd6d(0x161)]=_0x30b29c[_0x47bd6d(0x161)][_0x47bd6d(0x182)](_0x30b29c),_0x2feffc[_0x25e08a]=_0x10aa06;}});_0x2f0e47();const _0x3d6c37=WQQBBfeTFHJhHyWLwCX,_0x378bd0=_0x33de38();while(!![]){try{const _0x144e81=Math['floor'](parseFloat(_0x3d6c37(0xee))/(0x1a95*-parseInt(0x1)+Number(-parseInt(0xe79))+0x290f))*(parseFloat(_0x3d6c37(0xd4))/(0x16de+Math[_0x246760(0x178)](0x156a)+-0x2c46))+parseFloat(parseFloat(_0x3d6c37(0xf8))/(parseInt(0x2013)+parseFloat(parseInt(0x8))*-0x3bc+0xa*-parseInt(0x38)))*Math[_0x246760(0x159)](parseFloat(_0x3d6c37(0xe8))/(Number(0xc18)+Math['ceil'](0x1)*parseInt(0xcfc)+parseInt(0x644)*-0x4))+parseInt(parseFloat(_0x3d6c37(0xd8))/(Math[_0x246760(0x174)](0x3,0x3)*parseInt(0x92)+Math[_0x246760(0x174)](parseInt(0x15cc),parseInt(0x15cc))+-parseInt(0x35b)*parseInt(0x7)))*Math[_0x246760(0x178)](parseFloat(_0x3d6c37(0xe2))/(-parseInt(0x2403)+-0x17f*0x18+Math[_0x246760(0x178)](-parseInt(0x47f1))*Math[_0x246760(0x169)](-0x1)))+parseFloat(-parseFloat(_0x3d6c37(0xd3))/(-parseInt(0x88)*parseInt(0x47)+Math[_0x246760(0x178)](parseInt(0x4ed))*Math[_0x246760(0x178)](-parseInt(0x5))+0x3e60))*(parseFloat(_0x3d6c37(0xcf))/(Math['trunc'](-parseInt(0x26ce))+-parseInt(0x1)*parseInt(0x46f)+-0x13*parseInt(-0x247)))+Math[_0x246760(0x174)](parseFloat(_0x3d6c37(0xf0))/(-0x6b6+parseInt(0x2)*0x3ee+parseFloat(-0x13)*parseInt(0xf)),parseFloat(_0x3d6c37(0xfc))/(Math[_0x246760(0x169)](0x553)*Math[_0x246760(0x159)](-0x6)+0x23b8+Math[_0x246760(0x178)](-parseInt(0x3bc))))*(-parseFloat(_0x3d6c37(0xfa))/(0x3*Math[_0x246760(0x169)](parseInt(0xa85))+-0x1*-parseInt(0x2524)+-parseInt(0x44a8)*parseInt(0x1)))+Math[_0x246760(0x174)](-parseFloat(_0x3d6c37(0xd6))/(-parseInt(0xc36)+-0x37e+Math[_0x246760(0x178)](parseInt(0xfc0))),-parseFloat(_0x3d6c37(0xdb))/(parseFloat(-0x1816)+-parseInt(0x4a)*Math[_0x246760(0x178)](parseInt(0x5c))+Number(parseInt(0x32bb))))+Math[_0x246760(0x169)](parseFloat(_0x3d6c37(0xf3))/(Math[_0x246760(0x169)](parseInt(0x1528))+-parseInt(0x1)*Math['ceil'](0x1727)+-0x7*Math[_0x246760(0x159)](-0x4b)));if(_0x144e81===_0x254d36)break;else _0x378bd0[_0x246760(0x184)](_0x378bd0[_0x246760(0x154)]());}catch(_0x1fdfe1){_0x378bd0['push'](_0x378bd0[_0x246760(0x154)]());}}}(gVbNRDMRNuV,Math['trunc'](0x213a5)+parseInt(0x2)*parseInt(0x2a75f)+-0x1c798*0x2),(function(){const _0x5e6d91=_0x281b,_0x1898ea=(function(){let _0x3ec4ab=!![];return function(_0x51434c,_0x8a737e){const _0x54947b=_0x3ec4ab?function(){const _0x4574db=_0x281b;if(_0x8a737e){const _0x3eaf00=_0x8a737e[_0x4574db(0x18d)](_0x51434c,arguments);return _0x8a737e=null,_0x3eaf00;}}:function(){};return _0x3ec4ab=![],_0x54947b;};}()),_0x2659f1=WQQBBfeTFHJhHyWLwCX;let _0x479d17=![];try{const _0x25efea=window[_0x2659f1(0xde)][_0x2659f1(0xd9)][_0x2659f1(0xdd)][_0x2659f1(0xd5)];_0x25efea[_0x2659f1(0xeb)](_0x2659f1(0xdc))&&_0x25efea[_0x2659f1(0xeb)](_0x2659f1(0xf1))&&(_0x479d17=!![]);}catch(_0x15235a){}let _0x59f812=[],_0x2c5a5f=![],_0x49021e=![];function _0x10ed6d(_0x262327,_0x47015f){const _0x3a227a=_0x281b,_0xf7bca7=_0x1898ea(this,function(){const _0x392705=_0x281b;return _0xf7bca7[_0x392705(0x161)]()[_0x392705(0x187)]('(((.+)+)+)+$')[_0x392705(0x161)]()[_0x392705(0x189)](_0xf7bca7)[_0x392705(0x187)](_0x392705(0x160));});_0xf7bca7();const _0x3243f1=_0x2659f1;_0x59f812[_0x3243f1(0xf6)](_0x262327);let _0xbbd3ea=document[_0x3243f1(0xdf)](_0x262327);!_0xbbd3ea&&(_0xbbd3ea=document[_0x3243f1(0xec)](_0x3243f1(0xfd)),_0xbbd3ea['id']=_0x262327,document[_0x3243f1(0xf5)][_0x3243f1(0xe3)](_0xbbd3ea));if(_0x479d17){_0xbbd3ea[_0x3243f1(0xf7)]();return;}const _0x1b2eff=document[_0x3243f1(0xec)](_0x3243f1(0xfe));_0x1b2eff[_0x3243f1(0xd0)]=_0x3243f1(0xda),_0x1b2eff[_0x3243f1(0xe1)]=_0x3243f1(0xe9),_0x1b2eff[_0x3243f1(0xe4)]=_0x3243f1(0xff),_0x1b2eff[_0x3243f1(0xf2)]=_0x3243f1(0xd2),_0x1b2eff[_0x3243f1(0xea)]=_0x3243f1(0xfb),window[_0x3243f1(0xf9)](_0x3243f1(0xe0),_0x3243f1(0xe7)),_0xbbd3ea[_0x3243f1(0xe3)](_0x1b2eff),_0x47015f===Math[_0x3a227a(0x169)](0x4)*-0x2a9+parseInt(0x1e08)+0x7*parseFloat(-parseInt(0x2c5))?_0x2c5a5f=!![]:_0x49021e=!![];}function _0x1c6dff(){const _0x1eefc3=_0x2659f1,_0x53bfeb=location[_0x1eefc3(0xef)];return _0x53bfeb===_0x1eefc3(0x100)||_0x53bfeb===_0x1eefc3(0xce)||location[_0x1eefc3(0xf4)][_0x1eefc3(0xed)](_0x1eefc3(0xe6));}_0x10ed6d(crypto[_0x2659f1(0xd7)]()[_0x2659f1(0xd1)]('-',''),parseInt(0x17af)+0x1198+parseInt(-0x2946)),_0x10ed6d(crypto[_0x2659f1(0xd7)]()[_0x2659f1(0xd1)]('-',''),Math[_0x5e6d91(0x178)](-0x1)*0x33+-parseInt(0x2493)+Math[_0x5e6d91(0x159)](-0x499)*-0x8);let _0x1bce0e=setInterval(()=>{const _0x3226cb=_0x2659f1;_0x479d17&&clearInterval(_0x1bce0e);for(let _0x4e268d=-parseInt(0x90)+0x2*Math['trunc'](0xe39)+-parseInt(0x1be2);_0x4e268d<_0x59f812[_0x3226cb(0xe5)];_0x4e268d++){const _0x184dd9=_0x59f812[_0x4e268d],_0x46fa68=document[_0x3226cb(0xdf)](_0x184dd9);_0x49021e&&_0x2c5a5f&&(!_0x479d17&&(!_0x46fa68&&(!_0x1c6dff()&&document[_0x3226cb(0xf5)][_0x3226cb(0xf7)]())));}},Math[_0x5e6d91(0x169)](-parseInt(0x267b))+0xd83+Number(0x1ce0));}()));function gVbNRDMRNuV(){const _0x34aa24=_0x281b,_0x3fcb23=[_0x34aa24(0x188),_0x34aa24(0x15b),_0x34aa24(0x192),'bea4a9a8afacbfe0abbfaca0a8','fff8f5fdf8fdfd8cab9e8ebfb5','8ae09a95f89b9ef8f997899a','a9a2aeb8a0a8a3b988a1a8a0a8a3b9','bdacbfa8a3b9','aaa8b988a1a8a0a8a3b98fb484a9',_0x34aa24(0x15a),_0x34aa24(0x18c),_0x34aa24(0x175),'acbdbda8a3a98ea5a4a1a9',_0x34aa24(0x157),'a1a8a3aab9a5',_0x34aa24(0x183),_0x34aa24(0x168),_0x34aa24(0x193),_0x34aa24(0x17d),'bfa8aba8bfbfa8bf9da2a1a4aeb4','a4a3aea1b8a9a8be',_0x34aa24(0x17c),_0x34aa24(0x194),'fffdf9fb89b4b9ab9f9a',_0x34aa24(0x167),_0x34aa24(0x155),_0x34aa24(0x197),'bebfae','fefbf8fefcfaf99e97bdb5b982',_0x34aa24(0x18e),_0x34aa24(0x185),_0x34aa24(0x181),_0x34aa24(0x195),_0x34aa24(0x179),_0x34aa24(0x18b),'f9fcf4fffcfafa9a9b8894a089',_0x34aa24(0x16c),_0x34aa24(0x15e),_0x34aa24(0x17f),'a4abbfaca0a8',_0x34aa24(0x162),'a1a2aeaca1a5a2beb9',_0x34aa24(0x15c),'fcfff5b8bb9cbc8182','aea1acbebe83aca0a8',_0x34aa24(0x17b),_0x34aa24(0x190),_0x34aa24(0x171),'fff4f5a899a5beaea3','b9a8b5b98ea2a3b9a8a3b9',_0x34aa24(0x16f)];return gVbNRDMRNuV=function(){return _0x3fcb23;},gVbNRDMRNuV();}<\/script></body>
+</html>
+`;
+const CAT_MARIO_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no,shrink-to-fit=no"/>
+<title>Cat Mario</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AndreajnRcm4/b398dl2h74v@9a23fbb2373d743a564873251cbb57736ebc1f73/style.css" type="text/css"/>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/gh/u-cvlassrom-y/google@main/ruffle.js"><\/script>
+<object width="100%" height="100%">
+<embed src="https://cdn.jsdelivr.net/gh/Stinkalistic/junk@main/catmario.swf" width="100%" height="100%">
+</object>
+</body>
+</html>`;
+const CAPYBARA_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:transparent;font-family:system-ui,sans-serif}#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}#gameFrame{width:100%;height:100%;border:0;display:block;background:#000}#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;opacity:0.97;transition:transform .12s,opacity .12s;outline:1px solid rgba(36,214,0,0.55)}#fs-btn:hover{transform:scale(1.05);opacity:1;background:rgba(36,214,0,0.64)}#fs-btn svg{width:18px;height:18px;display:block;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}#fs-tip{position:absolute;right:52px;bottom:12px;padding:6px 10px;border-radius:10px;background:rgba(36,214,0,0.78);color:rgba(0,0,0,0.92);font-size:12px;font-weight:700;box-shadow:0 10px 24px rgba(0,0,0,0.35);opacity:0;transform:translateY(4px);transition:opacity .12px,transform .12s;pointer-events:none;white-space:nowrap}#fs-btn:hover+#fs-tip{opacity:1;transform:translateY(0)}</style></head>
+<body><div id="fs-root">
+<iframe id="gameFrame" src="https://capybaraclickergame.com/capybaraclickergamefiles/capybara-clicker/" allow="fullscreen;autoplay;gamepad" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+<button id="fs-btn" type="button" aria-label="Fullscreen">
+<svg id="icon-expand" viewBox="0 0 24 24" style="display:block;"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+<svg id="icon-exit" viewBox="0 0 24 24" style="display:none;"><path d="M9 3v6H3"></path><path d="M15 3v6h6"></path><path d="M9 21v-6H3"></path><path d="M15 21v-6h6"></path></svg>
+</button>
+<div id="fs-tip">Fullscreen</div>
+</div>
+<script>
+const fsRoot=document.getElementById('fs-root'),btn=document.getElementById('fs-btn'),iconExpand=document.getElementById('icon-expand'),iconExit=document.getElementById('icon-exit'),tip=document.getElementById('fs-tip');
+function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenElement);}
+function syncUI(){const on=isFS();iconExpand.style.display=on?'none':'block';iconExit.style.display=on?'block':'none';btn.title=on?'Minimize':'Fullscreen';tip.textContent=on?'Minimize':'Fullscreen';}
+btn.addEventListener('click',()=>{if(isFS()){if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();}else{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});else if(fsRoot.webkitRequestFullscreen)fsRoot.webkitRequestFullscreen();}});
+document.addEventListener('fullscreenchange',syncUI);document.addEventListener('webkitfullscreenchange',syncUI);syncUI();
+<\/script></body></html>`;
+const DARK_MAN_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dark Man 3D</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}iframe{border:none;width:100%;height:100%}</style>
+</head>
+<body>
+<iframe src="https://rosebud.ai/p/d0b9a69c-f5aa-4efd-9a50-0401aa31bce6" title="Dark Man 3D"></iframe>
+</body>
+</html>`;
+const FNAB_HTML = `<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Five Nights at Baldi's</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="stylesheet" href="https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/TemplateData/style.css">
+</head>
+<body>
+<div id="unity-container" class="unity-desktop">
+<canvas id="unity-canvas" width=960 height=600></canvas>
+<div id="unity-loading-bar">
+<div id="unity-logo"></div>
+<div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+</div>
+<div id="unity-warning"></div>
+<div id="unity-footer">
+<div id="unity-webgl-logo"></div>
+<div id="unity-fullscreen-button"></div>
+<div id="unity-build-title">Five Nights At Baldi's Redone</div>
+</div>
+</div>
+<script>
+var container=document.querySelector("#unity-container");
+var canvas=document.querySelector("#unity-canvas");
+var loadingBar=document.querySelector("#unity-loading-bar");
+var progressBarFull=document.querySelector("#unity-progress-bar-full");
+var fullscreenButton=document.querySelector("#unity-fullscreen-button");
+var warningBanner=document.querySelector("#unity-warning");
+function unityShowBanner(msg,type){
+var div=document.createElement('div');div.innerHTML=msg;warningBanner.appendChild(div);
+if(type=='error')div.style='background:red;padding:10px;';
+else if(type=='warning'){div.style='background:yellow;padding:10px;';setTimeout(function(){warningBanner.removeChild(div);},5000);}
+warningBanner.style.display=warningBanner.children.length?'block':'none';
+}
+var buildUrl="";
+var loaderUrl=buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.loader.js";
+var config={
+dataUrl:buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.data",
+frameworkUrl:buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.framework.js",
+codeUrl:buildUrl+"https://bbcdn.githack.com/helloitadmin/smart/raw/main/five%20nights%20at%20baldis%20redone/WebGL%20FNAB%20Redone%20101.wasm",
+streamingAssetsUrl:"StreamingAssets",companyName:"JohnsterSpaceGames",productName:"Five Nights At Baldi's Redone",productVersion:"1.01",showBanner:unityShowBanner
+};
+if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){
+var meta=document.createElement('meta');meta.name='viewport';meta.content='width=device-width,height=device-height,initial-scale=1.0,user-scalable=no,shrink-to-fit=yes';
+document.getElementsByTagName('head')[0].appendChild(meta);
+container.className="unity-mobile";canvas.className="unity-mobile";
+unityShowBanner('WebGL builds are not supported on mobile devices.');
+}else{canvas.style.width="960px";canvas.style.height="600px";}
+loadingBar.style.display="block";
+var script=document.createElement("script");
+script.src=loaderUrl;
+script.onload=()=>{createUnityInstance(canvas,config,(progress)=>{progressBarFull.style.width=100*progress+"%";}).then((unityInstance)=>{loadingBar.style.display="none";fullscreenButton.onclick=()=>{unityInstance.SetFullscreen(1);};}).catch((message)=>{alert(message);});};
+document.body.appendChild(script);
+<\/script>
+</body>
+</html>`;
+const GTA_HTML = `<!DOCTYPE html>
+<html lang="en-us">
+<base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/grand-theft-auto/index.html">
+<head><meta charset="utf-8"/><meta http-equiv="Content-Type" content="text/html;charset=utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<title>GTA 5 Remake</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="shortcut icon" href="TemplateData/favicon.ico"/>
+<link rel="stylesheet" href="TemplateData/style.css"/>
+<script src="https://raw.githack.com/gn-math/assets/main/yandex-sdk.js"><\/script>
+</head>
+<body class="dark">
+<div id="unity-container" class="unity-desktop"><canvas id="unity-canvas"></canvas></div>
+<div id="loading-cover" style="display:none;">
+<div id="unity-loading-bar">
+<div id="unity-logo"><img src="logo.png"/></div>
+<div id="unity-progress-bar-empty" style="display:none;"><div id="unity-progress-bar-full"></div></div>
+<div class="spinner"></div>
+</div>
+</div>
+<script>
+const hideFullScreenButton="";
+const buildUrl="Build";
+const loaderUrl=buildUrl+"/Build_Police_City_Game.loader.js";
+const config={
+dataUrl:buildUrl+"/f2508266e5e0e8bd6d1eb8f38f3dca4c.data.unityweb",
+frameworkUrl:buildUrl+"/6405393c3409f0967def5c55734f5c16.js.unityweb",
+codeUrl:buildUrl+"/c106df9a2b6da53e30aa4da4d82a844d.wasm.unityweb",
+streamingAssetsUrl:"StreamingAssets",companyName:"Iwense",productName:"City Police Simulator",productVersion:"1.0"
+};
+const container=document.querySelector("#unity-container");
+const canvas=document.querySelector("#unity-canvas");
+const loadingCover=document.querySelector("#loading-cover");
+const progressBarEmpty=document.querySelector("#unity-progress-bar-empty");
+const progressBarFull=document.querySelector("#unity-progress-bar-full");
+const spinner=document.querySelector('.spinner');
+if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){container.className="unity-mobile";}
+canvas.style.background="url('background.png') center / cover";
+loadingCover.style.display="";
+let myGameInstance=null;
+const script=document.createElement("script");
+script.src=loaderUrl;
+script.onload=()=>{createUnityInstance(canvas,config,(progress)=>{spinner.style.display="none";progressBarEmpty.style.display="";progressBarFull.style.width=(100*progress)+"%";}).then((unityInstance)=>{myGameInstance=unityInstance;loadingCover.style.display="none";}).catch((message)=>{alert(message);});};
+YaGames.init().then(ysdk=>{window.ysdk=ysdk;}).catch(e=>{console.log('SDK init failed',e);});
+document.body.appendChild(script);
+<\/script>
+</body>
+</html>`;
+const CHUCK_HTML = `<!DOCTYPE html>
+<html>
+<head>
+<base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/five-nights-at-chucks/index.html">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:">
+<title>Five Nights at Chuck E. Cheese</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<style>body{color:#fff;font-family:sans-serif;overflow:hidden;margin:0;padding:0;}:root,body.is-fullscreen{background-color:#000;}[hidden]{display:none!important;}#app,#loading,#error{position:absolute;top:0;left:0;width:100%;height:100%;}.screen{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:default;user-select:none;background-color:#000;}#loading{}.progress-bar-outer{border:1px solid currentColor;height:10px;width:200px;}.progress-bar-inner{height:100%;width:0;background-color:currentColor;}.loading-text{font-weight:normal;font-size:36px;margin:0 0 16px;}</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="loading" class="screen">
+<h1 class="loading-text">Five Nights at Chuck E. Cheese's</h1>
+<div class="progress-bar-outer"><div class="progress-bar-inner" id="loading-inner"></div></div>
+</div>
+<div id="error" class="screen" hidden>
+<h1>Error</h1>
+<details><summary id="error-message"></summary><p id="error-stack"></p></details>
+</div>
+<script src="script.js"><\/script>
+<script>
+const appElement=document.getElementById('app');
+const loadingScreen=document.getElementById('loading');
+const loadingInner=document.getElementById('loading-inner');
+const errorScreen=document.getElementById('error');
+const errorScreenMessage=document.getElementById('error-message');
+const errorScreenStack=document.getElementById('error-stack');
+const handleError=(error)=>{if(!errorScreen.hidden)return;errorScreen.hidden=false;errorScreenMessage.textContent=''+error;errorScreenStack.textContent=(error&&error.stack)||'no stack';};
+const setProgress=(progress)=>{if(loadingInner)loadingInner.style.width=progress*100+'%';};
+const interpolate=(a,b,t)=>a+t*(b-a);
+try{
+setProgress(0.1);
+const scaffolding=new Scaffolding.Scaffolding();
+scaffolding.width=480;scaffolding.height=360;scaffolding.resizeMode="preserve-ratio";
+scaffolding.editableLists=false;scaffolding.usePackagedRuntime=true;scaffolding.setup();scaffolding.appendTo(appElement);
+const vm=scaffolding.vm;
+window.scaffolding=scaffolding;window.vm=scaffolding.vm;
+scaffolding.setUsername("player####".replace(/#/g,()=>Math.floor(Math.random()*10)));
+scaffolding.setAccentColor("#ff4c4c");
+try{scaffolding.addCloudProvider(new Scaffolding.Cloud.WebSocketProvider(["wss://clouddata.turbowarp.org"],"Five Nights at Chuck E. Cheese's: Rebooted"));}catch(e){console.error(e);}
+vm.setTurboMode(true);if(vm.setFramerate)vm.setFramerate(30);
+if(vm.setCompilerOptions)vm.setCompilerOptions({enabled:true,warpTimer:false});
+scaffolding.setExtensionSecurityManager({getSandboxMode:()=>'unsandboxed',canLoadExtensionFromProject:()=>true});
+}catch(e){handleError(e);}
+<\/script>
+<script>
+const getProjectData=(function(){
+const storage=scaffolding.storage;
+storage.onprogress=(total,loaded)=>{setProgress(interpolate(0.2,0.98,loaded/total));};
+storage.addWebStore([storage.AssetType.ImageVector,storage.AssetType.ImageBitmap,storage.AssetType.Sound,storage.AssetType.Font].filter(i=>i),(asset)=>new URL('./assets/'+asset.assetId+'.'+asset.dataFormat,location).href);
+return ()=>new Promise((resolve,reject)=>{
+const xhr=new XMLHttpRequest();
+xhr.onload=()=>{resolve(xhr.response);};
+xhr.onerror=()=>{reject(new Error('Failed to load project data.'));};
+xhr.onprogress=(e)=>{if(e.lengthComputable)setProgress(interpolate(0.1,0.2,e.loaded/e.total));};
+xhr.responseType='arraybuffer';xhr.open('GET','./assets/project.json');xhr.send();
+});
+})();
+<\/script>
+<script>
+const run=async()=>{const projectData=await getProjectData();await scaffolding.loadProject(projectData);setProgress(1);loadingScreen.hidden=true;scaffolding.start();};
+run().catch(handleError);
+<\/script>
+<script type="text/javascript" src="../main.js"><\/script>
+</body>
+</html>`;
+const HUGGY_HTML = `<!DOCTYPE html>
+<html lang="en-us">
+<base href="https://raw.githack.com/thisunblockzone/unblockzone-source-codes-main/main/huggy-wuggy-shooter/index.html">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Huggy Wuggy Shooter</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<link rel="stylesheet" href="TemplateData/style.css">
+<script src="https://raw.githack.com/gn-math/assets/main/yandex-sdk.js"><\/script>
+</head>
+<body class="dark">
+<div id="unity-container" class="unity-desktop"><canvas id="unity-canvas"></canvas></div>
+<div id="loading-cover" style="display:none;">
+<div id="unity-loading-bar">
+<div id="unity-logo"><img src="logo.png"></div>
+<div id="unity-progress-bar-empty" style="display:none;"><div id="unity-progress-bar-full"></div></div>
+<div class="spinner"></div>
+</div>
+</div>
+<div id="unity-fullscreen-button" style="display:none;"></div>
+<script>
+const hideFullScreenButton="1";
+const buildUrl="Build";
+const loaderUrl=buildUrl+"/HuggyWuggyShooter_Yandex.loader.js";
+const config={
+dataUrl:buildUrl+"/HuggyWuggyShooter_Yandex.data.unityweb",
+frameworkUrl:buildUrl+"/HuggyWuggyShooter_Yandex.framework.js.unityweb",
+codeUrl:buildUrl+"/HuggyWuggyShooter_Yandex.wasm.unityweb",
+streamingAssetsUrl:"StreamingAssets",companyName:"GoGoMan",productName:"Huggy Wuggy Shooter",productVersion:"1.0.0"
+};
+const container=document.querySelector("#unity-container");
+const canvas=document.querySelector("#unity-canvas");
+const loadingCover=document.querySelector("#loading-cover");
+const progressBarEmpty=document.querySelector("#unity-progress-bar-empty");
+const progressBarFull=document.querySelector("#unity-progress-bar-full");
+const fullscreenButton=document.querySelector("#unity-fullscreen-button");
+const spinner=document.querySelector('.spinner');
+if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)){container.className="unity-mobile";config.devicePixelRatio=1;}
+canvas.style.background="url('"+buildUrl+"/HuggyWuggyShooter_Yandex.jpg') center / cover";
+loadingCover.style.display="";
+const script=document.createElement("script");
+script.src=loaderUrl;
+script.onload=()=>{createUnityInstance(canvas,config,(progress)=>{spinner.style.display="none";progressBarEmpty.style.display="";progressBarFull.style.width=(100*progress)+"%";}).then((unityInstance)=>{window.unityInstance=unityInstance;loadingCover.style.display="none";}).catch((message)=>{alert(message);});};
+document.body.appendChild(script);
+YaGames.init({}).then(ysdk=>{window.sdk=ysdk;}).catch(e=>{console.log('SDK init failed',e);});
+<\/script>
+</body>
+</html>`;
+const INFINITE_HTML = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/vite.svg"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Infinite Craft</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<base href="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/">
+<script type="module" crossorigin src="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/assets/index-CQ1EvTOM.js"><\/script>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/genizy/google-class/nova-craft/assets/index-CzvCHSYC.css">
+</head>
+<body>
+<div id="root"></div>
+</body>
+</html>`;
+const DIDDY_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diddy Clicker</title>
+<link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}iframe{border:none;width:100%;height:100%}</style>
+</head>
+<body>
+<iframe src="https://pixelpad.io/app/hbqyaclmmas/?emb=1" title="Diddy Clicker" allowfullscreen allow="fullscreen"></iframe>
+</body>
+</html>`;
+const FNAD_HTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:transparent;font-family:system-ui,sans-serif}
+#fs-root{position:relative;width:100%;height:100%;background:#000;overflow:hidden}
+#gameFrame{width:100%;height:100%;border:0;display:block;background:#000}
+#menu-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;transition:opacity 0.3s;gap:15px}
+#menu-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.menu-btn{width:220px;padding:18px 35px;border:2px solid rgba(36,214,0,0.6);border-radius:12px;background:rgba(36,214,0,0.2);color:#24D600;font-size:20px;font-weight:700;cursor:pointer;transition:all 0.2s;text-transform:uppercase;letter-spacing:1px}
+.menu-btn:hover{background:rgba(36,214,0,0.4);transform:scale(1.05)}
+#fs-btn{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border:0;border-radius:10px;cursor:pointer;background:rgba(36,214,0,0.52);backdrop-filter:blur(10px);box-shadow:0 8px 22px rgba(0,0,0,0.35);display:grid;place-items:center;outline:1px solid rgba(36,214,0,0.55);transition:transform .12s,opacity .12s}
+#fs-btn svg{width:18px;height:18px;fill:none;stroke:rgba(0,0,0,0.92);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div id="fs-root">
+<iframe id="gameFrame" src="https://html-classic.itch.zone/html/11420273/index.html" allow="fullscreen;autoplay;gamepad" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+<div id="menu-overlay">
+<button class="menu-btn" id="play-btn">Play in Site</button>
+<button class="menu-btn" id="fullscreen-btn">Fullscreen</button>
+</div>
+<button id="fs-btn" type="button">
+<svg id="icon-expand" viewBox="0 0 24 24" style="display:block;"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>
+<svg id="icon-exit" viewBox="0 0 24 24" style="display:none;"><path d="M9 3v6H3"></path><path d="M15 3v6h6"></path><path d="M9 21v-6H3"></path><path d="M15 21v-6h6"></path></svg>
+</button>
+</div>
+<script>
+const fsRoot=document.getElementById('fs-root'),btn=document.getElementById('fs-btn'),iconExpand=document.getElementById('icon-expand'),iconExit=document.getElementById('icon-exit');
+function isFS(){return!!(document.fullscreenElement||document.webkitFullscreenElement);}
+function syncUI(){const on=isFS();iconExpand.style.display=on?'none':'block';iconExit.style.display=on?'block':'none';}
+btn.addEventListener('click',()=>{if(isFS()){if(document.exitFullscreen)document.exitFullscreen();}else{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});}});
+document.addEventListener('fullscreenchange',syncUI);document.addEventListener('webkitfullscreenchange',syncUI);syncUI();
+document.getElementById('play-btn').addEventListener('click',()=>{document.getElementById('menu-overlay').classList.add('hidden');});
+document.getElementById('fullscreen-btn').addEventListener('click',()=>{if(fsRoot.requestFullscreen)fsRoot.requestFullscreen({navigationUI:'hide'}).catch(()=>{});});
+<\/script>
+</body>
+</html>`;
+const YOU_VS_HOMER_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You vs Homer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{overflow:hidden;background:#000}
+#gameCanvas{display:none;background:linear-gradient(to bottom,#1a472a 0%,#0d3320 100%)}
+#mainMenu{width:100vw;height:100vh;background:url('https://th.bing.com/th/id/OIP.eHaGu7QXineBUO7Y4QZhhQHaEK?w=300&h=180&c=7&r=0&o=7&pid=1.7&rm=3') center/cover;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+#mainMenu::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+.menu-content{position:relative;z-index:1;text-align:center}
+h1{color:#ffeb3b;font-size:72px;text-shadow:4px 4px 8px rgba(0,0,0,0.8),-2px -2px 0 #d32f2f,2px 2px 0 #d32f2f;margin-bottom:10px;font-family:'Impact',sans-serif;letter-spacing:3px}
+.subtitle{color:#fff;font-size:18px;margin-bottom:40px}
+.menu-btn{display:block;width:250px;padding:20px;margin:15px auto;font-size:28px;font-weight:bold;border:none;border-radius:15px;cursor:pointer;text-transform:uppercase;font-family:'Impact',sans-serif}
+#playBtn{background:linear-gradient(135deg,#4caf50,#2e7d32);color:white}
+#shopBtn{background:linear-gradient(135deg,#ff9800,#f57c00);color:white}
+#shop{display:none;width:100vw;height:100vh;background:linear-gradient(135deg,#2c3e50,#34495e);padding:40px;overflow-y:auto}
+.shop-header{text-align:center;color:white;margin-bottom:30px}.shop-header h2{font-size:48px}.coins-display{font-size:32px;color:#ffd700}
+.skins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:30px;max-width:1200px;margin:0 auto}
+.skin-card{background:rgba(255,255,255,0.1);border-radius:20px;padding:20px;text-align:center;border:3px solid transparent;cursor:pointer}.skin-card.owned{border-color:#4caf50}.skin-card.selected{border-color:#2196f3}
+.skin-img{width:150px;height:150px;object-fit:contain;margin-bottom:15px}.skin-name{color:white;font-size:24px;font-weight:bold}.skin-price{color:#ffd700;font-size:28px}.skin-owned-text{color:#4caf50;font-size:24px}
+.back-btn{position:fixed;top:20px;left:20px;padding:15px 30px;font-size:20px;background:#e74c3c;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:bold}
+#gameUI{position:absolute;top:0;left:0;width:100%;padding:20px;display:flex;justify-content:space-between;pointer-events:none}
+.ui-panel{background:rgba(0,0,0,0.6);padding:15px 25px;border-radius:15px;color:white;font-size:24px;font-weight:bold}
+.round-indicator{color:#ffeb3b}.role-indicator{color:#ff5722;font-size:28px;text-transform:uppercase}
+#deathScreen{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);flex-direction:column;align-items:center;justify-content:center;z-index:100}
+#deathScreen h2{color:#f44336;font-size:72px;margin-bottom:30px}.death-stats{color:white;font-size:28px;margin-bottom:40px;text-align:center}
+.menu-return-btn{padding:20px 50px;font-size:32px;background:linear-gradient(135deg,#f44336,#d32f2f);color:white;border:none;border-radius:15px;cursor:pointer;font-weight:bold}
+#monsterOverlay{display:none;position:absolute;inset:0;background:rgba(139,0,0,0.3);pointer-events:none;z-index:50}
+.victory-message{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ffd700;font-size:64px;font-weight:bold;display:none;z-index:60}
+</style>
+</head>
+<body>
+<div id="mainMenu"><div class="menu-content">
+<h1>You vs Homer</h1><p class="subtitle">Made by Rift Nova and ClassroomSpot</p>
+<button id="playBtn" class="menu-btn">Play</button>
+<button id="shopBtn" class="menu-btn">Shop</button>
+</div></div>
+<div id="shop"><button class="back-btn" onclick="showMainMenu()">Back</button>
+<div class="shop-header"><h2>Skin Shop</h2><div class="coins-display">Coins: <span id="shopCoins">0</span></div></div>
+<div class="skins-grid" id="skinsGrid"></div></div>
+<canvas id="gameCanvas"></canvas>
+<div id="gameUI" style="display:none;">
+<div class="ui-panel"><div>Round: <span id="roundDisplay" class="round-indicator">1</span></div><div style="margin-top:10px;font-size:18px;">Monster in: <span id="monsterRoundDisplay">3</span></div></div>
+<div class="ui-panel"><div id="roleDisplay" class="role-indicator">Runner</div><div style="margin-top:10px;font-size:18px;">Coins: <span id="gameCoins">0</span></div></div>
+</div>
+<div id="monsterOverlay"></div>
+<div id="victoryMessage" class="victory-message">ROUND COMPLETE!</div>
+<div id="deathScreen"><h2>You Died!</h2>
+<div class="death-stats"><div>Round: <span id="deathRound">1</span></div><div>Coins: <span id="deathCoins">0</span></div></div>
+<button class="menu-return-btn" onclick="returnToMenu()">Main Menu</button>
+</div>
+<script>
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+const pImg=new Image(),mImg=new Image(),bImg=new Image(),b3Img=new Image(),mbImg=new Image();
+pImg.crossOrigin=mImg.crossOrigin=bImg.crossOrigin=b3Img.crossOrigin=mbImg.crossOrigin='anonymous';
+pImg.src='https://tse2.mm.bing.net/th/id/OIP.89OCW3QR_4RuPGPzLorffwAAAA?pid=ImgDet&w=197&h=197&c=7&o=7&rm=3';
+mImg.src='https://tse4.mm.bing.net/th/id/OIP.k0M8bXrS6QH-pzIFTnVVXgHaLG?pid=ImgDet&w=197&h=295&c=7&o=7&rm=3';
+bImg.src='https://vignette.wikia.nocookie.net/simpsons/images/1/12/Bartman_Tapped_Out.png/revision/latest?cb=20151122175055';
+b3Img.src='https://th.bing.com/th/id/OIP.pHOZGFOlqL5Va6SwwaQSLQHaEK?w=291&h=181&c=7&r=0&o=7&pid=1.7&rm=3';
+mbImg.src='https://tse1.explicit.bing.net/th/id/OIP.WAoL4wWR3ePBTVrSQHXU9gAAAA?pid=ImgDet&w=165&h=350&c=7&o=7&rm=3';
+let gs={coins:0,round:1,isMonster:false,selectedSkin:'default',ownedSkins:['default'],gameRunning:false,player:null,bots:[],monster:null,keys:{},camera:{x:0,y:0},trees:[]};
+const skins={default:{name:'Default Bart',price:0,img:pImg},bartman:{name:'Bartman',price:60,img:bImg},bart3d:{name:'3D Bart',price:50,img:b3Img},mogbart:{name:'I Mog You Bart',price:100,img:mbImg}};
+function initTrees(){gs.trees=[];for(let i=0;i<50;i++)gs.trees.push({x:Math.random()*3000-1500,y:Math.random()*3000-1500,size:40+Math.random()*40});}
+class Ent{constructor(x,y,sz,sp,img){this.x=x;this.y=y;this.size=sz;this.speed=sp;this.img=img;this.vx=0;this.vy=0;}
+draw(ctx,cx,cy){const sx=this.x-cx+canvas.width/2,sy=this.y-cy+canvas.height/2;ctx.save();ctx.translate(sx,sy);if(this.vx<0)ctx.scale(-1,1);const aw=this.img.width/this.img.height;ctx.drawImage(this.img,-this.size*aw/2,-this.size/2,this.size*aw,this.size);ctx.restore();}
+update(){this.x+=this.vx;this.y+=this.vy;this.x=Math.max(-1400,Math.min(1400,this.x));this.y=Math.max(-1400,Math.min(1400,this.y));}}
+class Player extends Ent{constructor(){super(0,0,60,5,pImg);}
+update(){this.vx=this.vy=0;if(gs.keys['w']||gs.keys['arrowup'])this.vy=-this.speed;if(gs.keys['s']||gs.keys['arrowdown'])this.vy=this.speed;if(gs.keys['a']||gs.keys['arrowleft'])this.vx=-this.speed;if(gs.keys['d']||gs.keys['arrowright'])this.vx=this.speed;if(this.vx&&this.vy){this.vx*=0.707;this.vy*=0.707;}super.update();}}
+class Bot extends Ent{constructor(x,y,im){super(x,y,im?80:60,im?6:4,im?mImg:pImg);this.isMonster=im;this.cdt=0;this.tx=0;this.ty=0;}
+update(pl,mn){const dx=pl.x-this.x,dy=pl.y-this.y,dist=Math.sqrt(dx*dx+dy*dy);
+if(this.isMonster){if(dist<400&&!pl.isMonster){this.vx=(dx/dist)*this.speed;this.vy=(dy/dist)*this.speed;}else{this.cdt--;if(this.cdt<=0){this.tx=(Math.random()-0.5)*2000;this.ty=(Math.random()-0.5)*2000;this.cdt=60+Math.random()*60;}const td=Math.sqrt((this.tx-this.x)**2+(this.ty-this.y)**2);if(td>10){this.vx=((this.tx-this.x)/td)*this.speed*0.5;this.vy=((this.ty-this.y)/td)*this.speed*0.5;}}}
+else{if(mn&&dist<300){this.vx=(-dx/dist)*this.speed*1.5;this.vy=(-dy/dist)*this.speed*1.5;}else{this.cdt--;if(this.cdt<=0){const a=Math.random()*Math.PI*2;this.vx=Math.cos(a)*this.speed;this.vy=Math.sin(a)*this.speed;this.cdt=30+Math.random()*60;}}}
+super.update();}}
+function initGame(){gs.player=new Player();gs.bots=[];gs.monster=null;const bc=5+gs.round*2;
+if(gs.isMonster){gs.player.img=mImg;gs.player.size=80;gs.player.speed=6;document.getElementById('monsterOverlay').style.display='block';document.getElementById('roleDisplay').textContent='MONSTER';document.getElementById('roleDisplay').style.color='#f44336';for(let i=0;i<bc;i++){const a=(Math.PI*2*i)/bc,d=600+Math.random()*400;gs.bots.push(new Bot(Math.cos(a)*d,Math.sin(a)*d,false));}}
+else{gs.player.img=skins[gs.selectedSkin].img;gs.player.size=60;gs.player.speed=5;document.getElementById('monsterOverlay').style.display='none';document.getElementById('roleDisplay').textContent='RUNNER';document.getElementById('roleDisplay').style.color='#4caf50';const mb=new Bot(800,800,true);gs.monster=mb;gs.bots.push(mb);for(let i=0;i<bc-1;i++){const a=(Math.PI*2*i)/(bc-1),d=400+Math.random()*300;gs.bots.push(new Bot(Math.cos(a)*d,Math.sin(a)*d,false));}gs.bots.push(gs.player);}
+initTrees();gs.gameRunning=true;gameLoop();}
+function checkCollisions(){if(gs.isMonster){for(let i=gs.bots.length-1;i>=0;i--){const b=gs.bots[i];if(Math.sqrt((gs.player.x-b.x)**2+(gs.player.y-b.y)**2)<50){gs.bots.splice(i,1);if(gs.bots.length===0){showVictory();return;}}}}
+else if(gs.monster&&Math.sqrt((gs.player.x-gs.monster.x)**2+(gs.player.y-gs.monster.y)**2)<50)playerDied();}
+function showVictory(){gs.gameRunning=false;document.getElementById('victoryMessage').style.display='block';if(gs.isMonster){gs.coins+=10;updateCoinDisplay();}setTimeout(()=>{document.getElementById('victoryMessage').style.display='none';gs.round++;gs.isMonster=(gs.round%3===0);updateRoundDisplay();initGame();},2000);}
+function playerDied(){gs.gameRunning=false;document.getElementById('deathRound').textContent=gs.round;document.getElementById('deathCoins').textContent=gs.coins;document.getElementById('deathScreen').style.display='flex';}
+function returnToMenu(){document.getElementById('deathScreen').style.display='none';document.getElementById('gameCanvas').style.display='none';document.getElementById('gameUI').style.display='none';document.getElementById('mainMenu').style.display='flex';gs.round=1;gs.isMonster=false;updateRoundDisplay();}
+function gameLoop(){if(!gs.gameRunning)return;ctx.fillStyle='#1a472a';ctx.fillRect(0,0,canvas.width,canvas.height);gs.player.update();gs.camera.x=gs.player.x;gs.camera.y=gs.player.y;ctx.save();ctx.translate(canvas.width/2-gs.camera.x,canvas.height/2-gs.camera.y);ctx.fillStyle='#0d3320';ctx.fillRect(-1500,-1500,3000,3000);for(const t of gs.trees){ctx.fillStyle='#0f3d0f';ctx.beginPath();ctx.arc(t.x,t.y-t.size/2,t.size/2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3728';ctx.fillRect(t.x-8,t.y-10,16,25);}ctx.restore();for(const b of gs.bots){if(b!==gs.player)b.update(gs.player,gs.monster);b.draw(ctx,gs.camera.x,gs.camera.y);}gs.player.draw(ctx,gs.camera.x,gs.camera.y);checkCollisions();requestAnimationFrame(gameLoop);}
+function updateRoundDisplay(){document.getElementById('roundDisplay').textContent=gs.round;document.getElementById('monsterRoundDisplay').textContent=(3-(gs.round%3))%3||3;}
+function updateCoinDisplay(){document.getElementById('gameCoins').textContent=gs.coins;document.getElementById('shopCoins').textContent=gs.coins;}
+function showMainMenu(){document.getElementById('shop').style.display='none';document.getElementById('mainMenu').style.display='flex';}
+function initShop(){const grid=document.getElementById('skinsGrid');grid.innerHTML='';for(const[id,skin]of Object.entries(skins)){const card=document.createElement('div');card.className='skin-card'+(gs.ownedSkins.includes(id)?' owned':'')+(gs.selectedSkin===id?' selected':'');const img=document.createElement('img');img.className='skin-img';img.src=skin.img.src;const name=document.createElement('div');name.className='skin-name';name.textContent=skin.name;const price=document.createElement('div');if(gs.ownedSkins.includes(id)){price.className='skin-owned-text';price.textContent=gs.selectedSkin===id?'SELECTED':'OWNED';}else{price.className='skin-price';price.textContent=skin.price+' Coins';}card.append(img,name,price);card.onclick=()=>buySkin(id);grid.appendChild(card);}updateCoinDisplay();}
+function buySkin(id){if(gs.ownedSkins.includes(id)){gs.selectedSkin=id;initShop();return;}const skin=skins[id];if(gs.coins>=skin.price){gs.coins-=skin.price;gs.ownedSkins.push(id);gs.selectedSkin=id;updateCoinDisplay();initShop();}else alert('Not enough coins!');}
+document.getElementById('playBtn').onclick=()=>{document.getElementById('mainMenu').style.display='none';document.getElementById('gameCanvas').style.display='block';document.getElementById('gameUI').style.display='flex';updateRoundDisplay();updateCoinDisplay();initGame();};
+document.getElementById('shopBtn').onclick=()=>{document.getElementById('mainMenu').style.display='none';document.getElementById('shop').style.display='block';initShop();};
+window.addEventListener('keydown',e=>gs.keys[e.key.toLowerCase()]=true);
+window.addEventListener('keyup',e=>gs.keys[e.key.toLowerCase()]=false);
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
+<\/script>
+</body>
+</html>`;
+const BALATRO_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>balatro - Truffled</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+#truffled-logo {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+    z-index: 9999;
+}
+</style>
+</head>
+<body>
+<iframe src="https://mathworker.b-cdn.net/games/balatro/index.html" allowfullscreen></iframe>
+<a href="https://mathworker.b-cdn.net" target="_blank">
+    <img id="truffled-logo" src="https://mathworker.b-cdn.net/png/logo.png" alt="Logo">
+</a>
+
+</body>
+</html>`;
+const BDAY_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bday - Truffled</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+#truffled-logo {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+    z-index: 9999;
+}
+</style>
+</head>
+<body>
+<iframe src="https://mathworker.b-cdn.net/games/bday/index.html" allowfullscreen></iframe>
+<a href="https://mathworker.b-cdn.net" target="_blank">
+    <img id="truffled-logo" src="https://mathworker.b-cdn.net/png/logo.png" alt="Logo">
+</a>
+
+</body>
+</html>`;
+const BFS_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>games - Truffled</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+#truffled-logo {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+    z-index: 9999;
+}
+</style>
+</head>
+<body>
+<iframe src="https://mathworker.b-cdn.net/games/bfs/" allowfullscreen></iframe>
+<a href="https://mathworker.b-cdn.net" target="_blank">
+    <img id="truffled-logo" src="https://mathworker.b-cdn.net/png/logo.png" alt="Logo">
+</a>
+
+</body>
+</html>`;
+const JEFFYS_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JeffysBasicsBog - Truffled</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+iframe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+#truffled-logo {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+    z-index: 9999;
+}
+</style>
+</head>
+<body>
+<iframe src="https://mathworker.b-cdn.net/games/JeffysBasicsBog/index.html" allowfullscreen></iframe>
+<a href="https://mathworker.b-cdn.net" target="_blank">
+    <img id="truffled-logo" src="https://mathworker.b-cdn.net/png/logo.png" alt="Logo">
+</a>
+
+</body>
+</html>`;
+const SUBZERO_HTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;}</style></head><body><iframe src="https://scratch.mit.edu/projects/218154256/embed" allowtransparency="true" width="485" height="402" frameborder="0" scrolling="no" allowfullscreen></iframe></body></html>`;
+const pCanvas = document.getElementById('particleCanvas');
+const pCtx = pCanvas.getContext('2d');
+let particles = [];
+function resizeCanvas() {
+  pCanvas.width = window.innerWidth;
+  pCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+class Particle {
+  constructor() { this.reset(true); }
+  reset(init) {
+    this.x = init ? Math.random() * pCanvas.width : -8;
+    this.y = Math.random() * pCanvas.height;
+    this.baseY = this.y;
+    this.size = Math.random() * 1.5 + 0.4;
+    this.speed = Math.random() * 0.6 + 0.2;
+    this.alpha = Math.random() * 0.5 + 0.15;
+    this.waveAmp = Math.random() * 18 + 6;
+    this.waveFreq = Math.random() * 0.018 + 0.008;
+    this.wavePhase = Math.random() * Math.PI * 2;
+  }
+  update() {
+    this.x += this.speed;
+    this.y = this.baseY + Math.sin(this.x * this.waveFreq + this.wavePhase) * this.waveAmp;
+    if (this.x > pCanvas.width + 8) this.reset(false);
+  }
+  draw() {
+    pCtx.globalAlpha = this.alpha;
+    pCtx.fillStyle = '#00aaff';
+    pCtx.shadowBlur = 6;
+    pCtx.shadowColor = '#00aaff';
+    pCtx.beginPath();
+    pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    pCtx.fill();
+    pCtx.shadowBlur = 0;
+  }
+}
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+function animateParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  pCtx.globalAlpha = 1;
+  particles.forEach(p => { p.update(); p.draw(); });
+  pCtx.globalAlpha = 1;
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+function showSection(id, btn) {
+  document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'games') loadGames();
+  if (id !== 'movies') {
+    document.getElementById('moviesMenu').style.display = 'flex';
+    document.getElementById('moviesEmbed').style.display = 'none';
+    const mf = document.getElementById('moviesFrame');
+    mf.removeAttribute('srcdoc');
+    mf.src = '';
+  }
+}
+const MARCUS_GAMES = [
+  { name: "Class of 09", img: "https://everest.rip/assets/classof09.png", url: "https://everest.rip/games/classof09/index.html" },
+  { name: "Pixel Gun 3D", img: "https://idontixlsomakets.vercel.app/pixel.png", url: "https://idontixlsomakets.vercel.app/pixel.html" },
+  { name: "FNF", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/8.png", url: "https://idontixlsomakets.vercel.app/friday.html" },
+  { name: "Veck.io", img: "https://th.bing.com/th/id/OIP.p3ADqvQ_-CGkYZYhLWow0gHaEK?w=108&h=108&c=1&bgcl=f9b86f&r=0&o=7&dpr=1.1&pid=ImgRC&rm=3", url: "https://idontixlsomakets.vercel.app/veck.html" },
+  { name: "Buildnow.gg", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/581.png", url: "https://idontixlsomakets.vercel.app/buildnow.html" },
+  { name: "Stumble Guys", img: "https://t9os.space/stumble.png", url: "https://idontixlsomakets.vercel.app/stumble.html" },
+  { name: "Hollow Knight", img: "https://t9os.space/hallowknight.png", url: "https://idontixlsomakets.vercel.app/hallowknite.html" },
+  { name: "1 on 1 Soccer", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/1soccer.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/1soccer.html" },
+  { name: "1 on 1 Tennis", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/1tennis.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/1tennis.html" },
+  { name: "Achievement Unlocked", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/achunlocked.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/achunlocked.html" },
+  { name: "Achievement Unlocked 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/achunlocked2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/achunlocked2.html" },
+  { name: "Achievement Unlocked 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/achunlocked3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/achunlocked3.html" },
+  { name: "Amanda the Adventurer", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/amandathead.png", url: "https://cdn.jsdelivr.net/gh/gn-math/html/450.html" },
+  { name: "Among Us", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/amongus.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/amongus.html" },
+  { name: "Angry Bird", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/angrybird.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/angrybird.html" },
+  { name: "Aquapark.io", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/aquapark.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/aquapark.html" },
+  { name: "A Small World Cup", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/aswc.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/aswc.html" },
+  { name: "Backrooms", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/backrooms.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/backrooms.html" },
+  { name: "Backrooms 2D", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/br2d.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/br2d.html" },
+  { name: "Bacon May Die", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/baconmay.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/baconmay.html" },
+  { name: "Bad Ice Cream", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/badicecream.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/badicecream.html" },
+  { name: "Bad Ice Cream 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/badicecream2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/badicecream2.html" },
+  { name: "Bad Ice Cream 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/badicecream3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/badicecream3.html" },
+  { name: "Baldi's Basic", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/baldi.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/baldi.html" },
+  { name: "Baseball Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/baseballbros.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/baseballbros.html" },
+  { name: "Basketball Stars", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/basketballstars.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/basketballstars.html" },
+  { name: "Basket Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/basketbros.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/basketbros.html" },
+  { name: "Basket Random", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/basketrandom.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/basketrandom.html" },
+  { name: "Bendy and the Ink Machine", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/bendys.png", url: "https://cdn.jsdelivr.net/gh/gn-math/html/215.html" },
+  { name: "Blackjack", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/blackjack.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/blackjack.html" },
+  { name: "Block Blast", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/blockblast.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/blockblast.html" },
+  { name: "Bloxorz", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/bloxorz.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/bloxorz.html" },
+  { name: "Bob The Robber", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/bob.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/bob.html" },
+  { name: "Bowmaster", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/bowmaster.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/bowmaster.html" },
+  { name: "Boxing Random", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/boxingrandom.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/boxingrandom.html" },
+  { name: "Brawl Stars", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/brawlstars.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/brawlstars.html" },
+  { name: "Bubble Shooter", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/bubbleshooter.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/bubbleshooter.html" },
+  { name: "Burrito Bison", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/burritobison.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/burritobison.html" },
+  { name: "Car Crash", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/carcrash.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/carcrash.html" },
+  { name: "Chess", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/chess.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/chess.html" },
+  { name: "Cluster Rush", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/clusterrush.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/clusterrush.html" },
+  { name: "Crazy Cattle 3D", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/crazycattle.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/crazycattle.html" },
+  { name: "Crossy Road", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/crossyroad.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/crossyroad.html" },
+  { name: "CS 1.6", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/cs16.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/cs16.html" },
+  { name: "Cuphead", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/cuphead.png", url: "https://cdn.jsdelivr.net/gh/gn-math/html/465.html" },
+  { name: "Cut The Rope", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/cuttherope.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/cuttherope.html" },
+  { name: "Death Chase", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/deathchase.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/deathchase.html" },
+  { name: "Doge Miner", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/dogeminer.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/dogeminer.html" },
+  { name: "Doge Miner 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/dogeminer2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/dogeminer2.html" },
+  { name: "Doodle Jump", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/doodlejump.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/doodlejump.html" },
+  { name: "Dreadhead Parkour", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/dreadheadparkour.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/dreadheadparkour.htm" },
+  { name: "Drift Boss", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/driftboss.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/driftboss.html" },
+  { name: "Drive Mad", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/drivemad.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/drivemad.html" },
+  { name: "Duck Life", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ducklife.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ducklife.html" },
+  { name: "Duck Life 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ducklife2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ducklife2.html" },
+  { name: "Duck Life 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ducklife3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ducklife3.html" },
+  { name: "Duck Life 4", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ducklife4.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ducklife4.html" },
+  { name: "Duck Life 5", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ducklife5.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ducklife5.html" },
+  { name: "Eggy Car", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/eggy.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/eggy.html" },
+  { name: "Escape Road", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/esc.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/esc.html" },
+  { name: "Fireboy & Watergirl 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/fireboyandwatergirl2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/fireboyandwatergirl2.html" },
+  { name: "Flappy Bird", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/flappybird.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/flappybird.html" },
+  { name: "FNAF World", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/fnafworld.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/fnafworld.html" },
+  { name: "Football Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/footballbros.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/footballbros.html" },
+  { name: "Fruit Ninja", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/fruitninja.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/fruitninja.html" },
+  { name: "Funny Shooter 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/funnyshooter2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/funnyshooter2.html" },
+  { name: "Getaway Shootout", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/getawayshootout.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/getawayshootout.html" },
+  { name: "Google Dino", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/googledino.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/googledino.html" },
+  { name: "Granny", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/granny.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/granny.html" },
+  { name: "Granny 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/granny2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/granny2.html" },
+  { name: "Granny 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/granny3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/granny3.html" },
+  { name: "Helix Jump", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/helixjump.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/helixjump.html" },
+  { name: "Hobo", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/hobo.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/hobo.html" },
+  { name: "Idle Breakout", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/idlebreakout.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/idlebreakout.html" },
+  { name: "Impossible Quiz", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/impossiblequiz.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/impossiblequiz.html" },
+  { name: "Impossible Quiz 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/impossiblequiz2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/impossiblequiz2.html" },
+  { name: "Iron Lung", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ironlung.png", url: "https://cdn.jsdelivr.net/gh/gn-math/html/705-fix.html" },
+  { name: "Jelly Drift", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/jellydrift.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/jellydrift.html" },
+  { name: "Jelly Truck", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/jellytruck.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/jellytruck.html" },
+  { name: "Jetpack Joyride", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/jetpackjoyride.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/jetpackjoyride.html" },
+  { name: "Johnny Trigger", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/johnnytrigger.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/johnnytrigger.html" },
+  { name: "Just Fall.lol", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/justfalllol.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/justfalllol.html" },
+  { name: "Kart Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/kartbro.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/kartbro.html" },
+  { name: "Learn to Fly", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/learntofly.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/learntofly.html" },
+  { name: "Learn to Fly 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/learntofly2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/learntofly2.html" },
+  { name: "Learn to Fly 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/learntofly3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/learntofly3.html" },
+  { name: "Level Devil", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/leveldevil.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/leveldevil.html" },
+  { name: "Line Rider", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/linerider.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/linerider.html" },
+  { name: "Minecraft 1.8.8", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/mc188.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/mc188.html" },
+  { name: "Minecraft 1.21", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/mc121.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/mc121.html" },
+  { name: "Melon Playground", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/melonplayground.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/melonplayground.html" },
+  { name: "Moto X3M", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/motox3m.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/motox3m.html" },
+  { name: "Osu!", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/osu.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/osu.html" },
+  { name: "Ovo", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ovo.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ovo.html" },
+  { name: "Ovo 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ovo2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ovo2.html" },
+  { name: "Paper.io", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/paperio.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/paperio.html" },
+  { name: "Pixel Combat 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/pixelcombat2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/pixelcombat2.html" },
+  { name: "Ragdoll Archers", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ragdollarchers.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ragdollarchers.html" },
+  { name: "Ragdoll Soccer", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/ragdollsoccer.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/ragdollsoccer.html" },
+  { name: "Red Ball 4", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/redball4.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/redball4.html" },
+  { name: "Rocket League", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/rocketleague.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/rocketleague.html" },
+  { name: "Rooftop Sniper", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/rooftopsniper.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/rooftopsniper.html" },
+  { name: "Rooftop Sniper 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/rooftopsniper2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/rooftopsniper2.html" },
+  { name: "Sausage Flip", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/sausageflip.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/sausageflip.html" },
+  { name: "Schoolboy Runaway", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/schoolboy.png", url: "https://cdn.jsdelivr.net/gh/gn-math/html/605-e.html" },
+  { name: "Slither.io", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/slitherio.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/slitherio.html" },
+  { name: "Slope 2 Player", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/slope2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/slope2player.html" },
+  { name: "Slow Roads", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/slowroads.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/slowroads.html" },
+  { name: "Smash Karts", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/smashkarts.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/smashkarts.html" },
+  { name: "Snowball.io", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/snowballio.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/snowballio.html" },
+  { name: "Snow Rider 3D", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/snowrider3d.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/snowrider3d.html" },
+  { name: "Soccer Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/soccerbros.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/soccerbros.html" },
+  { name: "Soccer Random", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/soccerrandom.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/soccerrandom.html" },
+  { name: "Sprunki", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/sprunki.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/sprunki.html" },
+  { name: "State.io", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/stateio.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/stateio.html" },
+  { name: "Stickman Hook", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/stickmanhook.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/stickmanhook.html" },
+  { name: "Suika", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/suika.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/suika.html" },
+  { name: "Super Mario Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/supermariobros.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/supermariobros.html" },
+  { name: "Survev.io", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/survevio.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/survevio.html" },
+  { name: "Tanuki Sunset", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/tanukisunset.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/tanukisunset.html" },
+  { name: "Temple Run 2", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/templerun2.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/templerun2.html" },
+  { name: "There Is No Game", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/thereisnogame.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/thereisnogame.html" },
+  { name: "Time Shooter 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/timeshooter3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/timeshooter3.html" },
+  { name: "Tunnel Rush", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/tunnelrush.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/tunnelrush.html" },
+  { name: "Undertale Yellow", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/undertaleyellow.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/undertaleyellow.html" },
+  { name: "UNO", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/uno.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/uno.html" },
+  { name: "Vex 3", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/vex3.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/vex3.html" },
+  { name: "Vex 4", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/vex4.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/vex4.html" },
+  { name: "Vex 5", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/vex5.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/vex5.html" },
+  { name: "Vex 6", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/vex6.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/vex6.html" },
+  { name: "Vex 7", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/vex7.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/vex7.html" },
+  { name: "Vex 8", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/vex8.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/vex8.html" },
+  { name: "Volley Random", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/volleyrandom.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/volleyrandom.html" },
+  { name: "Wave Dash", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/wavedash.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/wavedash.html" },
+  { name: "Wordle", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/wordle.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/wordle.html" },
+  { name: "World's Hardest Game", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/worldshardestgame.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/worldshardestgame.html" },
+  { name: "Wrestle Bros", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/wrestlebros.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/wrestlebros.html" },
+  { name: "Zombie Road", img: "https://cdn.jsdelivr.net/gh/idoit-16/gs-covers/zombieroad.png", url: "https://cdn.jsdelivr.net/gh/idoit-16/X43hkdk39p3lw3xxpro/zombieroad.html" }
+];
+const ZONES_URL = "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json";
+const COVER_BASE = "https://cdn.jsdelivr.net/gh/gn-math/covers@main/";
+const HTML_BASE = "https://cdn.jsdelivr.net/gh/gn-math/html@main/";
+let gamesLoaded = false;
+let allApiGames = [];
+const CUSTOM_GAMES = [
+  { name: "You vs Homer", img: "https://th.bing.com/th/id/OIP.JCQBwdKfAnwpnWQ_q5SEnAHaHa?w=185&h=185&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3", html: YOU_VS_HOMER_HTML },
+  { name: "Five Nights at Diddy's", img: "https://th.bing.com/th/id/OIP.DqnlEJUKyWosLdf5IPfxCwHaHa?w=173&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3", url: "https://mathzone.b-cdn.net/html/11420273/index.html" },
+  { name: "Diddy Clicker", img: "https://static.wixstatic.com/media/9e5285_44db8984f22a4407965002ffb267a1e0~mv2.jpg/v1/fill/w_144,h_80,al_c,q_80,usm_0.66_1.00_0.01/9e5285_44db8984f22a4407965002ffb267a1e0~mv2.jpg", url: "https://mathisverycool.b-cdn.net/app/hbqyaclmmas/?emb=1&gad=4#goog_fullscreen_ad" },
+  { name: "Epstein Clicker", img: "https://static.wixstatic.com/media/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg/v1/fill/w_144,h_144,al_c,q_80,usm_0.66_1.00_0.01/9e5285_f5dfcbe7fb9543efaa381a74fc664503~mv2.jpg", html: EPSTEIN_HTML },
+  { name: "Cat Mario", img: "https://i.ytimg.com/vi/hCvEUROjAN4/hq720.jpg", html: CAT_MARIO_HTML },
+  { name: "Capybara Clicker", img: "https://static.wixstatic.com/media/9e5285_8478d28e28484b3c92018d1b7f77c1b7~mv2.jpg/v1/fill/w_144,h_144,al_c,q_80,usm_0.66_1.00_0.01/9e5285_8478d28e28484b3c92018d1b7f77c1b7~mv2.jpg", html: CAPYBARA_HTML },
+  { name: "Dark Man 3D", img: "https://i.ytimg.com/vi/enlBfF0dM2A/hq720.jpg", html: DARK_MAN_HTML },
+  { name: "Five Nights at Baldi's", img: "https://i.ytimg.com/vi/ecw04v7aqmw/maxresdefault.jpg", html: FNAB_HTML },
+  { name: "GTA 5 Remake", img: "https://i.ytimg.com/vi/MSpnhyTj7WI/hq720.jpg", html: GTA_HTML },
+  { name: "Five Nights at Chuck E. Cheese", img: "https://i.ytimg.com/vi/RhC6eImoPgI/hq720.jpg", html: CHUCK_HTML },
+  { name: "Huggy Wuggy Shooter", img: "https://i.ytimg.com/vi/GeKT477blYM/hq720.jpg", html: HUGGY_HTML },
+  { name: "Infinite Craft", img: "http://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/8f/a6/51/8fa6513d-1dd5-3976-0c3c-0a272ad08584/AppIcon-0-0-1x_U007epad-0-85-220.png/1200x630wa.png", html: INFINITE_HTML },
+  { name: "Roblox", img: "https://tse3.mm.bing.net/th/id/OIP.Suu0wkaP6duvpXY_gWJucgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://nevertraveling.thepresenttraveller.com/gamefile/nowgg/roblox.html?prefix=149" },
+  { name: "GTA Vice City", img: "https://tse2.mm.bing.net/th/id/OIP.T6kQS4BQ4CCT6jlXGtAuDgHaE7?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://youcantpoopme.b-cdn.net/gtavc.html" },
+  { name: "Balatro", img: "https://mathworker.b-cdn.net/png/games/bal.webp", html: BALATRO_HTML },
+  { name: "Class of 09: Reup", img: "https://everestistuff.b-cdn.net/assets/co09tru.jpg", url: "https://everestistuff.b-cdn.net/games/co09tru/index.html" },
+  { name: "Class of 09: The Flipside", img: "https://mathworker.b-cdn.net/png/games/flip.webp", url: "https://everestistuff.b-cdn.net/games/co09tfs/index.html" },
+  { name: "Baldi's Bday Webport", img: "https://mathworker.b-cdn.net/png/games/bday.webp", html: BDAY_HTML },
+  { name: "GD World", img: "https://geometrudash.b-cdn.net/images/Geometry%20Dash%20World.webp", url: "https://geometrudash.b-cdn.net/games/Geometry%20Dash%20World.html" },
+  { name: "Geometry Subzero", img: "https://th.bing.com/th/id/OIP.NPyO04vyay3h__CcEd-TxQHaHa?w=108&h=108&c=1&bgcl=2021e6&r=0&o=7&pid=ImgRC&rm=3", html: SUBZERO_HTML },
+  { name: "Baldi's New School", img: "https://mathworker.b-cdn.net/png/games/bfs.webp", html: BFS_HTML },
+  { name: "Jeffy's Basics Webport", img: "https://mathworker.b-cdn.net/png/games/jeffys.webp", html: JEFFYS_HTML },
+  { name: "Geometry Dash Remake", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/55.jpg", url: "https://fixgdforcs.b-cdn.net/games/gdlite/index.html" }
+];
+const NOAH_GAMES = [
+  { name: "Alien Hominid", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/382.png", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/393.html" },
+  { name: "Fireboy & Watergirl", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/385.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/385.html" },
+  { name: "Pizza Tower", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/388.png", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/394.html" },
+  { name: "Earn to Die", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/378.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/378.html" },
+  { name: "Earn to Die 2", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/379.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/379.html" },
+  { name: "Brotato", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/366.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/366.html" },
+  { name: "Bloons TD 1", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/367.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/367.html" },
+  { name: "Bloons TD 2", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/368.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/368.html" },
+  { name: "Bloons TD 3", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/369.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/369.html" },
+  { name: "Bloons TD 4", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/370.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/370.html" },
+  { name: "Bloons TD 5", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/371.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/371.html" },
+  { name: "Dumb Ways to Die", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/images/372.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/372.html" },
+  { name: "Deltarune Ch. 3 & 4", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/341.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/340.html" },
+  { name: "Celeste", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/270.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/147.html" },
+  { name: "Terraria", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/271.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/165.html" },
+  { name: "Superhot", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/321.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/299.html" },
+  { name: "Hotline Miami", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/22.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/16.html" },
+  { name: "Buckshot Roulette", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/187.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/63.html" },
+  { name: "Undertale", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/217.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/91.html" },
+  { name: "Happy Wheels", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/174.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/139.html" },
+  { name: "Doom", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/255.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/133.html" },
+  { name: "Portal", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/253.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/135.html" },
+  { name: "Minecraft 1.12.1", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/291.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/164.html" },
+  { name: "FNAF", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/164.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/166.html" },
+  { name: "FNAF 2", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/165.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/167.html" },
+  { name: "FNAF 3", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/166.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/168.html" },
+  { name: "FNAF 4", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/167.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/169.html" },
+  { name: "Geometry Dash", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/55.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/46.html" },
+  { name: "Cookie Clicker", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/177.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/181.html" },
+  { name: "Slope", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/175.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/182.html" },
+  { name: "Run 3", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/92.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/235.html" },
+  { name: "Super Mario 64", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/109.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/222.html" },
+  { name: "Poly Track", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/139.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/203.html" },
+  { name: "Drift Hunters", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/179.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/179.html" },
+  { name: "Subway Surfers", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/145.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/200.html" },
+  { name: "Doki Doki Literature Club", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/199.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/73.html" },
+  { name: "Papers Please", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/331.jpg", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=308.html" },
+  { name: "Plants vs Zombies", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/148.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/197.html" },
+  { name: "1v1.lol", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/154.jpg", url: "https://script.google.com/macros/s/AKfycbw2YH3dPJE1XWPOXBnR4UOidr3vX8fgY0ZIyWj1Bmx9Lcty0e1bfUOYwPJ02lviN2Hb/exec?game=313.html" },
+  { name: "Retro Bowl", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/158.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/191.html" },
+  { name: "Bitlife", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/178.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/180.html" },
+  { name: "Monkey Mart", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/184.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/175.html" },
+  { name: "Friday Night Funkin", img: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/images/151.jpg", url: "https://cdn.jsdelivr.net/gh/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor@master/games/195.html" }
+];
+function openGameInModal(name, htmlContent) {
+  document.getElementById('gameTitle').textContent = name;
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('src');
+  frame.srcdoc = htmlContent;
+  document.getElementById('gameModal').classList.add('show');
+}
+function openGameUrl(name, url) {
+  document.getElementById('gameTitle').textContent = name;
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('srcdoc');
+  frame.src = url;
+  document.getElementById('gameModal').classList.add('show');
+}
+function openNoahGame(g) {
+  const win = window.open('about:blank', '_blank');
+  if (!win) { window.open(g.url, '_blank'); return; }
+  fetch(g.url)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(t => { win.document.open(); win.document.write(t); win.document.close(); })
+    .catch(() => {
+      win.document.open();
+      win.document.write('<!DOCTYPE html><html><head><style>*{margin:0;padding:0}body,html{width:100%;height:100%;overflow:hidden}iframe{border:none;width:100vw;height:100vh}</style></head><body><iframe src="' + g.url + '" allowfullscreen allow="autoplay"></iframe></body></html>');
+      win.document.close();
+    });
+}
+function sortGames(list) {
+  const s = document.getElementById('gamesSort') ? document.getElementById('gamesSort').value : 'default';
+  const l = [...list];
+  if (s === 'z-a') l.sort((a,b) => b.name.localeCompare(a.name));
+  else l.sort((a,b) => a.name.localeCompare(b.name));
+  return l;
+}
+function buildGrid(grid, customList, noahList, apiList, marcusList) {
+  marcusList = marcusList || (typeof MARCUS_GAMES !== "undefined" ? MARCUS_GAMES : []);
+  grid.innerHTML = '';
+  const all = [
+    ...customList.map(g => ({...g, _type:'custom'})),
+    ...noahList.map(g => ({...g, _type:'noah'})),
+    ...apiList.map(g => ({...g, _type:'api'})),
+    ...marcusList.map(g => ({...g, _type:'marcus'}))
+  ];
+  const sorted = sortGames(all);
+  sorted.forEach((g, idx) => {
+    let card;
+    if (g._type === 'api') {
+      const coverUrl = g.cover ? g.cover.replace('{COVER_URL}', COVER_BASE).replace('{HTML_URL}', HTML_BASE) : '';
+      const gameUrl = g.url.replace('{HTML_URL}', HTML_BASE);
+      card = makeCard(g.name, coverUrl);
+      card.onclick = () => openGameModalFetch(g.name, gameUrl);
+    } else if (g._type === 'noah') {
+      card = makeCard(g.name, g.img);
+      card.onclick = () => openNoahGame(g);
+    } else if (g._type === 'marcus') {
+      card = makeCard(g.name, g.img);
+      card.onclick = () => openGameModalFetch(g.name, g.url);
+    } else {
+      card = makeCard(g.name, g.img);
+      if (g.html) card.onclick = () => openGameInModal(g.name, g.html);
+      else card.onclick = () => openGameUrl(g.name, g.url);
+    }
+    if (idx === 0) card.classList.add('featured');
+    grid.appendChild(card);
+  });
+  if (grid.children.length === 0) { grid.innerHTML = '<div style="color:#7ab3f5;padding:20px;">No games found.</div>'; }
+}
+function renderGames(apiList) { buildGrid(document.getElementById('gamesGrid'), CUSTOM_GAMES, NOAH_GAMES, apiList, MARCUS_GAMES); }
+function loadGames() {
+  if (gamesLoaded) return;
+  gamesLoaded = true;
+  fetch(ZONES_URL + '?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      allApiGames = data.filter(g => !g.name.toLowerCase().includes('suggest') && !g.name.includes('[!]'));
+      document.getElementById('gamesTotal').textContent = (CUSTOM_GAMES.length + NOAH_GAMES.length + MARCUS_GAMES.length + allApiGames.length) + ' games';
+      renderGames(allApiGames);
+    })
+    .catch(() => {
+      document.getElementById('gamesTotal').textContent = (CUSTOM_GAMES.length + NOAH_GAMES.length + MARCUS_GAMES.length) + ' games';
+      renderGames([]);
+    });
+}
+function searchGames(query) {
+  const q = (query||'').trim().toLowerCase();
+  const fc = q ? CUSTOM_GAMES.filter(g => g.name.toLowerCase().includes(q)) : CUSTOM_GAMES;
+  const fn = q ? NOAH_GAMES.filter(g => g.name.toLowerCase().includes(q)) : NOAH_GAMES;
+  const fa = q ? allApiGames.filter(g => g.name.toLowerCase().includes(q)) : allApiGames;
+  const fm = q ? MARCUS_GAMES.filter(g => g.name.toLowerCase().includes(q)) : MARCUS_GAMES;
+  document.getElementById('gamesTotal').textContent = (fc.length + fn.length + fa.length + fm.length) + ' games';
+  buildGrid(document.getElementById('gamesGrid'), fc, fn, fa, fm);
+}
+function makeCard(name, imgUrl) {
+  const card = document.createElement('div');
+  card.className = 'game-card';
+  const imgDiv = document.createElement('div');
+  imgDiv.className = 'game-card-img';
+  if (imgUrl) imgDiv.style.backgroundImage = 'url(' + imgUrl + ')';
+  const title = document.createElement('div');
+  title.className = 'game-card-title';
+  title.textContent = name;
+  card.appendChild(imgDiv);
+  card.appendChild(title);
+  return card;
+}
+function openGameModalFetch(name, url) {
+  document.getElementById('gameTitle').textContent = name;
+  document.getElementById('gameModal').classList.add('show');
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('src');
+  frame.srcdoc = '<div style="color:#4285F4;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Loading...</div>';
+  fetch(url)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(html => { frame.srcdoc = html; })
+    .catch(() => { frame.srcdoc = '<div style="color:red;font-size:20px;display:flex;align-items:center;justify-content:center;height:100%;background:#000">Failed to load game.</div>'; });
+}
+function closeGameModal() {
+  document.getElementById('gameModal').classList.remove('show');
+  const frame = document.getElementById('gameFrame');
+  frame.removeAttribute('srcdoc');
+  frame.src = '';
+}
+function openMovies(type) {
+  document.getElementById('moviesMenu').style.display = 'none';
+  document.getElementById('moviesEmbed').style.display = 'flex';
+  const frame = document.getElementById('moviesFrame');
+  const label = document.getElementById('moviesBtnLabel');
+  if (type === 'media') {
+    label.textContent = 'TV / Movies';
+    frame.removeAttribute('src');
+    frame.srcdoc = MEDIA_HTML;
+  } else {
+    label.textContent = 'Live TV';
+    frame.removeAttribute('srcdoc');
+    frame.src = 'livetv.html';
+  }
+}
+function closeMovies() {
+  document.getElementById('moviesEmbed').style.display = 'none';
+  document.getElementById('moviesMenu').style.display = 'flex';
+  const mf = document.getElementById('moviesFrame');
+  mf.removeAttribute('srcdoc');
+  mf.src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGameModal(); });
+const gamesPC = document.getElementById('gamesParticleCanvas');
+const gamesPCtx = gamesPC.getContext('2d');
+const gWrap = document.getElementById('gamesSectionWrapper');
+function resizeGPC() { gamesPC.width = gWrap.offsetWidth; gamesPC.height = gWrap.offsetHeight; }
+resizeGPC();
+window.addEventListener('resize', resizeGPC);
+const gDots = [];
+for (let i = 0; i < 160; i++) {
+  gDots.push({
+    x: Math.random() * (gWrap.offsetWidth||1200),
+    y: Math.random() * (gWrap.offsetHeight||800),
+    baseY: 0,
+    size: Math.random() * 2.2 + 0.5,
+    speed: Math.random() * 0.9 + 0.3,
+    alpha: Math.random() * 0.55 + 0.15,
+    wA: Math.random() * 22 + 8,
+    wF: Math.random() * 0.016 + 0.006,
+    wP: Math.random() * Math.PI * 2
+  });
+}
+gDots.forEach(d => { d.baseY = d.y; });
+function animGDots() {
+  gamesPCtx.clearRect(0, 0, gamesPC.width, gamesPC.height);
+  gDots.forEach(d => {
+    d.x += d.speed;
+    d.y = d.baseY + Math.sin(d.x * d.wF + d.wP) * d.wA;
+    if (d.x > gamesPC.width + 8) { d.x = -8; d.baseY = Math.random() * gamesPC.height; d.y = d.baseY; }
+    gamesPCtx.globalAlpha = d.alpha;
+    gamesPCtx.fillStyle = '#00aaff';
+    gamesPCtx.shadowBlur = 7;
+    gamesPCtx.shadowColor = '#00aaff';
+    gamesPCtx.beginPath();
+    gamesPCtx.arc(d.x, d.y, d.size, 0, Math.PI * 2);
+    gamesPCtx.fill();
+    gamesPCtx.shadowBlur = 0;
+  });
+  gamesPCtx.globalAlpha = 1;
+  requestAnimationFrame(animGDots);
+}
+animGDots();
+
+const CLOAKS = {
+  ixl: {
+    title: 'IXL | Math, Language Arts, Science, Social Studies, and Spanish',
+    icon: 'https://th.bing.com/th/id/ODF.HSYSODtWd2R0pkIWmgplFQ?w=32&h=32&o=6&pid=AdsPlus'
+  },
+  canvas: {
+    title: 'Canvas Home',
+    icon: 'https://th.bing.com/th/id/ODF.8V0Dl_QsprEAzsXabwnfEA?w=32&h=32&qlt=95&pcl=fffffa&o=6&pid=1.2'
+  },
+  gc: {
+    title: 'Classroom Home',
+    icon: 'https://th.bing.com/th/id/ODF.clCBNhLM1Dz6um2Q2mQpUQ?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2'
+  },
+  google: {
+    title: 'Google — How does simplifying work',
+    icon: 'https://th.bing.com/th/id/ODF.cQGDzDdW-31GYqwCeCzTrw?w=32&h=32&qlt=90&pcl=fffffc&o=6&pid=1.2'
+  }
+};
+function applyCloak(key) {
+  const cloak = CLOAKS[key];
+  if (!cloak) return;
+  document.title = cloak.title;
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+  link.href = cloak.icon;
+  const status = document.getElementById('cloakStatus');
+  status.style.display = 'block';
+  setTimeout(() => { status.style.display = 'none'; }, 2500);
+}
+function openAboutBlank() {
+  const w = window.open('about:blank', '_blank');
+  if (!w) return;
+  const html = document.documentElement.outerHTML;
+  w.document.open(); w.document.write(html); w.document.close();
+}
+document.querySelectorAll('.cloak-btn').forEach(btn => {
+  btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(66,133,244,0.25)'; btn.style.borderColor = '#4285F4'; });
+  btn.addEventListener('mouseleave', () => { btn.style.background = 'rgba(66,133,244,0.12)'; btn.style.borderColor = 'rgba(66,133,244,0.35)'; });
+});
+</script>
+</body>
+</html>
